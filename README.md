@@ -1,6 +1,6 @@
 # Resume
 
-- Code that reads datasheet of predetermined format to calculate gains and losses of criptocoins
+- Code that reads a datasheet (.xlsx file) of predetermined format to calculate gains and losses of transactions with criptocoins
 
 # TO DO
 
