@@ -46,19 +46,18 @@ function Navigator(column, line) {
     this.column = column;
     this.line = line;
     this.pos = () => {return this.column + this.line}
-    this.parseColumn = () => {
-
-    }
-    this.parseLine = () => this.line++
+    this.moveLines = (move) => {this.line += move;}
+    this.moveToColumn = (toColumn) => {this.column = toColumn;}
 }
 
 /*
 First formate data, separe each crypto, even with data redundance
 */
 
-function CryptoOp(date, mediumPrice, remainQuant) {
+function CryptoOperation(date, asset, newMediumPrice, remainQuant) {
+    this.asset = asset;
     this.date = date;
-    this.mediumPrice = mediumPrice;
+    this.newMediumPrice = newMediumPrice;
     this.remainQuant = remainQuant;
 }
 
@@ -77,11 +76,21 @@ const operationsList = [];
 
 // ############################### Operation Parsers #############################
 /*
-The functions are called by the parser, which passes its position in the datasheet to be used as reference
+The functions are called by the function parsing, which passes its position in the datasheet to be used as reference
 */
 // Operation type 1 - Buying using Real (R$)
-function opTypeOne(reference) {
-
+function opTypeOne(ref, worksheet) {
+    ref.moveToColumn('A');
+    const data = worksheet.getCell(ref.pos()).value;
+    ref.moveToColumn('B');
+    const asset = worksheet.getCell(ref.pos()).value;
+    ref.moveToColumn('I');
+    const newMediumPrice = worksheet.getCell(ref.pos()).value;
+    ref.moveToColumn('N');
+    const remainQuant = worksheet.getCell(ref.pos()).value.result;
+    
+    const newOp = new CryptoOperation(data, asset, newMediumPrice, remainQuant);
+    return newOp;
 }
 
 workbook.xlsx.readFile('Criptos.xlsx').then(() => {
@@ -91,8 +100,10 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
     function parsing() {
         const cell = worksheet.getCell(parser.pos()).value;
         if (cell) {
-            console.log(parser.pos(), ":", cell);
-            parser.parseLine();
+            if (cell === 1) {
+                console.log(opTypeOne(parser, worksheet)); // should return now only the date
+            }
+            parser.moveLines(1);
             parsing();
         }
         else {
