@@ -69,16 +69,24 @@ function CryptoReport() {
 }
 
 const parser = new Navigator('O', 2);
-const matchCrypto = new RegExp('\d//');
+const matchCrypto = new RegExp('\\w+');
 const matchOp = new RegExp('');
-//const cryptosList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX"];
-const cryptosList = [
+const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX"];
+const cryptosOpList = [
     {
         "name": "BTC",
         "operations": []
     },
     {
         "name": "ETH",
+        "operations": []
+    },
+    {
+        "name": "LTC",
+        "operations": []
+    },
+    {
+        "name": "EOS",
         "operations": []
     },
 ]
@@ -97,6 +105,9 @@ function opTypeOne(ref, worksheet) {
     const newMediumPrice = worksheet.getCell(ref.pos()).value;
     ref.moveToColumn('N');
     const remainQuant = worksheet.getCell(ref.pos()).value.result;
+
+    // Returns to the parser column
+    ref.moveToColumn('O');
     
     const newOp = new CryptoOperation(date, asset, newMediumPrice, remainQuant);
     return newOp;
@@ -108,13 +119,13 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
 
     function parsing() {
         const cell = worksheet.getCell(parser.pos()).value;
+        console.log(parser.pos(), cell);
         if (cell) {
             if (cell === 1) {
-                //Router to the correct asset
-                //Cut name of asset, find its indice in cryptoList and include data in operations
-                let op = opTypeOne(parser, worksheet)
-                console.log("crypto coin:", op.asset.match(matchCrypto)); //wrong
-                cryptosList[0].operations.push(op);
+                const op = opTypeOne(parser, worksheet)
+                const cryptoName = op.asset.match(matchCrypto)[0]
+                console.log("crypto coin:", cryptoName); 
+                cryptosOpList[cryptoNamesList.findIndex((name) => name === cryptoName)].operations.push(op);
             }
             else if (cell === 2) {
 
@@ -129,5 +140,5 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
     }
     parsing();
 
-    console.log(cryptosList[0]);
+    console.log(cryptosOpList);
 })
