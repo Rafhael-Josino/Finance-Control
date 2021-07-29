@@ -69,10 +69,19 @@ function CryptoReport() {
 }
 
 const parser = new Navigator('O', 2);
-const cryptosList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX"];
-const matchCrypto = new RegExp('');
+const matchCrypto = new RegExp('\d//');
 const matchOp = new RegExp('');
-const operationsList = [];
+//const cryptosList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX"];
+const cryptosList = [
+    {
+        "name": "BTC",
+        "operations": []
+    },
+    {
+        "name": "ETH",
+        "operations": []
+    },
+]
 
 // ############################### Operation Parsers #############################
 /*
@@ -81,7 +90,7 @@ The functions are called by the function parsing, which passes its position in t
 // Operation type 1 - Buying using Real (R$)
 function opTypeOne(ref, worksheet) {
     ref.moveToColumn('A');
-    const data = worksheet.getCell(ref.pos()).value;
+    const date = worksheet.getCell(ref.pos()).value;
     ref.moveToColumn('B');
     const asset = worksheet.getCell(ref.pos()).value;
     ref.moveToColumn('I');
@@ -89,7 +98,7 @@ function opTypeOne(ref, worksheet) {
     ref.moveToColumn('N');
     const remainQuant = worksheet.getCell(ref.pos()).value.result;
     
-    const newOp = new CryptoOperation(data, asset, newMediumPrice, remainQuant);
+    const newOp = new CryptoOperation(date, asset, newMediumPrice, remainQuant);
     return newOp;
 }
 
@@ -101,16 +110,24 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
         const cell = worksheet.getCell(parser.pos()).value;
         if (cell) {
             if (cell === 1) {
-                console.log(opTypeOne(parser, worksheet)); // should return now only the date
+                //Router to the correct asset
+                //Cut name of asset, find its indice in cryptoList and include data in operations
+                let op = opTypeOne(parser, worksheet)
+                console.log("crypto coin:", op.asset.match(matchCrypto)); //wrong
+                cryptosList[0].operations.push(op);
+            }
+            else if (cell === 2) {
+
             }
             parser.moveLines(1);
             parsing();
         }
+        // End of the datasheet
         else {
             console.log("End of file");
         }
     }
-
     parsing();
 
+    console.log(cryptosList[0]);
 })
