@@ -38,6 +38,7 @@ Report generated:
 */
 
 const ExcelJS = require('exceljs');
+const fs = require('fs');
 
 let workbook = new ExcelJS.Workbook();
 
@@ -141,4 +142,9 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
     parsing();
 
     console.log(cryptosOpList);
+    const data = JSON.stringify(cryptosOpList);
+    fs.writeFile("operations.json", data, err => {
+        if (err) console.log("Write operation failed", err);
+        else console.log("Write operation succeeded");
+    })
 })
