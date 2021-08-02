@@ -21,7 +21,7 @@ Types of operation:
 3 - Selling by stablecoin
 4 - Permute of criptocurrency by another
 
-Report generated:
+Sells Report generated:
 - JSON file per criptocurrency:
 {
     nº selling: {
@@ -55,9 +55,10 @@ function Navigator(column, line) {
 First formate data, separe each crypto, even with data redundance
 */
 
-function CryptoOperation(date, asset, newMediumPrice, remainQuant) {
+function CryptoOperation(date, asset, local, newMediumPrice, remainQuant) {
     this.asset = asset;
     this.date = date;
+    this.local = local;
     this.newMediumPrice = newMediumPrice;
     this.remainQuant = remainQuant;
 }
@@ -71,37 +72,28 @@ function CryptoReport() {
 
 const parser = new Navigator('O', 2);
 const matchCrypto = new RegExp('\\w+');
-const matchOp = new RegExp('');
 const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX"];
-const cryptosOpList = [
-    {
-        "name": "BTC",
-        "operations": []
-    },
-    {
-        "name": "ETH",
-        "operations": []
-    },
-    {
-        "name": "LTC",
-        "operations": []
-    },
-    {
-        "name": "EOS",
-        "operations": []
-    },
-]
+const cryptosBuyList = [[], [], [], [], [], [], [], []];
+const cryptosSellList  = [[], [], [], [], [], [], [], []];
+
+// ############################### Sell Logging #############################
+// Is not necessary to be a separated function, it is only generate an object and push in the list
+function logSell(asset, aquisitionDate, aquisitionValue, quant, sellingDate, sellingValue, comission, leftOverDate, leftOverValue) {
+}
 
 // ############################### Operation Parsers #############################
 /*
 The functions are called by the function parsing, which passes its position in the datasheet to be used as reference
 */
 // Operation type 1 - Buying using Real (R$)
+// Reference's line contains the operation in R$
 function opTypeOne(ref, worksheet) {
     ref.moveToColumn('A');
     const date = worksheet.getCell(ref.pos()).value;
     ref.moveToColumn('B');
     const asset = worksheet.getCell(ref.pos()).value;
+    ref.moveToColumn('K');
+    const local = worksheet.getCell(ref.pos()).value;
     ref.moveToColumn('I');
     const newMediumPrice = worksheet.getCell(ref.pos()).value;
     ref.moveToColumn('N');
@@ -110,8 +102,80 @@ function opTypeOne(ref, worksheet) {
     // Returns to the parser column
     ref.moveToColumn('O');
     
-    const newOp = new CryptoOperation(date, asset, newMediumPrice, remainQuant);
+    // Moves parser to the operations last line
+    ref.moveLines(1);
+
+    const newOp = new CryptoOperation(date, asset, local, newMediumPrice, remainQuant);
     return newOp;
+}
+
+// Operation type 2 - Buying using stablecoin
+// Reference's line +1 contains sell of stablecoin and +2 buy of crypto
+function opTypeTwo(ref, worksheet) {
+    // Sell of the sablecoin by the equivalent in R$
+    // Values retrieved from worksheet
+    ref.moveLines(1);
+    ref.moveToColumn('A');
+    const sellingDate = worksheet.getCell(ref.pos()).value;
+    ref.moveToColumn('B');
+    let asset = worksheet.getCell(ref.pos()).value.match(matchCrypto)[0];
+    ref.moveToColumn('F');
+    const sellingValue = worksheet.getCell(ref.pos()).value;
+
+    // Values retrived from data saved
+
+    /*
+    Always iterates through the buying list, but could it not start from the last buying?
+    Each selling element saves the index of the last buying
+    For the first element, this value is 0, that means the first buying element
+    */
+
+    // Searches for the first buy operation that still has a remanescent value
+    const indexCrypto = cryptoNamesList.findIndex((name) => name === asset);
+    let leftOver;
+    let debit = sellingValue;
+    let aquisitionValue = 0;
+    for (let i = 0; i < cryptosBuyList[indexCrypto].length; i++) {
+        if (cryptosBuyList[indexCrypto][i].remainQuant) {
+            leftOver = cryptosBuyList[indexCrypto][i].remainQuant - debit;
+            // If this buy covers the sell (totally or the remanescent)
+            if (leftOver >= 0) {
+                cryptosBuyList[indexCrypto][i].remainQuant = leftOver; // Updates the quantity remanescent
+                const aquisitionDate = cryptosBuyList[indexCrypto][i].date; // Only the last one is used
+                aquisitionValue += cryptosBuyList[indexCrypto][i].newMediumPrice * debit; // Medium price * quantity bought + previous buyings
+                
+                
+                break;
+            }
+            // The buy can not cover the sell and the next(s) one(s) must be checked
+            else {
+                aquisitionValue += cryptosBuyList[indexCrypto][i].newMediumPrice * cryptosBuyList[indexCrypto][i].remainQuant;
+                cryptosBuyList[indexCrypto][i].remainQuant = 0; // Updates the quantity remanescent, which is 0 in this case
+                debit = -leftOver;
+            } 
+        }
+    }
+
+
+    // Buy of the crypto by the equivalent in R$
+    ref.moveLines(1);
+    ref.moveToColumn('A');
+    const date = worksheet.getCell(ref.pos()).value;
+    ref.moveToColumn('B');
+    asset = worksheet.getCell(ref.pos()).value;
+    ref.moveToColumn('I');
+    const newMediumPrice = worksheet.getCell(ref.pos()).value;
+    ref.moveToColumn('N');
+    const remainQuant = worksheet.getCell(ref.pos()).value.result;
+
+    // Returns to the parser column
+    ref.moveToColumn('O');
+    
+    // Moves parser to the operations last line
+    ref.moveLines(1);
+    
+    const newOp = new CryptoOperation(date, asset, newMediumPrice, remainQuant);
+    //return newOp;
 }
 
 workbook.xlsx.readFile('Criptos.xlsx').then(() => {
@@ -126,7 +190,7 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
                 const op = opTypeOne(parser, worksheet)
                 const cryptoName = op.asset.match(matchCrypto)[0]
                 console.log("crypto coin:", cryptoName); 
-                cryptosOpList[cryptoNamesList.findIndex((name) => name === cryptoName)].operations.push(op);
+                cryptosBuyList[cryptoNamesList.findIndex((name) => name === cryptoName)].push(op);
             }
             else if (cell === 2) {
 
@@ -141,8 +205,8 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
     }
     parsing();
 
-    console.log(cryptosOpList);
-    const data = JSON.stringify(cryptosOpList);
+    console.log(cryptosBuyList);
+    const data = JSON.stringify(cryptosBuyList);
     fs.writeFile("operations.json", data, err => {
         if (err) console.log("Write operation failed", err);
         else console.log("Write operation succeeded");
