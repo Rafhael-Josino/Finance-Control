@@ -27,12 +27,12 @@ Sells Report generated:
     nº selling: {
         aquisitionDate: "aDate",
         aquisitionValue: aValue,
-        quant: quantValue,
+        quantSold: quantValue,
         sellingDate: "sDate",
         sellingValue: sValue,
         comission: cValue,
-        leftOverValue: loValue,
-        leftOverDate: loDate
+        indexesOfBuyings: indexes,
+        leftOverQuant: loQuant,
     }
 }
 */
@@ -51,10 +51,7 @@ function Navigator(column, line) {
     this.moveToColumn = (toColumn) => {this.column = toColumn;}
 }
 
-/*
-First formate data, separe each crypto, even with data redundance
-*/
-
+// Change name
 function CryptoOperation(date, asset, local, newMediumPrice, remainQuant) {
     this.asset = asset;
     this.date = date;
@@ -63,13 +60,19 @@ function CryptoOperation(date, asset, local, newMediumPrice, remainQuant) {
     this.remainQuant = remainQuant;
 }
 
-function CryptoReport() {
-    this.lastAqDate = 0;
-    this.lastAqValue = 0;
-    this.lastLOValue = 0;
-    this.lastLODate = 0;
+function CryptoSell(sellingDate, asset, sellingValue, aquisitionDate, aquisitionValue, quantSold, buyIndexes, leftOverQuant) {
+    this.sellingDate = sellingDate;
+    this.asset = asset;
+    this.sellingValue = sellingValue;
+    this.aquisitionDate = aquisitionDate;
+    this.aquisitionValue = aquisitionValue;
+    this.quantSold = quantSold;
+    this.buyIndexes = buyIndexes;
+    this.leftOverQuant = leftOverQuant;
 }
 
+// The parser, as a global instance of an object, may have not necessity of being called in functions
+// Test this with function opTypeOne
 const parser = new Navigator('O', 2);
 const matchCrypto = new RegExp('\\w+');
 const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX"];
@@ -77,7 +80,9 @@ const cryptosBuyList = [[], [], [], [], [], [], [], []];
 const cryptosSellList  = [[], [], [], [], [], [], [], []];
 
 // ############################### Sell Logging #############################
-// Is not necessary to be a separated function, it is only generate an object and push in the list
+// Check if the whole process of create a CryptoSell object, present so far in the function opTypeTwo, can be separeted in another function
+// and then called in the operationTypes functions
+// 
 function logSell(asset, aquisitionDate, aquisitionValue, quant, sellingDate, sellingValue, comission, leftOverDate, leftOverValue) {
 }
 
@@ -120,42 +125,46 @@ function opTypeTwo(ref, worksheet) {
     ref.moveToColumn('B');
     let asset = worksheet.getCell(ref.pos()).value.match(matchCrypto)[0];
     ref.moveToColumn('F');
-    const sellingValue = worksheet.getCell(ref.pos()).value;
+    const sellingQuant = worksheet.getCell(ref.pos()).value;
+    ref.moveToColumn('H');
+    const sellingValue= worksheet.getCell(ref.pos()).value;
 
     // Values retrived from data saved
 
     /*
     Always iterates through the buying list, but could it not start from the last buying?
-    Each selling element saves the index of the last buying
-    For the first element, this value is 0, that means the first buying element
+    All the elements would check if the previous sell has leftOvers
+    It it is the case, the loop would start from this buy, whose index is stored in the previous sell
     */
 
     // Searches for the first buy operation that still has a remanescent value
     const indexCrypto = cryptoNamesList.findIndex((name) => name === asset);
     let leftOver;
-    let debit = sellingValue;
+    let debit = sellingQuant;
     let aquisitionValue = 0;
+    let buyIndexes = [];
+    // Insert check code to define "i", depending on previous sells with leftOvers
     for (let i = 0; i < cryptosBuyList[indexCrypto].length; i++) {
         if (cryptosBuyList[indexCrypto][i].remainQuant) {
             leftOver = cryptosBuyList[indexCrypto][i].remainQuant - debit;
-            // If this buy covers the sell (totally or the remanescent)
+            // If this buying covers the sell (totally or the remanescent)
             if (leftOver >= 0) {
                 cryptosBuyList[indexCrypto][i].remainQuant = leftOver; // Updates the quantity remanescent
                 const aquisitionDate = cryptosBuyList[indexCrypto][i].date; // Only the last one is used
                 aquisitionValue += cryptosBuyList[indexCrypto][i].newMediumPrice * debit; // Medium price * quantity bought + previous buyings
-                
-                
+                buyIndexes.push(i);
                 break;
             }
-            // The buy can not cover the sell and the next(s) one(s) must be checked
+            // If the buying cannot cover the sell and the next(s) one(s) must be checked
             else {
                 aquisitionValue += cryptosBuyList[indexCrypto][i].newMediumPrice * cryptosBuyList[indexCrypto][i].remainQuant;
                 cryptosBuyList[indexCrypto][i].remainQuant = 0; // Updates the quantity remanescent, which is 0 in this case
-                debit = -leftOver;
+                debit = -leftOver; // Updates the debit
+                buyIndexes.push(i);
             } 
         }
     }
-
+    const newSell = new CryptoSell(sellingDate, asset, sellingValue, aquisitionDate, aquisitionValue, sellingQuant, buyIndexes, leftOver);
 
     // Buy of the crypto by the equivalent in R$
     ref.moveLines(1);
@@ -174,8 +183,9 @@ function opTypeTwo(ref, worksheet) {
     // Moves parser to the operations last line
     ref.moveLines(1);
     
-    const newOp = new CryptoOperation(date, asset, newMediumPrice, remainQuant);
-    //return newOp;
+    const newBuy = new CryptoOperation(date, asset, newMediumPrice, remainQuant);
+    
+    return [newSell, newBuy];
 }
 
 workbook.xlsx.readFile('Criptos.xlsx').then(() => {
