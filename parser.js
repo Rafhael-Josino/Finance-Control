@@ -79,12 +79,39 @@ const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PA
 const cryptosBuyList = [[], [], [], [], [], [], [], []];
 const cryptosSellList  = [[], [], [], [], [], [], [], []];
 
-// ############################### Sell Logging #############################
+// ############################### Log Functions #############################
 // Check if the whole process of create a CryptoSell object, present so far in the function opTypeTwo, can be separeted in another function
 // and then called in the operationTypes functions
-// 
-function logSell(asset, aquisitionDate, aquisitionValue, quant, sellingDate, sellingValue, comission, leftOverDate, leftOverValue) {
+// By this line of thought, could be a Buy logging function, if each buying is in essence, the same process, and the operations functions
+// just parser each operation and call the pertinent logging function at each datasheet line
+// The logging functions return then the a CryptoSell or CryptoBuy object.
+//function logSell(asset, aquisitionDate, aquisitionValue, quant, sellingDate, sellingValue, comission, leftOverDate, leftOverValue) {}
+function logBuy(worksheet, typeOp) {
+    parser.moveToColumn('A');
+    const date = worksheet.getCell(parser.pos()).value;
+    parser.moveToColumn('B');
+    const asset = worksheet.getCell(parser.pos()).value;
+    parser.moveToColumn('K');
+    const local = worksheet.getCell(parser.pos()).value;
+    // There are operations where the medium price is calculated
+    parser.moveToColumn('I');
+    let newMediumPrice;
+    if (typeOp < 3) newMediumPrice = worksheet.getCell(parser.pos()).value;
+    else newMediumPrice = worksheet.getCell(parser.pos()).value.result; // Yet to test
+    parser.moveToColumn('N');
+    const remainQuant = worksheet.getCell(parser.pos()).value.result;
+
+    // Returns to the parser column
+    parser.moveToColumn('O');
+    
+    const newOp = new CryptoOperation(date, asset, local, newMediumPrice, remainQuant);
+    return newOp;
 }
+
+function logSell() {
+
+}
+
 
 // ############################### Operation Parsers #############################
 /*
@@ -92,7 +119,8 @@ The functions are called by the function parsing, which passes its position in t
 */
 // Operation type 1 - Buying using Real (R$)
 // Reference's line contains the operation in R$
-function opTypeOne(ref, worksheet) {
+function opTypeOne(worksheet) {
+    /*
     ref.moveToColumn('A');
     const date = worksheet.getCell(ref.pos()).value;
     ref.moveToColumn('B');
@@ -112,6 +140,11 @@ function opTypeOne(ref, worksheet) {
 
     const newOp = new CryptoOperation(date, asset, local, newMediumPrice, remainQuant);
     return newOp;
+    */
+    const newBuy = logBuy(worksheet, 1);
+    // Moves parser to the operations last line
+    parser.moveLines(1);
+    return newBuy;
 }
 
 // Operation type 2 - Buying using stablecoin
@@ -161,7 +194,8 @@ function opTypeTwo(ref, worksheet) {
                 cryptosBuyList[indexCrypto][i].remainQuant = 0; // Updates the quantity remanescent, which is 0 in this case
                 debit = -leftOver; // Updates the debit
                 buyIndexes.push(i);
-            } 
+            }
+            // In both cases, pehaps the buying objects should not have the values of their attributes changed (changes the log)
         }
     }
     const newSell = new CryptoSell(sellingDate, asset, sellingValue, aquisitionDate, aquisitionValue, sellingQuant, buyIndexes, leftOver);
@@ -197,7 +231,7 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
         console.log(parser.pos(), cell);
         if (cell) {
             if (cell === 1) {
-                const op = opTypeOne(parser, worksheet)
+                const op = opTypeOne(worksheet)
                 const cryptoName = op.asset.match(matchCrypto)[0]
                 console.log("crypto coin:", cryptoName); 
                 cryptosBuyList[cryptoNamesList.findIndex((name) => name === cryptoName)].push(op);
