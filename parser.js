@@ -52,21 +52,26 @@ function Navigator(column, line) {
 }
 
 // Change name
-function CryptoOperation(date, asset, local, newMediumPrice, remainQuant) {
+function CryptoOperation(date, asset, local, totalBought, tax, newMediumPrice) {
     this.asset = asset;
     this.date = date;
     this.local = local;
+    this.totalBought = totalBought;
+    this.tax = tax;
+    this.remainQuant = totalBought - tax;
     this.newMediumPrice = newMediumPrice;
-    this.remainQuant = remainQuant;
 }
 
-function CryptoSell(sellingDate, asset, sellingValue, aquisitionDate, aquisitionValue, quantSold, buyIndexes, leftOverQuant) {
+function CryptoSell(sellingDate, asset, received, aquisitionDate, aquisitionValue, quantSold, buyIndexes, leftOverQuant) {
+    // Attributes that are present in the sheet:
     this.sellingDate = sellingDate;
     this.asset = asset;
-    this.sellingValue = sellingValue;
+    this.received = received;
+    this.quantSold = quantSold;
+
+    // Attributes that are obtained from previous purchases:
     this.aquisitionDate = aquisitionDate;
     this.aquisitionValue = aquisitionValue;
-    this.quantSold = quantSold;
     this.buyIndexes = buyIndexes;
     this.leftOverQuant = leftOverQuant;
 }
@@ -80,79 +85,39 @@ const cryptosBuyList = [[], [], [], [], [], [], [], []];
 const cryptosSellList  = [[], [], [], [], [], [], [], []];
 
 // ############################### Log Functions #############################
+// Each log function is called when the parser is already in its line from the sheet
+
 // Check if the whole process of create a CryptoSell object, present so far in the function opTypeTwo, can be separeted in another function
 // and then called in the operationTypes functions
 // By this line of thought, could be a Buy logging function, if each buying is in essence, the same process, and the operations functions
 // just parser each operation and call the pertinent logging function at each datasheet line
 // The logging functions return then the a CryptoSell or CryptoBuy object.
-//function logSell(asset, aquisitionDate, aquisitionValue, quant, sellingDate, sellingValue, comission, leftOverDate, leftOverValue) {}
+
 function logBuy(worksheet, typeOp) {
     parser.moveToColumn('A');
     const date = worksheet.getCell(parser.pos()).value;
     parser.moveToColumn('B');
-    const asset = worksheet.getCell(parser.pos()).value;
+    const asset = worksheet.getCell(parser.pos()).value; // add filter
     parser.moveToColumn('K');
     const local = worksheet.getCell(parser.pos()).value;
-    // There are operations where the medium price is calculated
+    parser.moveToColumn('E');
+    const totalBought = worksheet.getCell(parser.pos()).value;
+    parser.moveToColumn('F');
+    const tax = worksheet.getCell(parser.pos()).value;
     parser.moveToColumn('I');
     let newMediumPrice;
+    // There are operations where the medium price is calculated
     if (typeOp < 3) newMediumPrice = worksheet.getCell(parser.pos()).value;
     else newMediumPrice = worksheet.getCell(parser.pos()).value.result; // Yet to test
-    parser.moveToColumn('N');
-    const remainQuant = worksheet.getCell(parser.pos()).value.result;
 
     // Returns to the parser column
     parser.moveToColumn('O');
     
-    const newOp = new CryptoOperation(date, asset, local, newMediumPrice, remainQuant);
+    const newOp = new CryptoOperation(date, asset, local, totalBought, tax, newMediumPrice);
     return newOp;
 }
 
-function logSell() {
-
-}
-
-
-// ############################### Operation Parsers #############################
-/*
-The functions are called by the function parsing, which passes its position in the datasheet to be used as reference
-*/
-// Operation type 1 - Buying using Real (R$)
-// Reference's line contains the operation in R$
-function opTypeOne(worksheet) {
-    /*
-    ref.moveToColumn('A');
-    const date = worksheet.getCell(ref.pos()).value;
-    ref.moveToColumn('B');
-    const asset = worksheet.getCell(ref.pos()).value;
-    ref.moveToColumn('K');
-    const local = worksheet.getCell(ref.pos()).value;
-    ref.moveToColumn('I');
-    const newMediumPrice = worksheet.getCell(ref.pos()).value;
-    ref.moveToColumn('N');
-    const remainQuant = worksheet.getCell(ref.pos()).value.result;
-
-    // Returns to the parser column
-    ref.moveToColumn('O');
-    
-    // Moves parser to the operations last line
-    ref.moveLines(1);
-
-    const newOp = new CryptoOperation(date, asset, local, newMediumPrice, remainQuant);
-    return newOp;
-    */
-    const newBuy = logBuy(worksheet, 1);
-    // Moves parser to the operations last line
-    parser.moveLines(1);
-    return newBuy;
-}
-
-// Operation type 2 - Buying using stablecoin
-// Reference's line +1 contains sell of stablecoin and +2 buy of crypto
-function opTypeTwo(ref, worksheet) {
-    // Sell of the sablecoin by the equivalent in R$
-    // Values retrieved from worksheet
-    ref.moveLines(1);
+function logSell(worksheet) {
     ref.moveToColumn('A');
     const sellingDate = worksheet.getCell(ref.pos()).value;
     ref.moveToColumn('B');
@@ -162,25 +127,23 @@ function opTypeTwo(ref, worksheet) {
     ref.moveToColumn('H');
     const sellingValue= worksheet.getCell(ref.pos()).value;
 
-    // Values retrived from data saved
-
     /*
-    Always iterates through the buying list, but could it not start from the last buying?
+    Always iterates through the buying list, but could it not start from the last purchase?
     All the elements would check if the previous sell has leftOvers
-    It it is the case, the loop would start from this buy, whose index is stored in the previous sell
+    If it is the case, the loop would start from this buy, whose index is stored in the previous sell
     */
 
-    // Searches for the first buy operation that still has a remanescent value
     const indexCrypto = cryptoNamesList.findIndex((name) => name === asset);
-    let leftOver;
-    let debit = sellingQuant;
-    let aquisitionValue = 0;
+    let leftOver; // in cryptos
+    let debit = sellingQuant; // in cryptos
+    let aquisitionValue = 0; // in FIAT coin
     let buyIndexes = [];
+    // Searches for the first purchase operation that still has a remanescent value
     // Insert check code to define "i", depending on previous sells with leftOvers
     for (let i = 0; i < cryptosBuyList[indexCrypto].length; i++) {
         if (cryptosBuyList[indexCrypto][i].remainQuant) {
             leftOver = cryptosBuyList[indexCrypto][i].remainQuant - debit;
-            // If this buying covers the sell (totally or the remanescent)
+            // If the quantity of this purchase covers the sell (totally or the with a rest)
             if (leftOver >= 0) {
                 cryptosBuyList[indexCrypto][i].remainQuant = leftOver; // Updates the quantity remanescent
                 const aquisitionDate = cryptosBuyList[indexCrypto][i].date; // Only the last one is used
@@ -195,29 +158,35 @@ function opTypeTwo(ref, worksheet) {
                 debit = -leftOver; // Updates the debit
                 buyIndexes.push(i);
             }
-            // In both cases, pehaps the buying objects should not have the values of their attributes changed (changes the log)
         }
     }
+
     const newSell = new CryptoSell(sellingDate, asset, sellingValue, aquisitionDate, aquisitionValue, sellingQuant, buyIndexes, leftOver);
+    return newSell;
+}
 
-    // Buy of the crypto by the equivalent in R$
-    ref.moveLines(1);
-    ref.moveToColumn('A');
-    const date = worksheet.getCell(ref.pos()).value;
-    ref.moveToColumn('B');
-    asset = worksheet.getCell(ref.pos()).value;
-    ref.moveToColumn('I');
-    const newMediumPrice = worksheet.getCell(ref.pos()).value;
-    ref.moveToColumn('N');
-    const remainQuant = worksheet.getCell(ref.pos()).value.result;
 
-    // Returns to the parser column
-    ref.moveToColumn('O');
-    
-    // Moves parser to the operations last line
-    ref.moveLines(1);
-    
-    const newBuy = new CryptoOperation(date, asset, newMediumPrice, remainQuant);
+// ############################### Operation Parsers #############################
+/*
+The functions are called by the function parsing, which passes its position in the datasheet to be used as reference
+*/
+// Operation type 1 - Buying using Real (R$)
+// Line +1 : purchase in R$
+function opTypeOne(worksheet) {
+    const newBuy = logBuy(worksheet, 1);
+    parser.moveLines(1);
+    return newBuy;
+}
+
+// Operation type 2 - Buying using stablecoin
+// Line +1 : equivalent in R$ of the stablecoin's sell
+// Line +2 : purchase of crypto, using the equivalent in R$ from the stablecoin's sell
+function opTypeTwo(worksheet) {
+    // Sell of the sablecoin by the equivalent in R$
+    parser.moveLines(1);
+    const newSell = logSell(worksheet);
+    parser.moveLines(1);
+    const newBuy = logBuy(worksheet, 2);
     
     return [newSell, newBuy];
 }
