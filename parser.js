@@ -290,17 +290,13 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
 
     console.log(cryptosBuyList);
     console.log(cryptosSellList);
-    const dataPurchases = JSON.stringify(cryptosBuyList);
-    const dataSells = JSON.stringify(cryptosSellList);
-    fs.writeFile("purchases.json", dataPurchases, err => {
-        if (err) console.log("Write purchases file failed", err);
-        else {
-            console.log("Write purchases file succeeded");
-            console.log("Trying write sells file");
-            fs.writeFile("sells.json", dataSells, err => {
-                if (err) console.log("Write sells file failed:", err);
-                else console.log("Write sells file succeeded")
-            })
-        }    
+    const data = {
+        "purchases" : cryptosBuyList,
+        "sells" : cryptosSellList
+    }
+    const dataJSON = JSON.stringify(data);
+    fs.writeFile("data.json", dataJSON, err => {
+        if (err) console.log("Write file failed", err);
+        else console.log("Write file succeeded");
     })
 })
