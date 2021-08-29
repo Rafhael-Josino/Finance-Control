@@ -4,7 +4,6 @@
 
 # TO DO
 
-- Write the whole data as wrapped in an object to turn possible read everything with a JSON parser (fs module)
 - Create code to read files (purchases and sells)
 - Create front end where user can choose the asset's purchases, sells or both
 - Insert cells objects with respective explanations
