@@ -107,9 +107,9 @@ function logBuy(worksheet, typeOp) {
     const tax = worksheet.getCell(parser.pos()).value;
     parser.moveToColumn('I');
     let newMediumPrice;
-    // There are operations where the medium price is calculated
-    if (typeOp < 3) newMediumPrice = worksheet.getCell(parser.pos()).value;
-    else newMediumPrice = worksheet.getCell(parser.pos()).value.result; // Yet to test
+    newMediumPrice = worksheet.getCell(parser.pos()).value.result; // Yet to test
+    // If the cell has not a calculated value
+    if (!newMediumPrice) newMediumPrice = worksheet.getCell(parser.pos()).value;
 
     // Returns to the parser column and go to next line
     parser.moveToColumn('O');

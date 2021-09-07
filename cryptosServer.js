@@ -9,9 +9,10 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.get('/operations', (req, res) => {
-	fs.readFile('./operations.json', 'utf8', (err, data) => {
+	fs.readFile('./data.json', 'utf8', (err, data) => {
 		if (err) console.log("Error reading cryptos file:", err);
 		else {
+			console.log("Sending data.json");
 			res.send(data);
 		}
 	});
@@ -31,6 +32,7 @@ app.get('/index', (req, res) => {
 	fs.readFile('./index.html', 'utf8', (err, data) => {
 		if (err) console.log("Error reading cryptos index:", err);
 		else {
+			console.log("Sending index.html");
 			res.send(data);
 		}
 	})
