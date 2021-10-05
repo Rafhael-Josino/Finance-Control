@@ -82,6 +82,8 @@ function CryptoSell(sellingDate, asset, received, aquisitionDate, aquisitionValu
 const parser = new Navigator('O', 2);
 const matchCrypto = new RegExp('\\w+');
 const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX"];
+// Change name from cryptosBuyList to cryptosOpList
+// The lists inside this one will contain all the operations
 const cryptosBuyList = [[], [], [], [], [], [], [], []];
 const cryptosSellList  = [[], [], [], [], [], [], [], []];
 
@@ -251,7 +253,8 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
                 const cryptoBoughtName = ops[1].asset;
                 console.log("crypto coin sold:", cryptoSoldName);
                 console.log("crypto coin bought", cryptoBoughtName);
-                cryptosSellList[cryptoNamesList.findIndex((name) => name === cryptoSoldName)].push(ops[0]);
+                //cryptosSellList[cryptoNamesList.findIndex((name) => name === cryptoSoldName)].push(ops[0]);
+                cryptosBuyList[cryptoNamesList.findIndex((name) => name === cryptoSoldName)].push(ops[0]);
                 cryptosBuyList[cryptoNamesList.findIndex((name) => name === cryptoBoughtName)].push(ops[1]);
             }
             else if (cell === 3) {
@@ -266,7 +269,8 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
                 const cryptoBoughtName = ops[1].asset;
                 console.log("crypto coin sold:", cryptoSoldName);
                 console.log("crypto coin bought", cryptoBoughtName);
-                cryptosSellList[cryptoNamesList.findIndex((name) => name === cryptoSoldName)].push(ops[0]);
+                //cryptosSellList[cryptoNamesList.findIndex((name) => name === cryptoSoldName)].push(ops[0]);
+                cryptosBuyList[cryptoNamesList.findIndex((name) => name === cryptoSoldName)].push(ops[0]);
                 cryptosBuyList[cryptoNamesList.findIndex((name) => name === cryptoBoughtName)].push(ops[1]);
             }
             else if (cell === 5) {
@@ -275,7 +279,8 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
                 const cryptoBoughtName = ops[1].asset;
                 console.log("crypto coin sold:", cryptoSoldName);
                 console.log("crypto coin bought", cryptoBoughtName);
-                cryptosSellList[cryptoNamesList.findIndex((name) => name === cryptoSoldName)].push(ops[0]);
+                //cryptosSellList[cryptoNamesList.findIndex((name) => name === cryptoSoldName)].push(ops[0]);
+                cryptosBuyList[cryptoNamesList.findIndex((name) => name === cryptoSoldName)].push(ops[0]);
                 cryptosBuyList[cryptoNamesList.findIndex((name) => name === cryptoBoughtName)].push(ops[1]);
             }
             parser.moveLines(1);
