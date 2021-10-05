@@ -18,3 +18,8 @@
 # Dependencies
 
 - https://github.com/exceljs/exceljs
+
+
+# Observations
+
+- The parser code must run before the application, so the json files are ready beforehand
