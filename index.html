@@ -1,3 +1,9 @@
+<style>
+    .grid-parent {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+</style>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,9 +19,20 @@
        <button id='BTC'>BTC</button>
        <button id='ETH'>ETH</button>
        <button id='LTC'>LTC</button>
-       <p id="paragraphList">
-           <pre id="opList"></pre>
-       </p>
+       <div class="parent grid-parent">
+            <div class="child">
+                <p>Purchases</p>
+                <p id="purchasesParagraph">
+                    <pre id="purchasesList"></pre>
+                </p>
+            </div>
+            <div class="child">
+                <p>Sellings</p>
+                <p id="sellingsParagraph">
+                    <pre id="sellingsList"></pre>
+                </p>
+            </div>
+       </div>
     </div>
     <script src="./cryptos.js"></script>
 </body>
