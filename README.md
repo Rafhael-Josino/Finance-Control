@@ -4,7 +4,6 @@
 
 # TO DO
 
-- Verify divergence between code and manual log results of type 3 operations
 - Verify use of time interval to calculate gains and losses inside given interval
 - Once ready, expand to other classes of assets (the main objective of this code is for cripto transactions)
 - Write contability of gains and losses
