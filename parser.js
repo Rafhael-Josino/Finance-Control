@@ -79,6 +79,12 @@ function CryptoSell(sellingDate, asset, local, received, aquisitionDate, aquisit
     this.leftOverQuant = leftOverQuant;
 }
 
+function CryptoSoldLog(index, quant, price) {
+    this.index = index;
+    this.quant = quant;
+    this.price = price;
+}
+
 // The parser, as a global instance of an object, may have not necessity of being called in functions
 // Test this with function opTypeOne
 const parser = new Navigator('O', 2);
@@ -160,18 +166,25 @@ function logSell(worksheet, typeOp) {
             // If the quantity of this purchase covers the sell (totally or the with a rest)
             if (leftOver >= 0) {
                 cryptosBuyList[indexCrypto][i].remainQuant = leftOver; // Updates the quantity remanescent
-                aquisitionDate = cryptosBuyList[indexCrypto][i].date; // Only the last one is used
                 // Aquisition value = this purchase medium price * quantity bought + previous purchase's values
                 aquisitionValue += cryptosBuyList[indexCrypto][i].purchaseMediumPrice * debit; 
-                buyIndexes.push(i);
+                buyIndexes.push(new CryptoSoldLog(
+                    cryptosBuyList[indexCrypto][i].date, 
+                    debit, 
+                    cryptosBuyList[indexCrypto][i].purchaseMediumPrice)
+                );
                 break;
             }
             // If the buying cannot cover the sell and the next(s) one(s) must be checked
             else {
-                aquisitionValue += cryptosBuyList[indexCrypto][i].newMediumPrice * cryptosBuyList[indexCrypto][i].remainQuant;
+                aquisitionValue += cryptosBuyList[indexCrypto][i].purchaseMediumPrice * cryptosBuyList[indexCrypto][i].remainQuant;
+                buyIndexes.push(new CryptoSoldLog(
+                    cryptosBuyList[indexCrypto][i].date, 
+                    cryptosBuyList[indexCrypto][i].remainQuant, 
+                    cryptosBuyList[indexCrypto][i].purchaseMediumPrice)
+                );
                 cryptosBuyList[indexCrypto][i].remainQuant = 0; // Updates the quantity remanescent, which is 0 in this case
                 debit = -leftOver; // Updates the debit
-                buyIndexes.push(i);
             }
         }
     }
@@ -180,7 +193,7 @@ function logSell(worksheet, typeOp) {
     parser.moveToColumn('O');
     parser.moveLines(1);
 
-    const newSell = new CryptoSell(sellingDate, asset, local, received, aquisitionDate, aquisitionValue, sellingQuant, buyIndexes, leftOver);
+    const newSell = new CryptoSell(sellingDate, asset, local, received, "see buyIndexes", aquisitionValue, sellingQuant, buyIndexes, leftOver);
     return newSell;
 }
 
