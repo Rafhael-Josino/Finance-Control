@@ -53,11 +53,12 @@ function Navigator(column, line) {
 }
 
 // Change name
-function CryptoOperation(date, asset, local, totalBought, tax, newMediumPrice) {
+function CryptoOperation(date, asset, local, totalBought, purchaseMediumPrice, tax, newMediumPrice) {
     this.asset = asset;
     this.date = date;
     this.local = local;
     this.totalBought = totalBought;
+    this.purchaseMediumPrice = purchaseMediumPrice;
     this.tax = tax;
     this.remainQuant = totalBought - tax;
     this.newMediumPrice = newMediumPrice;
@@ -100,6 +101,8 @@ function logBuy(worksheet, typeOp) {
     const date = worksheet.getCell(parser.pos()).value;
     parser.moveToColumn('B');
     const asset = worksheet.getCell(parser.pos()).value.match(matchCrypto)[0];
+    parser.moveToColumn('D');
+    const purchaseMediumPrice = worksheet.getCell(parser.pos()).value;
     parser.moveToColumn('K');
     const local = worksheet.getCell(parser.pos()).value;
     parser.moveToColumn('E');
@@ -116,7 +119,7 @@ function logBuy(worksheet, typeOp) {
     parser.moveToColumn('O');
     parser.moveLines(1);
     
-    const newOp = new CryptoOperation(date, asset, local, totalBought, tax, newMediumPrice);
+    const newOp = new CryptoOperation(date, asset, local, totalBought, purchaseMediumPrice, tax, newMediumPrice);
     return newOp;
 }
 
@@ -158,7 +161,8 @@ function logSell(worksheet, typeOp) {
             if (leftOver >= 0) {
                 cryptosBuyList[indexCrypto][i].remainQuant = leftOver; // Updates the quantity remanescent
                 aquisitionDate = cryptosBuyList[indexCrypto][i].date; // Only the last one is used
-                aquisitionValue += cryptosBuyList[indexCrypto][i].newMediumPrice * debit; // Medium price * quantity bought + previous buyings
+                // Aquisition value = this purchase medium price * quantity bought + previous purchase's values
+                aquisitionValue += cryptosBuyList[indexCrypto][i].purchaseMediumPrice * debit; 
                 buyIndexes.push(i);
                 break;
             }
