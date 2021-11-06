@@ -189,7 +189,7 @@ function logSell(worksheet, typeOp) {
         }
     }
 
-    // Returns to the parser column and go to next line
+    // Returns to the parser column (O) and go to the next line
     parser.moveToColumn('O');
     parser.moveLines(1);
 
@@ -227,7 +227,7 @@ function opTypeThree(worksheet) {
     return newSell;
 }
 
-// Operation type 4 - Selling by sablecoin
+// Operation type 4 - Selling for sablecoin
 // Line +1 : equivalent in R$ of the cryptocoin's sell
 // Line +3 : purchase of stablecoin, using the equivalent in R$ from the cryptocoin's sell
 function opTypeFour(worksheet) {
