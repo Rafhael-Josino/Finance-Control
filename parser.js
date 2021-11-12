@@ -123,7 +123,7 @@ function logBuy(worksheet, typeOp) {
 
     // Returns to the parser column and go to next line
     parser.moveToColumn('O');
-    parser.moveLines(1);
+    //parser.moveLines(1);
     
     const newOp = new CryptoOperation(date, asset, local, totalBought, purchaseMediumPrice, tax, newMediumPrice);
     return newOp;
@@ -191,7 +191,7 @@ function logSell(worksheet, typeOp) {
 
     // Returns to the parser column (O) and go to the next line
     parser.moveToColumn('O');
-    parser.moveLines(1);
+    //parser.moveLines(1);
 
     const newSell = new CryptoSell(sellingDate, asset, local, received, "see buyIndexes", aquisitionValue, sellingQuant, buyIndexes, leftOver);
     return newSell;
@@ -206,6 +206,7 @@ The functions are called by the function parsing, which passes its position in t
 // Line +0 : purchase in R$
 function opTypeOne(worksheet) {
     const newBuy = logBuy(worksheet, 1);
+    parser.moveLines(1);
     return newBuy;
 }
 
@@ -216,14 +217,17 @@ function opTypeTwo(worksheet) {
     // Sell of the sablecoin by the equivalent in R$
     parser.moveLines(1);
     const newSell = logSell(worksheet, 2);
+    parser.moveLines(1);
     const newBuy = logBuy(worksheet, 2);
+    parser.moveLines(1);
     return [newSell, newBuy];
 }
 
 // Operation type 3 - Selling using Real (R$)
-// Line +1 : sell in R$
+// Line +0 : sell in R$
 function opTypeThree(worksheet) {
     const newSell = logSell(worksheet, 2);
+    parser.moveLines(1);
     return newSell;
 }
 
@@ -233,7 +237,7 @@ function opTypeThree(worksheet) {
 function opTypeFour(worksheet) {
     parser.moveLines(1);
     const newSell = logSell(worksheet, 4);
-    parser.moveLines(1);
+    parser.moveLines(2);
     const newBuy = logBuy(worksheet, 4);
     return [newSell, newBuy];
 }
@@ -244,8 +248,9 @@ function opTypeFour(worksheet) {
 function opTypeFive(worksheet) {
     parser.moveLines(1);
     const newSell = logSell(worksheet, 4);
-    parser.moveLines(1);
+    parser.moveLines(2);
     const newBuy = logBuy(worksheet, 4);
+    parser.moveLines(1);
     return [newSell, newBuy];
 }
 
