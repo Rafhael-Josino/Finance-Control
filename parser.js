@@ -79,8 +79,9 @@ function CryptoSell(sellingDate, asset, local, received, aquisitionDate, aquisit
     this.leftOverQuant = leftOverQuant;
 }
 
-function CryptoSoldLog(index, quant, price) {
+function CryptoSoldLog(index, date, quant, price) {
     this.index = index;
+    this.date = date;
     this.quant = quant;
     this.price = price;
 }
@@ -169,6 +170,7 @@ function logSell(worksheet, typeOp) {
                 // Aquisition value = this purchase medium price * quantity bought + previous purchase's values
                 aquisitionValue += cryptosBuyList[indexCrypto][i].purchaseMediumPrice * debit; 
                 buyIndexes.push(new CryptoSoldLog(
+                    i,
                     cryptosBuyList[indexCrypto][i].date, 
                     debit, 
                     cryptosBuyList[indexCrypto][i].purchaseMediumPrice)
@@ -179,6 +181,7 @@ function logSell(worksheet, typeOp) {
             else {
                 aquisitionValue += cryptosBuyList[indexCrypto][i].purchaseMediumPrice * cryptosBuyList[indexCrypto][i].remainQuant;
                 buyIndexes.push(new CryptoSoldLog(
+                    i,
                     cryptosBuyList[indexCrypto][i].date, 
                     cryptosBuyList[indexCrypto][i].remainQuant, 
                     cryptosBuyList[indexCrypto][i].purchaseMediumPrice)
