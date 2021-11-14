@@ -18,6 +18,12 @@
 
 - https://github.com/exceljs/exceljs
 
+# Images
+
+- https://icon-library.com/png/357188.html
+- https://icon-library.com/icon/bitcoin-icon-22.html
+- https://icon-library.com/icon/ethereum-icon-28.html
+- https://icon-library.com/png/579718.html
 
 # Observations
 

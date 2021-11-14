@@ -38,4 +38,16 @@ app.get('/index', (req, res) => {
 	})
 })
 
+app.get('/images/:image', (req, res) => {
+	console.log("Loading image", req.params.image);
+	let namePath = path.join(__dirname, req.params.image);
+	fs.readFile(namePath, (err, data) => {
+		if (err) console.log("Error:", err);
+		else {
+			console.log("Sending image", req.params.image);
+			res.send(data);
+		}
+	})
+})
+
 app.listen(8000, () => console.log("listening"));
