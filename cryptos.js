@@ -31,7 +31,7 @@ buttonETH.addEventListener("click", () => {
 buttonLTC.addEventListener("click", () => {
 	purchasesList.textContent = JSON.stringify(purchases[2], undefined, 2);
 	sellingsList.textContent = JSON.stringify(sellings[2], undefined, 2);
-	cryptoImage.src="images/litecoin.png";
+	cryptoImage.src="images/litecoin-icon-579718.png";
 	cryptoImage.alt="litecoin";
 });
 
