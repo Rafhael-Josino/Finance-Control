@@ -17,7 +17,6 @@ fetch('operations').then(resp => resp.json()).
 		sellings = jsonFile.sellings;
 		console.log(typeof purchases);
 		console.log(typeof sellings);
-		//opList.innerHTML = JSON.stringify(jsonFile, undefined, 2);
 	})
 
 buttonBTC.addEventListener("click", () => {
