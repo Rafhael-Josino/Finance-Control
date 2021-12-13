@@ -36,21 +36,25 @@
     <div id="menu">
        <h1>Cryptos Operation Log</h1>
        <p>
-           <select id="select">
+           <select id="selectMenu">
                <option value="operations">Operations</option>
                <option value="currentSituation">Current situation</option>
            </select>
        </p>
        <div id="currentSituationDiv"></div>
+       <label id="labelCrypto" for="crypto">Select crypto</label>
+       <select id="selectCrypto" name="crypto">
+           <option value=-1 id="deleteOption">-</option>
+           <option value=0>BTC</option>
+           <option value=1>ETH</option>
+           <option value=2>LTC</option>
+           <option value=3>EOS</option>
+           <option value=4>USDT</option>
+           <option value=5>TUSD</option>
+           <option value=6>USDC</option>
+           <option value=7>PAX</option>
+       </select>
        <img id="image" src="images/library-icon-357188.png" alt="..." height=5%></img>
-       <button id='BTC'>BTC</button>
-       <button id='ETH'>ETH</button>
-       <button id='LTC'>LTC</button>
-       <button id='EOS'>EOS</button>
-       <button id='USDT'>USDT</button>
-       <button id='TUSD'>TUSD</button>
-       <button id='USDC'>USDC</button>
-       <button id='PAX'>PAX</button>
        <div class="parent grid-parent">
             <div class="child">
                 <h2 id="h2purchases">Purchases</h2>
