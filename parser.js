@@ -1,19 +1,16 @@
 /*
 Sheet's columns escription:
 A - Date
-B - Pair: Asset / Coin evaluated
-C - Operation
-D - Medium price
-E - Total bought
-F - Total sold OR Tax (if buy operation)
-G - Value paid
+B - Pair Asset/Coin evaluated
+C - Type of operation
+D - Operation medium price (formula or direct value)
+E - Total bought (direct value)
+F - Total sold OR Tax (direct value)
+G - Value paid (formula or direct value)
 H - Value received
 I - New asset's medium price
 J - Profit
 K - Operation's local
-L - Observations
-...
-O - navigator
 
 Sells Report generated:
 - JSON file per criptocurrency:
@@ -35,7 +32,6 @@ const ExcelJS = require('exceljs');
 const fs = require('fs');
 
 let workbook = new ExcelJS.Workbook();
-
 
 // Object that represents a cell of the datasheet
 function Navigator(column, line) {
@@ -85,9 +81,9 @@ function CryptoSoldLog(index, date, quant, price) {
 const parser = new Navigator('B', 2);
 const matchCrypto = new RegExp('\\w+');
 const cryptoInBRL = new RegExp('\\w+/BRL'); // In this case is used the FIAT coin BRL as parameter (brazillian coin)
-const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX"];
-const cryptosBuyList = [[], [], [], [], [], [], [], []];
-const cryptosSellList  = [[], [], [], [], [], [], [], []];
+const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX", "BUSD"];
+const cryptosBuyList = [[], [], [], [], [], [], [], [], []];
+const cryptosSellList  = [[], [], [], [], [], [], [], [], []];
 
 // ############################### Log Functions #############################
 // Each log function is called when the parser is already in its line from the sheet
@@ -202,6 +198,7 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
 
     function parsing() {
         const cell = worksheet.getCell(parser.pos()).value;
+        // console.log(parser.pos()); // Used to find lines in the table with problemn
         // If this line contains an operation with values equivalent in BRL
         if (cell.match(cryptoInBRL)) {
             parser.moveToColumn('C');
@@ -218,7 +215,7 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
             parser.moveLines(1);
             parsing();
         }
-        else if (!cell || cell === "STOP") {
+            else if (cell === null || cell === "STOP") {
             console.log("Parsing finished");
         }
         else {
