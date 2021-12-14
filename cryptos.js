@@ -6,6 +6,21 @@ let selectMenu = document.getElementById("selectMenu");
 let selectCrypto = document.getElementById("selectCrypto");
 let currentSitDiv = document.getElementById("currentSituationDiv");
 let cryptoImage = document.getElementById("image");
+let summaries = [];
+
+function CryptoSituation(name, total, mediumPrice) {
+	this.name = name;
+	this.total = total;
+	this.mediumPrice = mediumPrice;
+	this.aquisitionPrice = total * mediumPrice;
+}
+
+function selectCryptoFunc(event) {
+	purchasesList.textContent = JSON.stringify(purchases[event.target.value], undefined, 2);
+	sellingsList.textContent = JSON.stringify(sellings[event.target.value], undefined, 2);
+	cryptoImage.src="images/" + String(event.target.value);
+	cryptoImage.alt="Crypto";
+}
 
 fetch('operations').then(resp => resp.json()).
 	then(jsonFile => {
@@ -13,33 +28,31 @@ fetch('operations').then(resp => resp.json()).
 		sellings = jsonFile.sellings;
 		console.log(typeof purchases);
 		console.log(typeof sellings);
+		let cryptosList = purchases.filter(p => p.length); // Filter out empty lists
+		console.log(cryptosList);
+		const cryptoQuantity = cryptosList.length; // WRONG
+		console.log(cryptoQuantity);
+		for (let i = 0; i < cryptoQuantity; i++) {
+			let total = 0;
+			for (let j = 0; j < cryptosList[i].length; j++) {
+				total = total + cryptosList[i][j].remainQuant;
+			}
+			console.log(cryptosList[i]);
+			summaries.push(new CryptoSituation(cryptosList[i][0].asset, total, cryptosList[i][cryptosList[i].length-1].newMediumPrice));
+		}
 	})
-
-// Compute the current situation of each crypto:
-// total, medium price, aquisition price
-// total = sum of remanescent quantities of each purchase operation
-// medium price = final medium price attribute of each purchase element
-// This parameters will be used to do the checksum of the purchases operations with the user's manual control
-
-let test = "this is just a test";
 
 selectMenu.addEventListener("change", (event) => {
 	if (event.target.value === "operations") {
 		currentSitDiv.innerHTML = null;
+		selectCrypto.addEventListener("change", selectCryptoFunc);
 	}
 	if (event.target.value === "currentSituation") {
-		currentSitDiv.innerHTML = test;
-	purchasesList.textContent = null;
-	sellingsList.textContent = null;
+		currentSitDiv.innerHTML = JSON.stringify(summaries, undefined, 2);
+		purchasesList.textContent = null;
+		sellingsList.textContent = null;
+		selectCrypto.removeEventListener("change", selectCryptoFunc);
 	}
 });
-
-// Will be used to substitute the buttons for a select element
-function selectCryptoFunc(event) {
-	purchasesList.textContent = JSON.stringify(purchases[event.target.value], undefined, 2);
-	sellingsList.textContent = JSON.stringify(sellings[event.target.value], undefined, 2);
-	cryptoImage.src="images/" + stringify(event.target.value);
-	cryptoImage.alt="Crypto";
-}
 
 selectCrypto.addEventListener("change", selectCryptoFunc);
