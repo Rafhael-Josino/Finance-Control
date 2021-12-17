@@ -4,8 +4,8 @@ A - Date
 B - Pair Asset/Coin evaluated
 C - Type of operation
 D - Operation medium price (formula or direct value)
-E - Total bought (direct value)
-F - Total sold OR Tax (direct value)
+E - Total bought (formula or direct value -> fix to this)
+F - Total sold OR Tax (formula or direct value -> fix to this)
 G - Value paid (formula or direct value)
 H - Value received
 I - New asset's medium price
@@ -104,18 +104,21 @@ function logBuy(worksheet) {
     parser.moveToColumn('D');
     let purchaseMediumPrice; 
     purchaseMediumPrice = worksheet.getCell(parser.pos()).value.result;
-    // If the cell has a value not calculated by formula
     if (!purchaseMediumPrice) purchaseMediumPrice = worksheet.getCell(parser.pos()).value;
     
     parser.moveToColumn('K');
     const local = worksheet.getCell(parser.pos()).value;
     
     parser.moveToColumn('E');
-    const totalBought = worksheet.getCell(parser.pos()).value;
-    
+    let totalBought;
+    totalBought = worksheet.getCell(parser.pos()).value.result;
+    if (!totalBought) totalBought = worksheet.getCell(parser.pos()).value;
+
     parser.moveToColumn('F');
-    const tax = worksheet.getCell(parser.pos()).value;
-    
+    let tax;
+    tax = worksheet.getCell(parser.pos()).value.result;
+    if (!tax) tax = worksheet.getCell(parser.pos()).value;
+
     parser.moveToColumn('I');
     let newMediumPrice;
     newMediumPrice = worksheet.getCell(parser.pos()).value.result; // Yet to test
@@ -137,10 +140,14 @@ function logSell(worksheet) {
     const local = worksheet.getCell(parser.pos()).value;
 
     parser.moveToColumn('F');
-    const sellingQuant = worksheet.getCell(parser.pos()).value;
+    let sellingQuant;
+    sellingQuant = worksheet.getCell(parser.pos()).value.result;
+    if (!sellingQuant) sellingQuant = worksheet.getCell(parser.pos()).value;
 
     parser.moveToColumn('H');
-    const received = worksheet.getCell(parser.pos()).value.result;
+    let received;
+    received = worksheet.getCell(parser.pos()).value.result;
+    if (!received) received = worksheet.getCell(parser.pos()).value;
 
     /*
     Always iterates through the buying list, but could it not start from the last purchase?
