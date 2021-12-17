@@ -9,6 +9,10 @@
         color: white;
     }
 
+    table {
+        width: 100%;
+    }
+
     button {
         background-color: gray;
         color: white;
@@ -17,6 +21,14 @@
     select {
         background-color: gray;
         color: white;
+    }
+
+    .newLineClass:hover {
+        color: blue;
+    }
+
+    #firstRoll, h1 {
+        background-color: gray;
     }
 
     #currentSituationDiv {
@@ -35,29 +47,17 @@
 <body>
     <div id="menu">
        <h1>Cryptos Operation Log</h1>
-       <p>
-           <select id="selectMenu">
-               <option value="operations">Operations</option>
-               <option value="currentSituation">Current situation</option>
-           </select>
-       </p>
-       <p>
-           <pre id="currentSituationDiv"></pre>
-       </p>
-       <label id="labelCrypto" for="crypto">Select crypto</label>
-       <select id="selectCrypto" name="crypto">
-           <option value=-1 id="deleteOption">-</option>
-           <option value=0>BTC</option>
-           <option value=1>ETH</option>
-           <option value=2>LTC</option>
-           <option value=3>EOS</option>
-           <option value=4>USDT</option>
-           <option value=5>TUSD</option>
-           <option value=6>USDC</option>
-           <option value=7>PAX</option>
-           <option value=8>BUSD</option>
-       </select>
-       <img id="image" src="images/library-icon-357188.png" alt="..." height=5%></img>
+       <div>
+            <table id="currentSituationTab">
+                <tr id="firstRoll">
+                    <td><strong>Name</strong></td>
+                    <td><strong>Total</strong></td>
+                    <td><strong>Medium Price</strong></td>
+                    <td><strong>Aquisition Cost</strong></td>
+                </tr>
+            </table>
+            <pre id="currentSituationDiv"></pre>
+        </div>
        <div class="parent grid-parent">
             <div class="child">
                 <h2 id="h2purchases">Purchases</h2>
