@@ -28,7 +28,7 @@ fetch('operations').then(resp => resp.json()).
 		purchases = jsonFile.purchases;
 		sellings = jsonFile.sellings;
 		let cryptosList = purchases.filter(p => p.length); // Filter out empty lists
-		let sellingsTemp = sellings.filter(p => p.length);
+		let sellingsTemp = sellings.filter(p => p.length); // WRONG, empty sells doesn't mean that there is no crypto
 		console.log(cryptosList);
 		const cryptoQuantity = cryptosList.length;
 		console.log(cryptoQuantity);

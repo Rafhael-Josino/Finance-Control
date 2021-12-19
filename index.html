@@ -1,4 +1,16 @@
 <style>
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #subHeader {
+        display: flex;
+        gap: .8rem;
+        align-items: center;
+    }
+
     .grid-parent {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -13,14 +25,10 @@
         width: 100%;
     }
 
-    button {
+    #contact {
         background-color: gray;
         color: white;
-    }
-
-    select {
-        background-color: gray;
-        color: white;
+        padding: .8rem;
     }
 
     .newLineClass:hover {
@@ -45,6 +53,18 @@
     <title>Document</title>
 </head>
 <body>
+    <header>
+        <nav>
+            <div id="logo">LOGO</div>
+            <div id="subHeader">
+                <div id="home">HOME</div>
+                <div id="about">ABOUT</div>
+                <div id="services">SERVICES</div>
+                <div id="testimonials">TESTIMONIALS</div>
+                <div id="contact">CONTACT</div>
+            </div>
+        </nav>
+    </header>
     <div id="menu">
        <h1>Cryptos Operation Log</h1>
        <div>
