@@ -11,9 +11,17 @@
         align-items: center;
     }
 
-    .grid-parent {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+    #operationsDiv {
+        display: flex;
+        gap: 1rem;
+    }
+
+    #purchasesDiv {
+        flex: 1;
+    }
+
+    #sellsDiv {
+        flex: 3;
     }
 
     body {
@@ -42,6 +50,12 @@
     #currentSituationDiv {
         margin-bottom: 10px;
         margin-top: 10px;
+    }
+
+    #footer {
+        height: 8rem;
+        display: flex;
+        justify-content: center;
     }
 </style>
 <!DOCTYPE html>
@@ -77,20 +91,21 @@
                 </tr>
             </table>
             <pre id="currentSituationDiv"></pre>
+
         </div>
-       <div class="parent grid-parent">
-            <div class="child">
+       <div id="operationsDiv">
+            <div id="purchasesDiv">
                 <h2 id="h2purchases">Purchases</h2>
                 <table id="tableP"></table>
-                <p id="purchasesParagraph"><pre id="purchasesList"></pre></p>
             </div>
-            <div class="child">
+            <div id="sellsDiv">
                 <h2 id="h2sells">Sells</h2>
                 <table id="tableS"></table>
                 <p id="sellingsParagraph"><pre id="sellingsList"></pre></p>
             </div>
        </div>
     </div>
+    <div id="footer">2021</div>
     <script src="./cryptos.js"></script>
 </body>
 </html>
