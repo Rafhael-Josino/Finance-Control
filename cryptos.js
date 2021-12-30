@@ -6,14 +6,6 @@ let selectCrypto = document.getElementById("selectCrypto");
 let currentSitTab = document.getElementById("currentSituationTab");
 let currentSitDiv = document.getElementById("currentSituationDiv");
 let cryptoImage = document.getElementById("image");
-let summaries = [];
-
-function CryptoSituation(name, total, mediumPrice) {
-	this.name = name;
-	this.total = total;
-	this.mediumPrice = mediumPrice;
-	this.aquisitionPrice = total * mediumPrice;
-}
 
 function cryptoLogConstruct(cryptoIndex, purchases, sells) {
 	function cryptoLog() {
@@ -25,10 +17,8 @@ function cryptoLogConstruct(cryptoIndex, purchases, sells) {
 
 fetch('operations').then(resp => resp.json()).
 	then(jsonFile => {
-		purchases = jsonFile.purchases;
-		sellings = jsonFile.sellings;
-		let cryptosList = purchases.filter(p => p.length); // Filter out empty lists
-		let sellingsTemp = sellings.filter(p => p.length); // WRONG, empty sells doesn't mean that there is no crypto
+		const cryptosList = jsonFile.purchases;
+		const sellingsTemp = jsonFile.sellings;
 		console.log(cryptosList);
 		const cryptoQuantity = cryptosList.length;
 		console.log(cryptoQuantity);
@@ -50,6 +40,5 @@ fetch('operations').then(resp => resp.json()).
 			newLine.setAttribute("class", "newLineClass");
 			newLine.addEventListener("click", cryptoLogConstruct(i, cryptosList, sellingsTemp));
 			currentSitTab.appendChild(newLine);
-			summaries.push(new CryptoSituation(cryptosList[i][0].asset, total, cryptosList[i][cryptosList[i].length-1].newMediumPrice));
 		}
 	})
