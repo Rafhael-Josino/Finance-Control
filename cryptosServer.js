@@ -28,11 +28,34 @@ app.get('/cryptos.js', (req, res) => {
 	})
 })
 
+app.get('/index.css', (req, res) => {
+	var options = {
+		root: __dirname
+	}
+	res.sendFile("index.css", options, (err) => {
+		if (err) console.log("error sendFile");
+		else console.log("index.css sent");
+	})
+});
+
+
 app.get('/index', (req, res) => {
 	fs.readFile('./index.html', 'utf8', (err, data) => {
 		if (err) console.log("Error reading cryptos index:", err);
 		else {
 			console.log("Sending index.html");
+			res.send(data);
+		}
+	})
+})
+
+// Yet to be implemented
+// Part of the study with the Rocketseat project
+app.get('/finances', (req, res) => {
+	fs.readFile('./finances.html', 'utf8', (err, data) => {
+		if (err) console.log("Error reading finances:", err);
+		else {
+			console.log("Sending finances.html");
 			res.send(data);
 		}
 	})
