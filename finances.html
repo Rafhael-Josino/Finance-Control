@@ -53,17 +53,23 @@
         </section>
 
         <section id="transactionsContainer">
-            <div id="newTransaction">+ New Transaction</div>
+            <div><span id="newTransaction">+ New Transaction</span></div>
 
             <div id='newDivForm' class="divForm">
+                <h2>New Transaction</h2>
                 <form action="./newTransaction" method="post" id="newForm">
-                    <div><b>New Transaction</b></div>
-                    <label for="Description"><b>Description</b></label>
-                    <input type="text" name="Description" class="descriptionInput" id="newDescription" placeholder="Description"required>
-                    <label for="Value"><b>Value</b></label>
-                    <input type="number" name="Value" class="valueInput" id="newValue" placeholder="Value" required>
-                    <label for="Date"><b>Date</b></label>
-                    <input type="text" onfocus="(this.type='date')" name="Date" class="dateInput" id="newDate" placeholder="Date" required>                    
+                    <div class="input-group">
+                        <label for="Description" class="sr-only">Description</label>
+                        <input type="text" name="Description" class="descriptionInput" id="newDescription" placeholder="Description"required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Value" class="sr-only">Value</label>
+                        <input type="number" name="Value" class="valueInput" id="newValue" placeholder="Value" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Date" class="sr-only">Date</label>
+                        <input type="text" onfocus="(this.type='date')" name="Date" class="dateInput" id="newDate" placeholder="Date" required>                    
+                    </div>
                     <input type="hidden" name="transactionID" id="newID">
                     <div class="formButtons">
                         <button type="submit" class="formConfirm" id="newConfirm">Confirm</button>
@@ -73,19 +79,25 @@
             </div>
         
             <div id='editDivForm' class="divForm">
+                <h2>Edit Transaction</h2> 
                 <form id="editForm" action="./editTransaction" method="post">
-                    <div><b>Edit Transaction</b></div>
-                    <label for="Description"><b>Description</b></label>
-                    <input type="text" name="Description" class="descriptionInput" id="editDescription" required>
-                    <label for="Value"><b>Value</b></label>
-                    <input type="number" name="Value" class="valueInput" id="editValue" required>
-                    <label for="Date"><b>Date</b></label>
-                    <input type="text" onfocus="(this.type='date')" name="Date" class="dateInput" id="editDate" required>
+                    <div class="input-group">
+                        <label for="Description" class="sr-only">Description</label>
+                        <input type="text" name="Description" class="descriptionInput" id="editDescription" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Value" class="sr-only">Value</label>
+                        <input type="number" name="Value" class="valueInput" id="editValue" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="Date" class="sr-only">Date</label>
+                        <input type="text" onfocus="(this.type='date')" name="Date" class="dateInput" id="editDate" required>
+                    </div>
                     <input type="hidden" name="transactionsIndex" id="editIndex">
                     <div class="formButtons">
                         <button type="submit" class="formConfirm" id="editFormConfirm">Confirm</button>
                         <button type="button" class="formCancel" id="editFormCancel">Cancel</button>
-                        <button type="button" id="editFormDelete">Delete</button>
+                        <button type="button" class="formDelete" id="editFormDelete">Delete</button>
                     </div>
                 </form>
             </div>
