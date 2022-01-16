@@ -8,36 +8,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.get('/operations', (req, res) => {
-	fs.readFile('./data.json', 'utf8', (err, data) => {
-		if (err) console.log("Error reading cryptos file:", err);
-		else {
-			console.log("Sending data.json");
-			res.send(data);
-		}
-	});
-});
-
-app.get('/cryptos.js', (req, res) => {
-	fs.readFile('./cryptos.js', 'utf8', (err, data) => {
-		if (err) console.log("Error reading cryptos code:", err);
-		else {
-			console.log("Sending cryptos.js");
-			res.send(data);
-		}
-	})
-})
-
-app.get('/finances.js', (req, res) => {
-	fs.readFile('./finances.js', 'utf8', (err, data) => {
-		if (err) console.log("Error reading finance.js code:", err);
-		else {
-			console.log("Sending finances.js");
-			res.send(data);
-		}
-	})
-})
-
 app.get('/index.css', (req, res) => {
 	var options = {
 		root: __dirname
@@ -61,12 +31,54 @@ app.get('/index', (req, res) => {
 
 /* --------------------- Finances ---------------------- */
 
+app.get('/cryptos', (req, res) => {
+	fs.readFile('./cryptos.html', 'utf8', (err, data) => {
+		if (err) console.log("Error reading cryptos file:", err);
+		else {
+			console.log("Sending cryptos.js");
+			res.send(data);
+		}
+	})
+})
+
+app.get('/cryptos.js', (req, res) => {
+	fs.readFile('./cryptos.js', 'utf8', (err, data) => {
+		if (err) console.log("Error reading cryptos code:", err);
+		else {
+			console.log("Sending cryptos.js");
+			res.send(data);
+		}
+	})
+})
+
+app.get('/operations', (req, res) => {
+	fs.readFile('./data.json', 'utf8', (err, data) => {
+		if (err) console.log("Error reading cryptos file:", err);
+		else {
+			console.log("Sending data.json");
+			res.send(data);
+		}
+	});
+});
+
+/* --------------------- Finances ---------------------- */
+
 // Part of the study with the Rocketseat project
 app.get('/finances', (req, res) => {
 	fs.readFile('./finances.html', 'utf8', (err, data) => {
 		if (err) console.log("Error reading finances:", err);
 		else {
 			console.log("Sending finances.html");
+			res.send(data);
+		}
+	})
+})
+
+app.get('/finances.js', (req, res) => {
+	fs.readFile('./finances.js', 'utf8', (err, data) => {
+		if (err) console.log("Error reading finance.js code:", err);
+		else {
+			console.log("Sending finances.js");
 			res.send(data);
 		}
 	})

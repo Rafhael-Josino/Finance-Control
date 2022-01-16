@@ -2,9 +2,19 @@
 /* All pages */
 /* ############ */
 
+:root {
+    --background-color: rgb(218, 218, 218);
+    --this-green: rgb(6, 83, 6);
+    --white-hover: rgb(200, 200, 200);
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Poppins', 'sans-serif';
-    background-color: rgb(218, 218, 218);
+    background-color: var(--background-color);
     margin: 0;
     padding: 0;
 }
@@ -12,7 +22,7 @@ body {
 header {
     padding: 10px;
     padding-bottom: 100px;
-    background: rgb(6, 83, 6);
+    background-color: var(--this-green);
 }
 
 nav {
@@ -22,11 +32,15 @@ nav {
     align-items: center;
 }
 
+#logo {
+    margin-right: 4rem;;
+}
+
 #subHeader {
     display: flex;
     gap: .8rem;
     align-items: center;
-    flex-wrap: wrap;
+    overflow-y: auto;
 }
 
 #contact {
@@ -42,6 +56,19 @@ footer {
     padding: 4rem 0 2rem;
 }
 
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    border: solid 1px red;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
 /* ## Links and Buttons ## */
 
 button {
@@ -54,26 +81,21 @@ button {
 }
 
 button:hover {
-    background: rgb(200, 200, 200);
+    background-color: var(--white-hover);
 }
 
-.sr-only {
-    visibility: hidden;
-    position: absolute;
-    /* there are more parameters */
-}
 
 /* ################################################## */
 /* ############### finances.html #####################*/
 /* ################################################## */
 
 #financeMenu {
-    width: min(90vw, 730px);
+    width: 730px;
     margin: auto;
 }
 
 #summaryContainer {
-    margin-top: -5rem;
+    margin-top: -4rem;
     display: flex;
     justify-content: space-between;
     gap: 1.5rem;
@@ -82,10 +104,11 @@ button:hover {
 .summaryBox {
     background: white;
     color: black;
-    flex-grow: 1;
-    height: 15%;
+    width: 33%;
+    height: 130px;
     padding: 1.5rem;
     border-radius: 0.25rem;
+    overflow: auto;
 }
 
 #total {
@@ -122,16 +145,23 @@ button:hover {
     cursor: pointer;
 }
 
+/* ################ Forms ############## */
+
 .divForm {
-    width: 25vw;
-    background: rgb(6, 83, 6);
-    display: none;
-    position: fixed;
+    width: 400px;
+    padding: 0.5rem;
+    background-color: var(--background-color);
     border: 3px solid rgb(6, 83, 6);
-    z-index: 9;
+    border-radius: 6px;
 }
 
-form {
+.divForm h2 {
+    color: green;
+    text-align: center;
+    margin: 0;
+}
+
+.divForm form {
     display: flex;
     flex-direction: column;
 }
@@ -140,10 +170,15 @@ form {
     margin-top: .8rem;
 }
 
+.input-group input {
+    width: 100%;
+}
+
 .formButtons {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    gap: 1rem;
 }
 
 .formConfirm {
@@ -161,22 +196,24 @@ form {
     color: red;
 }
 
+/* ############### Transactions ############### */
+
 .tableClass {
     display: flex;
     align-items: center;
     height: 2.5rem;
     background: white;
     color: black;
-    border-radius: 0.25rem 0.25rem 0.25rem 0.25rem;
+    border-radius: 0.25rem;
 }
 
 .tableTransaction:hover {
-    opacity: .5;
+    background: var(--this-green);
     cursor: pointer;
 }
 
 #tableNames {
-    background-color: rgb(6, 83, 6);
+    background-color: var(--this-green);
     color: white;
     height: 2rem;
     font-weight: bold;
@@ -185,18 +222,40 @@ form {
 .description {
     display: inline-block;
     flex-grow: 1;
+    min-width: 150px;
     padding-left: 2rem; 
+    overflow: auto;
 }
 
 .value {
     display: inline-block;
     width: 150px;
+    min-width: 150px;
+    margin-left: 2rem;
 }
 
 .date {
     display: inline-block;
     width: 150px;
+    min-width: 150px;
 }
+
+/* ############# Modal ############## */
+
+/* Obs: check attributes */
+.modal {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.6);
+    margin: 0;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw; /*not sure*/
+    height: 100vh; /*not sure*/
+}
+
 
 /* ################################################## */
 /* ################## cryptos.html ###################*/
@@ -258,11 +317,30 @@ h1 {
 /* ############################## */
 
 @media (max-width: 730px) {
+    #financeMenu {
+        width: 90vw;
+    }
     #summaryContainer {
         flex-direction: column;
     }
 
+    .summaryBox {
+        width: min(90vw, 730px);
+    }
+
+    #transactionsContainer, main, body, html {
+        width: 100%;
+    }
+
     #transactionsContainer {
+        max-height: 100vh;
+        max-width: 100vw;
+        overflow: auto;
+    }
+
+    .tableClass {
+        max-height: 100vh;
+        max-width: 100vw;
         overflow-x: auto;
     }
 }

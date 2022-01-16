@@ -5,6 +5,8 @@
 const body = document.getElementsByName("body");
 const transactionsContainer = document.getElementById("transactionsContainer");
 const newTransactionButton = document.getElementById("newTransaction");
+const newModal = document.getElementById("newModal");
+const editModal = document.getElementById("editModal");
 
 /*--------------------- Form New Transaction --------------------*/
 const newDivForm = document.getElementById("newDivForm");
@@ -29,8 +31,8 @@ const editFormDelete = document.getElementById("editFormDelete");
 
 /* --------------------- Global Variables -------------------- */
 let transactionsLog;
-let entries = 0;
-let outs = 0;
+let income = 0;
+let expense = 0;
 let transactionCounter = 0;
 let selectedTransaction;
 
@@ -49,8 +51,7 @@ function newTransaction() {
     newValue.required = true;
     newDate.required = true;
     
-    newTransactionButton.removeEventListener("click", newTransaction);
-    newDivForm.style.display = "block";
+    newModal.classList.remove("sr-only");
     //Obs: It will have to deactivate all the others event listeners
     //Obs2: Or just open a pop-up that will deactive the rest of the page behind the new window
 }
@@ -84,17 +85,12 @@ function cancelNewTransaction() {
     newDate.required = false;
     
     newDate.setAttribute("type", "text");
-    newTransactionButton.addEventListener("click", newTransaction);
-    newDivForm.style.display = "none";
+    newModal.classList.add("sr-only");
 }
+
 
 /* -------------------------------- Edit Transactions Callbacks-------------------------------- */
 function editTransaction(event) {
-    editDescription.value = null;
-    editValue.value = null;
-    editDate.value = null;
-	editIndex.value = null;
-
     selectedTransaction = transactionsLog.findIndex(element => element.transactionID === event.currentTarget.id);
     console.log("This ID is:", event.currentTarget.id);
     console.log(transactionsLog[selectedTransaction]);
@@ -103,8 +99,12 @@ function editTransaction(event) {
     editValue.value = transactionsLog[selectedTransaction].Value;
     editDate.value = transactionsLog[selectedTransaction].Date;
 
-    editDivForm.style.display = "block";
-    //Obs: figure out how to move form to below the target element
+    // See cancelNewTransaction function for explanation
+    newDescription.required = true;
+    newValue.required = true;
+    newDate.required = true;
+
+    editModal.classList.remove("sr-only");
 }
 
 function confirmEditTransaction() {
@@ -112,17 +112,21 @@ function confirmEditTransaction() {
 	// is the transactions array's index instead, so the server knows which element to edit
 	editIndex.value = selectedTransaction;
 	
-	const editedDiv = document.getElementById(
-		transactionsLog[selectedTransaction].transactionID);
+	const editedDiv = document.getElementById(transactionsLog[selectedTransaction].transactionID);
 	console.log("Children:\n", editedDiv.childNodes);
     editedDiv.childNodes[0].innerHTML = editDescription.value;
     editedDiv.childNodes[1].innerHTML = 'R$ ' + editValue.value;
     editedDiv.childNodes[2].innerHTML = editDate.value;
 
+    if (editValue.value[0] === "-") editedDiv.childNodes[1].style.color = 'red';
+    else editedDiv.childNodes[1].style.color = 'green';
+
     transactionsLog[selectedTransaction].Description = editDescription.value;
     transactionsLog[selectedTransaction].Value = editValue.value;
-    transactionsLog[selectedTransaction].Date = editDate.value;
+    transactionsLog[selectedTransaction].Date = editDate.value;    
 
+    updateIncome_Expenses();
+    updateSummaries();
     cancelEditTransaction();
 }
 
@@ -139,9 +143,12 @@ function deleteTransaction() {
             transactionsContainer.removeChild(document.getElementById(
 				transactionsLog[selectedTransaction].transactionID)); 
             transactionsLog.splice(selectedTransaction, 1);
+            updateIncome_Expenses();
+            updateSummaries();
         }
         else console.log("Error at delete transaction nº:", selectedTransaction);
-    })
+    });
+
     cancelEditTransaction();
 }
 
@@ -151,15 +158,15 @@ function cancelEditTransaction() {
     newValue.required = false;
     newDate.required = false;
     
+    editModal.classList.add("sr-only");
     editDate.setAttribute("type", "text");
-    editDivForm.style.display = "none";
 }
 
 /* ----------------------------- Front-End Appearance ------------------------- */
 function updateSummaries() {
-    document.getElementById("entriesValue").innerHTML = 'R$ ' + String(entries); 
-    document.getElementById("outsValue").innerHTML = 'R$ ' + String(outs); 
-    document.getElementById("totalValue").innerHTML = 'R$ ' + String(entries + outs); 
+    document.getElementById("entriesValue").innerHTML = 'R$ ' + income.toFixed(2);
+    document.getElementById("outsValue").innerHTML = 'R$ ' + expense.toFixed(2);
+    document.getElementById("totalValue").innerHTML = 'R$ ' + (income + expense).toFixed(2); 
 }
 
 function addTransaction(transactionData) {
@@ -183,14 +190,25 @@ function addTransaction(transactionData) {
 
     if (transactionData.Value[0] === '-') {
         spanArray[1].style.color = 'red';
-        outs += Number(transactionData.Value);
+        expense += Number(transactionData.Value);
     }
     else {
         spanArray[1].style.color = 'green';
-        entries += Number(transactionData.Value);
+        income += Number(transactionData.Value);
     }
 
     transactionsContainer.appendChild(newTransaction);
+}
+
+/* ----------------------------- Other Functions ------------------------- */
+function updateIncome_Expenses() {
+    income = 0;
+    expense = 0;
+
+    transactionsLog.forEach(transaction => {
+        if (transaction.Value[0] === '-') expense += Number(transaction.Value);
+        else income += Number(transaction.Value);
+    })
 }
 
 

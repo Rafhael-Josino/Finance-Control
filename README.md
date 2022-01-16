@@ -6,6 +6,8 @@ This project aims my practice with Development, building up applications that st
 
 # TO DO
 
+- Exchange div elements per transaction in finances.html by a table element
+- Add to the transaction elements mentioned above event handlers to touch screen events
 - Make an inital page that directs to the desired application (so far there are general transactions logging and criptocoins transactions organizer);
 - Write down how contability of gains and losses is considered here;
 - Put json file generation as an option in the crypto transactions application;
