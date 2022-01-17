@@ -50,8 +50,8 @@ nav {
 }
 
 footer {
-    width: 100vw;
-    color: rgb(6, 83, 6);
+    width: 100%;
+    color: var(--this-green);
     text-align: center;
     padding: 4rem 0 2rem;
 }
@@ -151,7 +151,7 @@ button:hover {
     width: 400px;
     padding: 0.5rem;
     background-color: var(--background-color);
-    border: 3px solid rgb(6, 83, 6);
+    border: 3px solid var(--this-green);
     border-radius: 6px;
 }
 
@@ -198,6 +198,12 @@ button:hover {
 
 /* ############### Transactions ############### */
 
+#tableTransactions {
+    border-radius: 0.25rem;
+    border-collapse: separate;
+    border-spacing: 0 15px;
+}
+
 .tableClass {
     display: flex;
     align-items: center;
@@ -212,11 +218,16 @@ button:hover {
     cursor: pointer;
 }
 
-#tableNames {
+/* tableNames2 temporary */
+#tableNames, #tableNames2 {
     background-color: var(--this-green);
     color: white;
     height: 2rem;
     font-weight: bold;
+}
+
+#tableNames2 td, #tableNames2 th {
+    text-align: left;
 }
 
 .description {
@@ -333,14 +344,10 @@ h1 {
     }
 
     #transactionsContainer {
-        max-height: 100vh;
-        max-width: 100vw;
         overflow: auto;
     }
 
     .tableClass {
-        max-height: 100vh;
-        max-width: 100vw;
-        overflow-x: auto;
+        min-width: 450px;
     }
 }

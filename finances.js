@@ -217,7 +217,6 @@ function updateIncome_Expenses() {
 /* #################################################################################### */
 newTransactionButton.addEventListener("click", newTransaction);
 
-//formConfirm.addEventListener("click", confirmNewTransaction);
 newForm.addEventListener("submit", confirmNewTransaction);
 formCancel.addEventListener("click", cancelNewTransaction);
 
@@ -237,7 +236,7 @@ fetch('transactionsLog').then(resp => resp.json().then(jsonFile => {
 
     jsonFile.forEach(transactionData => addTransaction(transactionData));
     updateSummaries();
-})).catch(err => {
-    console.log('Fail to receive file or file does not exist: ', err);
-    transactionsLog = [];
+    })).catch(err => {
+        console.log('Fail to receive/read file or file does not exist: ', err);
+        transactionsLog = [];
 });
