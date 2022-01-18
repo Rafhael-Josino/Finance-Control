@@ -35,51 +35,63 @@ let income = 0;
 let expense = 0;
 let transactionCounter = 0;
 let selectedTransaction;
+let currencyUsed = "BRL";
+
 
 /* #################################################################################### */
 /* -------------------------------- Callback functions ---------------------------------*/
 /* #################################################################################### */
 
 /* -------------------------- New Transactions Callbacks ---------------------------------*/
+
+// Called when "+ New Transaction" is clicked 
+// It readys the form that adds a new transaction
 function newTransaction() {
     newDescription.value = null;
     newValue.value = null; 
     newDate.value = null; 
     newID.value = null;
 
+    // This application requires all inputs to be valid
     newDescription.required = true;
     newValue.required = true;
     newDate.required = true;
     
+    // Form tab stays apparent
     newModal.classList.remove("sr-only");
-    //Obs: It will have to deactivate all the others event listeners
-    //Obs2: Or just open a pop-up that will deactive the rest of the page behind the new window
 }
 
+// Called when the form is submitted
 function confirmNewTransaction() {
+    // Hidden attributes that servers as ID to each transaction stored
     newID.value = transactionCounter;
+    transactionCounter++;
+    
+    // The amount values is saved as integers to formatations purposes
+    newValue.value = Number(newValue.value) * 100;
 
-    let transactionData = {
+    const transactionData = {
         "Description": newDescription.value,
         "Value": newValue.value,
         "Date": newDate.value,
         "transactionID": newID.value 
     }
-
-    console.log("Adding transaction");
-    addTransaction(transactionData);
+    
+    // Adds new transaction data to front-end's list of transactions
     transactionsLog.push(transactionData);
-    transactionCounter++;
+    
+    // Updates the page appearance with the new data
+    addTransaction(transactionData);
     updateSummaries();
+    
     cancelNewTransaction();
-
-    console.log(transactionsLog); //Only for test purposes
 }
 
+// Called when form is either submitted or "canceled". It closes the form "windown"
 function cancelNewTransaction() {
-    // The fields required are turned false before the browser submits the form
+    /* The fields required are turned false before the browser submits the form
     // This is necessary for browsers like Chrome that trigger erros when the form controls are not focusable
-    // In this case, the form has its display already setted to "none" when the form is submitted
+    In this case, the form has its display already setted to "none" when the form is submitted */
     newDescription.required = false;
     newValue.required = false;
     newDate.required = false;
@@ -90,47 +102,64 @@ function cancelNewTransaction() {
 
 
 /* -------------------------------- Edit Transactions Callbacks-------------------------------- */
+
+// Called when a transaction tab is clicked
+// It readys the form that edits the respective transaction clicked
 function editTransaction(event) {
+    // Gets the transaction's current index inside transactionsLog list
+    // It does not corresponds necessarily to the transaction's ID
     selectedTransaction = transactionsLog.findIndex(element => element.transactionID === event.currentTarget.id);
     console.log("This ID is:", event.currentTarget.id);
     console.log(transactionsLog[selectedTransaction]);
     
+    // The initial form values are the ones from the transaction to be edited
+    // This way, the values that shall remain the same don't need to be written again by the user
     editDescription.value = transactionsLog[selectedTransaction].Description;
-    editValue.value = transactionsLog[selectedTransaction].Value;
+    editValue.value = Number(transactionsLog[selectedTransaction].Value) / 100;
     editDate.value = transactionsLog[selectedTransaction].Date;
 
-    // See cancelNewTransaction function for explanation
+    // This application requires all inputs to be valid
     newDescription.required = true;
     newValue.required = true;
     newDate.required = true;
 
+    // Form tab stays apparent
     editModal.classList.remove("sr-only");
 }
 
+// Called when the form is submitted
 function confirmEditTransaction() {
-	// The ID atributte is constant, therefore the hidden input sent in the edit form
-	// is the transactions array's index instead, so the server knows which element to edit
+	/* The ID atributte remains the same, therefore the hidden input sent in the edit form
+	// is the transactions array's index instead of the ID
+    With this input's value, the server knows which element to edit */
 	editIndex.value = selectedTransaction;
-	
-	const editedDiv = document.getElementById(transactionsLog[selectedTransaction].transactionID);
-	console.log("Children:\n", editedDiv.childNodes);
-    editedDiv.childNodes[0].innerHTML = editDescription.value;
-    editedDiv.childNodes[1].innerHTML = 'R$ ' + editValue.value;
-    editedDiv.childNodes[2].innerHTML = editDate.value;
 
-    if (editValue.value[0] === "-") editedDiv.childNodes[1].style.color = 'red';
-    else editedDiv.childNodes[1].style.color = 'green';
+    // The amount values is saved as integers to formatations purposes
+    editValue.value = Number(editValue.value) * 100;
 
+    // Updates the transaction data in the front-end's list of transactions
     transactionsLog[selectedTransaction].Description = editDescription.value;
     transactionsLog[selectedTransaction].Value = editValue.value;
     transactionsLog[selectedTransaction].Date = editDate.value;    
-
-    updateIncome_Expenses();
+	
+    // Updates the page appearance with the new data
+	const editedDiv = document.getElementById(transactionsLog[selectedTransaction].transactionID);
+    const amountClass = editValue.value[0] === '-' ? 'expense' : 'income';
+    editedDiv.innerHTML = `
+        <span class="description">${editDescription.value}</span>
+        <span class="value ${amountClass}">${formatCurrency(editValue.value, amountClass)}</span>
+        <span class="date">${editDate.value}</span>
+    `;
     updateSummaries();
+
     cancelEditTransaction();
 }
 
+// Called when Delete button present in edit form is clicked
+// There is no form submition here, but rather a manual call of a fetch function to the server
 function deleteTransaction() {
+    // Sends to the server a DELETE request with the transaction's index
+    // so the server knows which transaction delete
     fetch("./editTransaction", {
         method: "DELETE",
         headers: {"Content-Type": "application/json"},
@@ -138,12 +167,16 @@ function deleteTransaction() {
             index: selectedTransaction
         })
     }).then(resp => {
-        if (resp.status === 204) { 
-            console.log("Removing in the front-end")
+        if (resp.status === 204) {
+            // If well succeeded
+            // Removes the transaction's tab
             transactionsContainer.removeChild(document.getElementById(
 				transactionsLog[selectedTransaction].transactionID)); 
+
+            // Updates the transaction data in the front-end's list of transactions
             transactionsLog.splice(selectedTransaction, 1);
-            updateIncome_Expenses();
+
+            // Update the summay boxes's values
             updateSummaries();
         }
         else console.log("Error at delete transaction nº:", selectedTransaction);
@@ -152,6 +185,8 @@ function deleteTransaction() {
     cancelEditTransaction();
 }
 
+// Called when form is either submitted, "canceled" or delete function is called
+// It closes the form "windown"
 function cancelEditTransaction() {
     // See cancelNewTransaction function for explanation
     newDescription.required = false;
@@ -162,58 +197,60 @@ function cancelEditTransaction() {
     editDate.setAttribute("type", "text");
 }
 
+
 /* ----------------------------- Front-End Appearance ------------------------- */
+
+// Updates the summary boxes (Income, Expenses and Total)
 function updateSummaries() {
-    document.getElementById("entriesValue").innerHTML = 'R$ ' + income.toFixed(2);
-    document.getElementById("outsValue").innerHTML = 'R$ ' + expense.toFixed(2);
-    document.getElementById("totalValue").innerHTML = 'R$ ' + (income + expense).toFixed(2); 
-}
-
-function addTransaction(transactionData) {
-    const newTransaction = document.createElement("div");
-    newTransaction.classList.add('tableClass', 'tableTransaction');
-    newTransaction.setAttribute('id', transactionData.transactionID);
-    newTransaction.addEventListener("click", editTransaction);
-
-    let spanArray = [];
-    for (let i = 0; i < 4; i++) {
-        spanArray.push(document.createElement("span"));
-        newTransaction.appendChild(spanArray[i]);
-    }
-    spanArray[0].setAttribute("class", "description");
-    spanArray[1].setAttribute("class", "value");
-    spanArray[2].setAttribute("class", "date");
-    spanArray[3].setAttribute("class", "symbol");
-    spanArray[0].innerHTML = transactionData.Description;
-    spanArray[1].innerHTML = 'R$ ' + transactionData.Value;
-    spanArray[2].innerHTML = transactionData.Date;
-
-    if (transactionData.Value[0] === '-') {
-        spanArray[1].style.color = 'red';
-        expense += Number(transactionData.Value);
-    }
-    else {
-        spanArray[1].style.color = 'green';
-        income += Number(transactionData.Value);
-    }
-
-    transactionsContainer.appendChild(newTransaction);
-}
-
-/* ----------------------------- Other Functions ------------------------- */
-function updateIncome_Expenses() {
     income = 0;
     expense = 0;
 
     transactionsLog.forEach(transaction => {
         if (transaction.Value[0] === '-') expense += Number(transaction.Value);
         else income += Number(transaction.Value);
+    });
+
+    document.getElementById("entriesValue").innerHTML = formatCurrency(income);
+    document.getElementById("outsValue").innerHTML = formatCurrency(expense)
+    document.getElementById("totalValue").innerHTML = formatCurrency(income + expense); 
+}
+
+// Adds a new transaction tab
+function addTransaction(transactionData) {
+    const newTransaction = document.createElement("div");
+    newTransaction.classList.add('tableClass', 'tableTransaction');
+    newTransaction.setAttribute('id', transactionData.transactionID);
+    newTransaction.addEventListener("click", editTransaction);
+
+    const amountClass = transactionData.Value[0] === '-' ? 'expense' : 'income';
+    newTransaction.innerHTML = `
+        <span class="description">${transactionData.Description}</span>
+        <span class="value ${amountClass}">${formatCurrency(transactionData.Value, amountClass)}</span>
+        <span class="date">${transactionData.Date}</span>
+    `;
+
+    transactionsContainer.appendChild(newTransaction);
+}
+
+// Formats the amount value to the currency choosen (up to now fixed to the Brazillian Coin, BRL)
+function formatCurrency(_value, _signal) {
+    let value = String(_value).replace(/\D/g, "");
+
+    value = Number(value / 100);
+    
+    const signal = _signal === "expense" ? '-' : '';
+
+    value = value.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: currencyUsed
     })
+
+    return signal + value;
 }
 
 
 /* #################################################################################### */
-/* ------------------------------------- Event handlers --------------------------------*/
+/* ------------------------------------- Event Listeners --------------------------------*/
 /* #################################################################################### */
 newTransactionButton.addEventListener("click", newTransaction);
 
@@ -228,15 +265,20 @@ editFormDelete.addEventListener("click", deleteTransaction);
 /* #################################################################################### */
 /* ------------------------------------- Initialization --------------------------------*/
 /* #################################################################################### */
+
+// Fetchs the data from server
 fetch('transactionsLog').then(resp => resp.json().then(jsonFile => {
     transactionsLog = jsonFile;
 
-    // Saves the ID value to the next transaction object that can be created
+    // Saves the ID value of the next transaction object that can be created
     transactionCounter = Number(transactionsLog[transactionsLog.length - 1].transactionID) + 1;
 
-    jsonFile.forEach(transactionData => addTransaction(transactionData));
+    // Updates the front-end appearance
+    jsonFile.forEach(addTransaction);
     updateSummaries();
-    })).catch(err => {
+    }))
+    // Case there is no file yet or other error occours
+    .catch(err => {
         console.log('Fail to receive/read file or file does not exist: ', err);
         transactionsLog = [];
 });
