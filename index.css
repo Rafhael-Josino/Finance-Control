@@ -313,12 +313,19 @@ h1 {
 #operationsDiv {
     width: 70vw;
     display: flex;
+    gap: 0.5rem;
     margin-left: 23vw;
     margin-right: 25vw;
 }
 
-#h2purchases, #h2sells {
+#h2purchases {
     background-color: green;
+    color: white;
+    text-align: center;
+}
+
+#h2sells {
+    background-color: red;
     color: white;
     text-align: center;
 }
@@ -329,6 +336,28 @@ h1 {
 
 #sellsDiv {
     width: 25vw;
+}
+
+#tablesP table {
+    background-color: white;
+    font-size: 12px;
+    border: 1px solid var(--this-green);
+    margin-top: 1rem;
+    width: 25vw;
+    overflow: auto;
+}
+
+#tablesS table {
+    background-color: white;
+    font-size: 12px;
+    border: 1px solid red;
+    margin-top: 1rem;
+    width: 25vw;
+    overflow: auto;
+}
+
+#tablesS .subTable {
+    margin-top: 0;
 }
 
 /* ############################## */
