@@ -97,7 +97,8 @@ app.get('/finances.js', (req, res) => {
 })
 
 app.get('/transactionsLog', (req, res) => {
-	fs.readFile('./transactions.json', 'utf8', (err, data) => {
+	const fileName = path.join(__dirname, 'logs', 'transactions.json');
+	fs.readFile(fileName, 'utf8', (err, data) => {
 		try {
 			console.log("Sending transaction log");
 			res.send(data);
@@ -110,7 +111,7 @@ app.get('/transactionsLog', (req, res) => {
 
 app.post('/newTransaction', (req, res) => {
 	console.log("New transaction to be created");
-	const fileName = path.join(__dirname, 'transactions.json')
+	const fileName = path.join(__dirname, 'logs', 'transactions.json');
 	fs.readFile(fileName, 'utf8', (err, data) => {
 		let newData;
 		if (err) {
@@ -138,7 +139,7 @@ app.post('/newTransaction', (req, res) => {
 
 app.post('/editTransaction', (req, res) => {
 	console.log("Edit function:\n", req.body);
-	const fileName = path.join(__dirname, 'transactions.json')
+	const fileName = path.join(__dirname, 'logs', 'transactions.json');
 	fs.readFile(fileName, 'utf8', (err, data) => {
 		const oldData = JSON.parse(data);
 		oldData[req.body.transactionsIndex].Description = req.body.Description;
@@ -157,7 +158,7 @@ app.post('/editTransaction', (req, res) => {
 
 app.delete('/editTransaction', (req, res) => {
 	console.log("Delete function for transaction nº: ", req.body.index);
-	const fileName = path.join(__dirname, 'transactions.json')
+	const fileName = path.join(__dirname, 'logs', 'transactions.json')
 	fs.readFile(fileName, 'utf8', (err, data) => {
 		if (err) console.log("Error reading file:", err);
 		else {
@@ -168,7 +169,7 @@ app.delete('/editTransaction', (req, res) => {
 			fs.writeFile(fileName, newData, err => {
 				if (err) console.log("Error at file creation:", err);
 				else {
-					console.log("File created");
+					console.log("File overwritten");
 					res.sendStatus(204);
 				}
 			})
