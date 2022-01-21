@@ -42,7 +42,7 @@ function Navigator(column, line) {
     this.moveToColumn = (toColumn) => {this.column = toColumn;}
 }
 
-// Change name
+// Obs: Change name
 function CryptoOperation(date, asset, local, totalBought, purchaseMediumPrice, tax, newMediumPrice) {
     this.asset = asset;
     this.date = date;
@@ -222,9 +222,11 @@ workbook.xlsx.readFile('Criptos.xlsx').then(() => {
             parser.moveLines(1);
             parsing();
         }
-            else if (cell === null || cell === "STOP") {
+
+        else if (cell === null || cell === "STOP") {
             console.log("Parsing finished");
         }
+
         else {
             parser.moveLines(1);
             parsing();

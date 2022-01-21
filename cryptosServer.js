@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.get('/index.css', (req, res) => {
-	var options = {
+	const options = {
 		root: __dirname
 	}
 	res.sendFile("index.css", options, (err) => {
@@ -29,7 +29,19 @@ app.get('/index', (req, res) => {
 	})
 })
 
-/* --------------------- Finances ---------------------- */
+app.get('/images/:image', (req, res) => {
+	console.log("Loading image", req.params.image);
+	let namePath = path.join(__dirname, req.params.image);
+	fs.readFile(namePath, (err, data) => {
+		if (err) console.log("Error:", err);
+		else {
+			console.log("Sending image", req.params.image);
+			res.send(data);
+		}
+	})
+})
+
+/* --------------------- Crypto Operations ---------------------- */
 
 app.get('/cryptos', (req, res) => {
 	fs.readFile('./cryptos.html', 'utf8', (err, data) => {
@@ -160,18 +172,6 @@ app.delete('/editTransaction', (req, res) => {
 					res.sendStatus(204);
 				}
 			})
-		}
-	})
-})
-
-app.get('/images/:image', (req, res) => {
-	console.log("Loading image", req.params.image);
-	let namePath = path.join(__dirname, req.params.image);
-	fs.readFile(namePath, (err, data) => {
-		if (err) console.log("Error:", err);
-		else {
-			console.log("Sending image", req.params.image);
-			res.send(data);
 		}
 	})
 })
