@@ -138,39 +138,60 @@ app.post('/newTransaction', (req, res) => {
 })
 
 app.post('/editTransaction', (req, res) => {
-	console.log("Edit function:\n", req.body);
+	console.log("Edit Transaction:\n", req.body);
+	
+	const {Description, Value, Date, transactionsIndex} = req.body;
 	const fileName = path.join(__dirname, 'logs', 'transactions.json');
+	
 	fs.readFile(fileName, 'utf8', (err, data) => {
-		const oldData = JSON.parse(data);
-		oldData[req.body.transactionsIndex].Description = req.body.Description;
-		oldData[req.body.transactionsIndex].Value = req.body.Value;
-		oldData[req.body.transactionsIndex].Date = req.body.Date;
-		newData = JSON.stringify(oldData);
-		fs.writeFile(fileName, newData, err => {
-			if (err) console.log("Error at file edition:", err);
-			else {
-				console.log("File edited");
-				res.sendStatus(204);
-			}
-		})
+		if (err) {
+			console.log("Error reading transaction file:", err);
+			res.status(400).json({error: err});
+		}
+		else {
+			const oldData = JSON.parse(data);
+			oldData[transactionsIndex].Description = Description;
+			oldData[transactionsIndex].Value = Value;
+			oldData[transactionsIndex].Date = Date;
+			newData = JSON.stringify(oldData);
+			fs.writeFile(fileName, newData, err => {
+				if (err) {
+					console.log("Error at file edition:", err);
+					res.status(400).json({error: err});
+				}
+				else {
+					console.log("File edited");
+					res.status(204).send();
+				}
+			})
+		}
 	})
 })
 
 app.delete('/editTransaction', (req, res) => {
-	console.log("Delete function for transaction nº: ", req.body.index);
+	const {index} = req.body;
 	const fileName = path.join(__dirname, 'logs', 'transactions.json')
+	
+	console.log("Delete function for transaction nº: ", index);
+	
 	fs.readFile(fileName, 'utf8', (err, data) => {
-		if (err) console.log("Error reading file:", err);
+		if (err) {
+			console.log("Error reading file:", err);
+			res.status(400).json({error: err});
+		}
 		else {
-			console.log("Deleting transaction:", req.body.index);
+			console.log("Deleting transaction:", index);
 			const oldData = JSON.parse(data);
-			oldData.splice(req.body.index, 1);
+			oldData.splice(index, 1);
 			const newData = JSON.stringify(oldData);
 			fs.writeFile(fileName, newData, err => {
-				if (err) console.log("Error at file creation:", err);
+				if (err) {
+					console.log("Error at file creation:", err);
+					res.status(400).json({error: err});
+				}
 				else {
 					console.log("File overwritten");
-					res.sendStatus(204);
+					res.status(204).send();
 				}
 			})
 		}
