@@ -3,6 +3,11 @@ const path = require('path');
 const app = express();
 const cors = require('cors');
 const fs = require('fs');
+const ExcelJS = require('exceljs');
+const { readWorksheet } = require('./parser.js');
+
+//test - delete these two lines later
+//readWorksheet(1, fs, path, ExcelJS);
 
 app.use(cors());
 app.use(express.json());
@@ -31,7 +36,7 @@ app.get('/index', (req, res) => {
 
 app.get('/images/:image', (req, res) => {
 	console.log("Loading image", req.params.image);
-	let namePath = path.join(__dirname, req.params.image);
+	const namePath = path.join(__dirname, req.params.image);
 	fs.readFile(namePath, (err, data) => {
 		if (err) console.log("Error:", err);
 		else {
@@ -63,6 +68,7 @@ app.get('/cryptos.js', (req, res) => {
 	})
 })
 
+// Old - delete later
 app.get('/operations', (req, res) => {
 	fs.readFile('./data.json', 'utf8', (err, data) => {
 		if (err) console.log("Error reading cryptos file:", err);
@@ -72,6 +78,27 @@ app.get('/operations', (req, res) => {
 		}
 	});
 });
+
+app.get('/operations/:sheetNumber', (req, res) => {
+	const { sheetNumber } = req.params;
+	const pathName = path.join(__dirname, "cryptoLogs", "sheet" + sheetNumber + ".json");
+	fs.readFile(pathName, 'utf8', (err, data) => {
+		if (err) {
+			console.log("Error reading cryptos file:", err);
+			res.status(500).json({error: "Error reading cryptos file:" + err.message});
+		}
+		else {
+			console.log("Sending:", pathName);
+			res.send(data);
+		}
+	});
+});
+
+app.put('/updateSheet/:sheetNumber', (req, res) => {
+	const { sheetNumber } = req.params;
+	const status = readWorksheet(sheetNumber, fs, path, ExcelJS, res);
+	//res.status(status).send();
+})
 
 /* --------------------- Finances ---------------------- */
 
