@@ -8,7 +8,6 @@ This project aims to practice Development, building up applications that stores 
 
 - Add to the transaction elements mentioned above event handlers to touch screen events
 - Make an inital page that directs to the desired application (so far there are general transactions logging and criptocoins transactions organizer);
-- Put json file generation as an option in the crypto transactions application;
 - Make another json file containing the final situation of each year. This file should be used to parser from a determined year without having to parser all the previous years
 - Verify use of time interval to calculate gains and losses inside given interval
 - Expand to other classes of assets (the main objective of this code is for cripto transactions)
@@ -28,7 +27,3 @@ This project aims to practice Development, building up applications that stores 
 - https://icon-library.com/icon/bitcoin-icon-22.html
 - https://icon-library.com/icon/ethereum-icon-28.html
 - https://www.iconpacks.net/free-icon-pack/cryptocurrencies-105.html
-
-# Observations
-
-- The parser code must run before the cryptocoins application, so the json files are ready beforehand

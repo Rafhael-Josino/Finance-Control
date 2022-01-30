@@ -33,6 +33,10 @@ nav {
     align-items: center;
 }
 
+nav a {
+    color: white;
+}
+
 #logo {
     margin-right: 4rem;;
 }
@@ -97,6 +101,29 @@ button {
 
 button:hover {
     background-color: var(--white-hover);
+}
+
+/* ################################################## */
+/* ############### index.html #####################*/
+/* ################################################## */
+
+#mainMenu {
+    margin-top: 1rem;
+    font-weight: bold;
+    width: 70vw;
+    margin-left: 15vw;
+    margin-right: 15vw;
+}
+
+#mainMenu div {
+    padding: .5rem;
+    border-radius: .25rem;
+    background-color: green;
+    color: white;
+}
+
+#mainMenu a:hover {
+    color: white;
 }
 
 
@@ -304,6 +331,10 @@ button:hover {
     width: 70vw;
     margin-left: 15vw;
     margin-right: 15vw;
+}
+
+#loadSheet {
+    cursor: pointer;
 }
 
 #saveSheet {
