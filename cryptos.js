@@ -1,14 +1,23 @@
 const menu = document.getElementById("menu");
+
+const saveSheet = document.getElementById("saveSheet");
+const loadSheet = document.getElementById("loadSheet");
+
+const currentSitTab = document.getElementById("currentSituationTab");
+const currentSitDiv = document.getElementById("currentSituationDiv");
+
 const purchasesList = document.getElementById("purchasesList");
 const sellingsList = document.getElementById("sellingsList");
 const selectCrypto = document.getElementById("selectCrypto");
-const currentSitTab = document.getElementById("currentSituationTab");
-const currentSitDiv = document.getElementById("currentSituationDiv");
 const cryptoImage = document.getElementById("image");
 const tablesP = document.getElementById("tablesP");
 const tablesS = document.getElementById("tablesS");
-let purchases, sellings;
 
+// check if can be deleted:
+//let purchases, sellings;
+
+// Temporarily the only user
+const user = 'rafhael';
 
 function formatCurrency(_value) {
 	let	 value = Number(_value).toFixed(2);
@@ -24,9 +33,8 @@ function formatCurrency(_value) {
     return value;
 }
 
-//To verify values without the function
+// To verify values without the function
 //function formatCurrency(value) {return value}
-
 
 function formatDate(date) {
 	date = new Date(date);
@@ -34,8 +42,46 @@ function formatDate(date) {
 	return date.toLocaleDateString("pt-BR");
 }
 
-//To verify values without the function
-//function formatDate(date) {return date}
+function currentSitTabConstruction(jsonFile) {
+	const cryptosList = jsonFile.purchases;
+	const sellingsTemp = jsonFile.sellings;
+	console.log(cryptosList);
+	const cryptoQuantity = cryptosList.length;
+	console.log(cryptoQuantity);
+
+	// Cleans all previous content
+	currentSitTab.innerHTML = `
+	<tr id="firstRoll">
+		<td><strong>Name</strong></td>
+		<td><strong>Total</strong></td>
+		<td><strong>Medium Price</strong></td>
+		<td><strong>Aquisition Cost</strong></td>
+	</tr>
+	`;
+	tablesP.innerHTML = "";
+	tablesS.innerHTML = "";
+
+	// For each cryptocoin:
+	for (let i = 0; i < cryptoQuantity; i++) {
+		let total = 0;
+		for (let j = 0; j < cryptosList[i].length; j++) {
+			total = total + cryptosList[i][j].remainQuant;
+		}
+
+		if (total) {
+			const newLine = document.createElement("tr");
+			newLine.innerHTML = `
+				<td>${cryptosList[i][0].asset}</td>
+				<td>${total}</td>
+				<td>${formatCurrency(cryptosList[i][cryptosList[i].length-1].newMediumPrice)}</td>
+				<td>${formatCurrency(cryptosList[i][cryptosList[i].length-1].newMediumPrice * total)}</td>
+			`
+			newLine.addEventListener("click", cryptoLogConstruct(i, cryptosList, sellingsTemp));
+			newLine.setAttribute("class", "newLineClass");
+			currentSitTab.appendChild(newLine);
+		}
+	}
+}
 
 function cryptoLogConstruct(cryptoIndex, purchases, sells) {
 	function cryptoLog() {
@@ -159,30 +205,41 @@ function cryptoLogConstruct(cryptoIndex, purchases, sells) {
 	return cryptoLog;
 }
 
-fetch('operations').then(resp => resp.json()).
-	then(jsonFile => {
-		const cryptosList = jsonFile.purchases;
-		const sellingsTemp = jsonFile.sellings;
-		console.log(cryptosList);
-		const cryptoQuantity = cryptosList.length;
-		console.log(cryptoQuantity);
-		for (let i = 0; i < cryptoQuantity; i++) {
-			let total = 0;
-			for (let j = 0; j < cryptosList[i].length; j++) {
-				total = total + cryptosList[i][j].remainQuant;
+
+/* ################# Initialization ################# */
+
+fetch(
+	'sheets', { headers: { user } }).then(respStream => respStream.json()).then(resp => {
+	let index = 0;
+	
+	loadSheet.addEventListener('change', (event) => {
+		fetch(
+			`operations/${event.target.value}`,
+			{ headers: { user } }	
+		).then(resp => resp.json()).then(operationsData => {
+			currentSitTabConstruction(operationsData);
+		});
+	});
+
+	saveSheet.addEventListener('click', (event) => {
+		fetch(
+			`operations/${loadSheet.value}`,
+			{ method: 'PUT', headers: { user } }
+		).then(resp => {
+			if (resp.status === 201) {
+				resp.json().then(operationsData => {
+					currentSitTabConstruction(operationsData);
+					console.log(`sheet${loadSheet.value}.json written successfully`);
+				})
+				// print alert('Sheet created successfully') in screen
 			}
-			console.log(cryptosList[i]);
-			let newLine = document.createElement("tr");
-			newLine.insertCell(-1);
-			newLine.lastChild.innerHTML = cryptosList[i][0].asset;
-			newLine.insertCell(-1);
-			newLine.lastChild.innerHTML = total;
-			newLine.insertCell(-1);
-			newLine.lastChild.innerHTML = formatCurrency(cryptosList[i][cryptosList[i].length-1].newMediumPrice);
-			newLine.insertCell(-1);
-			newLine.lastChild.innerHTML = formatCurrency(total * cryptosList[i][cryptosList[i].length-1].newMediumPrice);
-			newLine.setAttribute("class", "newLineClass");
-			newLine.addEventListener("click", cryptoLogConstruct(i, cryptosList, sellingsTemp));
-			currentSitTab.appendChild(newLine);
-		}
-	})
+		})
+	});
+
+	resp.forEach(sheet => {
+		const newOption = document.createElement('option');
+		newOption.innerHTML = sheet;
+		newOption.value = index++;
+		loadSheet.appendChild(newOption);
+	});
+})

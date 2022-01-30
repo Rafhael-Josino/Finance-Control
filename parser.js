@@ -29,7 +29,7 @@ Sells Report generated:
 */
 
 
-function readWorksheet(sheetNumber, fs, path, ExcelJS, res) {
+function readWorksheet(user, sheetNumber, fs, path, ExcelJS, res) {
     const workbook = new ExcelJS.Workbook();
 
     // Object that represents a cell of the datasheet
@@ -198,7 +198,10 @@ function readWorksheet(sheetNumber, fs, path, ExcelJS, res) {
         return newSell;
     }
 
-    workbook.xlsx.readFile('Criptos.xlsx').then(() => {
+    // test!
+    const pathName = path.join(__dirname, "cryptoLogs", user, "cryptos.xlsx");
+
+    workbook.xlsx.readFile(pathName).then(() => {
         console.log("Parsing started");
         console.log(workbook.worksheets.length, "sheets in archive");
         const worksheet = workbook.worksheets[sheetNumber];
@@ -206,13 +209,13 @@ function readWorksheet(sheetNumber, fs, path, ExcelJS, res) {
         function parsing() {
             const cell = worksheet.getCell(parser.pos()).value;
 
-            //test
-            console.log("pos:", parser.pos());
-            console.log("cell:", cell);
-
             // console.log(parser.pos()); // Used to find lines in the table with problemn
             // If this line contains an operation with values equivalent in BRL
-            if (cell.match(cryptoInBRL)) {
+            if (cell === null || cell === "STOP") {
+                console.log("Parsing finished");
+            }
+
+            else if (cell.match(cryptoInBRL)) {
                 parser.moveToColumn('C');
                 const operationType = worksheet.getCell(parser.pos()).value;
                 if (operationType === "Compra") { // Purchase
@@ -228,10 +231,6 @@ function readWorksheet(sheetNumber, fs, path, ExcelJS, res) {
                 parsing();
             }
 
-            else if (cell === null || cell === "STOP") {
-                console.log("Parsing finished");
-            }
-
             else {
                 parser.moveLines(1);
                 parsing();
@@ -241,28 +240,28 @@ function readWorksheet(sheetNumber, fs, path, ExcelJS, res) {
 
         //console.log(cryptosBuyList);
         //console.log(cryptosSellList);
-        const data = {
+        const dataJSON = {
             "purchases" : cryptosBuyList,
             "sellings" : cryptosSellList
         }
         //console.log(data);
         
         
-        const dataJSON = JSON.stringify(data);
-        const namePath = path.join(__dirname, "cryptoLogs", "sheet" + sheetNumber + ".json");
-        fs.writeFile(namePath, dataJSON, err => {
+        const data = JSON.stringify(dataJSON);
+        const namePath = path.join(__dirname, "cryptoLogs", user, `sheet${sheetNumber}.json`);
+        fs.writeFile(namePath, data, err => {
             if (err) {
                 console.log("Write file failed", err);
                 res.status(500).json({ error: "Error at writing file: " + err })
             }
             else {
-                console.log("Write file succeeded");
-                res.status(201).send();
+                console.log(`sheet${sheetNumber}.json written successfully`);
+                res.status(201).send(data);
             }
         })
-    }).catch(() => {
-        console.log("Error reading Cryptos.xlsx");
-        res.status(500).json({ error: "Error at reading Cryptos.xlsx" })
+    }).catch(err => {
+        console.log("Error reading cryptos.xlsx:", err.message);
+        res.status(500).json({ error: "Error reading cryptos.xlsx: " + err.message });
     })
 }
 

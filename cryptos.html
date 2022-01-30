@@ -15,7 +15,7 @@
     <header>
         <nav>
             <div id="logo">LOGO</div>
-            <div id="subHeader">
+            <div class="subHeader">
                 <div id="home">HOME</div>
                 <div id="about">ABOUT</div>
                 <div id="services">SERVICES</div>
@@ -26,18 +26,20 @@
     </header>
 
     <main id="cryptosMenu">
-       <h1>Cryptos Operation Log</h1>
+        <nav id="navCryptos">
+            <div>Cryptos Operations Log</div>
+            <div class="subHeader">
+                <select name="loadSheet" id="loadSheet">
+                    <option value="" class="option optionTitle">Load Sheet</option>
+                </select>
+                <a href="#" id="saveSheet">Save Sheet</a>
+            </div>
+        </nav>
 
        <section>
             <table id="currentSituationTab">
-                <tr id="firstRoll">
-                    <td><strong>Name</strong></td>
-                    <td><strong>Total</strong></td>
-                    <td><strong>Medium Price</strong></td>
-                    <td><strong>Aquisition Cost</strong></td>
-                </tr>
+
             </table>
-            <pre id="currentSituationDiv"></pre>
         </section>
 
        <section id="operationsDiv">

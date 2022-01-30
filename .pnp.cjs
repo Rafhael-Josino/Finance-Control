@@ -40,7 +40,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express", "npm:4.17.2"],
             ["fs", "npm:0.0.1-security"],
             ["nodemon", "npm:2.0.15"],
-            ["path", "npm:0.12.7"]
+            ["path", "npm:0.12.7"],
+            ["uuid", "npm:8.3.2"]
           ],
           "linkType": "SOFT",
         }]
@@ -181,7 +182,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express", "npm:4.17.2"],
             ["fs", "npm:0.0.1-security"],
             ["nodemon", "npm:2.0.15"],
-            ["path", "npm:0.12.7"]
+            ["path", "npm:0.12.7"],
+            ["uuid", "npm:8.3.2"]
           ],
           "linkType": "SOFT",
         }]

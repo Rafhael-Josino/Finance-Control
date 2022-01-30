@@ -4,14 +4,37 @@ const app = express();
 const cors = require('cors');
 const fs = require('fs');
 const ExcelJS = require('exceljs');
+const { v4: uuid } = require('uuid');
 const { readWorksheet } = require('./parser.js');
 
-//test - delete these two lines later
-//readWorksheet(1, fs, path, ExcelJS);
+
+/* --------------------- Middleware -------------------- */
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+
+function verifyUserExists(req, res, next) {
+	const { user } = req.headers;
+
+	fs.readdir(path.join(__dirname, 'cryptoLogs'), (err, files) => {
+		if (err) {
+			console.log("Unable to read directory:", err);
+			res.status(500).json({error: "Unable to read directory: " + err.message});
+		}
+		else {
+			console.log(files);
+			if (files.includes(user)) return next();
+			else {
+				console.log("User does not exist");
+				return res.status(404).json({error: "User does not exist"});
+			}
+		}
+	})
+}
+
+
+/* --------------------- Index -------------------- */
 
 app.get('/index.css', (req, res) => {
 	const options = {
@@ -46,6 +69,7 @@ app.get('/images/:image', (req, res) => {
 	})
 })
 
+
 /* --------------------- Crypto Operations ---------------------- */
 
 app.get('/cryptos', (req, res) => {
@@ -68,24 +92,33 @@ app.get('/cryptos.js', (req, res) => {
 	})
 })
 
-// Old - delete later
-app.get('/operations', (req, res) => {
-	fs.readFile('./data.json', 'utf8', (err, data) => {
-		if (err) console.log("Error reading cryptos file:", err);
-		else {
-			console.log("Sending data.json");
-			res.send(data);
+app.get('/sheets', verifyUserExists, (req, res) => {
+	const { user } = req.headers;
+	const pathName = path.join(__dirname, "cryptoLogs", user, "cryptos.xlsx");
+	const workbook = new ExcelJS.Workbook();
+	
+	workbook.xlsx.readFile(pathName).then(() => {
+		if (workbook.worksheets.length > 0) {
+			const namesList = [];
+			workbook.worksheets.forEach(sheet => namesList.push(sheet.name));
+			res.send(namesList);
 		}
-	});
-});
+	}).catch(err => {
+		console.log("Error reading file:", err.message);
+		res.status(500).json({ error: "Error reading file:" + err.message})
+	})
+})
 
-app.get('/operations/:sheetNumber', (req, res) => {
+app.get('/operations/:sheetNumber', verifyUserExists, (req, res) => {
 	const { sheetNumber } = req.params;
-	const pathName = path.join(__dirname, "cryptoLogs", "sheet" + sheetNumber + ".json");
+	const { user } = req.headers;
+	const pathName = path.join(__dirname, "cryptoLogs", user, `sheet${sheetNumber}.json`);
+
 	fs.readFile(pathName, 'utf8', (err, data) => {
 		if (err) {
 			console.log("Error reading cryptos file:", err);
-			res.status(500).json({error: "Error reading cryptos file:" + err.message});
+			console.log("Attempting to create file from cryptos.xlsx:");
+			readWorksheet(user, sheetNumber, fs, path, ExcelJS, res);
 		}
 		else {
 			console.log("Sending:", pathName);
@@ -94,11 +127,12 @@ app.get('/operations/:sheetNumber', (req, res) => {
 	});
 });
 
-app.put('/updateSheet/:sheetNumber', (req, res) => {
+app.put('/operations/:sheetNumber', verifyUserExists, (req, res) => {
 	const { sheetNumber } = req.params;
-	const status = readWorksheet(sheetNumber, fs, path, ExcelJS, res);
-	//res.status(status).send();
-})
+	const { user } = req.headers;
+	readWorksheet(user, sheetNumber, fs, path, ExcelJS, res);
+});
+
 
 /* --------------------- Finances ---------------------- */
 

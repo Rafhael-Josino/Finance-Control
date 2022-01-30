@@ -27,6 +27,7 @@ header {
 
 nav {
     color: white;
+    background-color: var(--this-green);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -36,7 +37,7 @@ nav {
     margin-right: 4rem;;
 }
 
-#subHeader {
+.subHeader {
     display: flex;
     gap: .8rem;
     align-items: center;
@@ -47,6 +48,20 @@ nav {
     background-color: gray;
     color: white;
     padding: .8rem;
+}
+
+select {
+    background-color: green;
+    color: white;
+    font-weight: bold;
+}
+
+.optionTitle {
+    visibility: hidden;
+}
+
+.option{
+    margin-top: .5rem;
 }
 
 footer {
@@ -280,7 +295,24 @@ button:hover {
 /* ################## cryptos.html ###################*/
 /* ################################################## */
 
+#navCryptos {
+    margin-top: 1rem;
+    padding: .5rem;
+    background-color: green;
+    font-weight: bold;
+    border-radius: 0.25rem;
+    width: 70vw;
+    margin-left: 15vw;
+    margin-right: 15vw;
+}
+
+#saveSheet {
+    color: white;
+    font-size: .8rem;
+}
+
 #currentSituationTab {
+    margin-top: 1rem;
     width: 70vw;
     margin-left: 15vw;
     margin-right: 15vw;
