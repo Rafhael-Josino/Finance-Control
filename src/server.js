@@ -17,7 +17,7 @@ app.use(express.urlencoded({extended: true}));
 function verifyUserExists(req, res, next) {
 	const { user } = req.headers;
 
-	fs.readdir(path.join(__dirname, 'cryptoLogs'), (err, files) => {
+	fs.readdir(path.join(__dirname, '..', 'cryptoLogs'), (err, files) => {
 		if (err) {
 			console.log("Unable to read directory:", err);
 			res.status(500).json({error: "Unable to read directory: " + err.message});
@@ -48,7 +48,8 @@ app.get('/index.css', (req, res) => {
 
 
 app.get('/index', (req, res) => {
-	fs.readFile('./index.html', 'utf8', (err, data) => {
+	const namePath = path.join(__dirname, 'index.html');
+	fs.readFile(namePath, 'utf8', (err, data) => {
 		if (err) console.log("Error reading cryptos index:", err);
 		else {
 			console.log("Sending index.html");
@@ -59,9 +60,12 @@ app.get('/index', (req, res) => {
 
 app.get('/images/:image', (req, res) => {
 	console.log("Loading image", req.params.image);
-	const namePath = path.join(__dirname, req.params.image);
+	const namePath = path.join(__dirname, "images", req.params.image);
 	fs.readFile(namePath, (err, data) => {
-		if (err) console.log("Error:", err);
+		if (err) {
+			console.log("Error:", err);
+			res.status(404).json({ error: "Image not found: " + err.message });
+		}
 		else {
 			console.log("Sending image", req.params.image);
 			res.send(data);
@@ -73,7 +77,8 @@ app.get('/images/:image', (req, res) => {
 /* --------------------- Crypto Operations ---------------------- */
 
 app.get('/cryptos', (req, res) => {
-	fs.readFile('./cryptos.html', 'utf8', (err, data) => {
+	const namePath = path.join(__dirname, 'cryptos.html');
+	fs.readFile(namePath, 'utf8', (err, data) => {
 		if (err) console.log("Error reading cryptos file:", err);
 		else {
 			console.log("Sending cryptos.js");
@@ -83,7 +88,8 @@ app.get('/cryptos', (req, res) => {
 })
 
 app.get('/cryptos.js', (req, res) => {
-	fs.readFile('./cryptos.js', 'utf8', (err, data) => {
+	const namePath = path.join(__dirname, 'cryptos.js');
+	fs.readFile(namePath, 'utf8', (err, data) => {
 		if (err) console.log("Error reading cryptos code:", err);
 		else {
 			console.log("Sending cryptos.js");
@@ -94,7 +100,7 @@ app.get('/cryptos.js', (req, res) => {
 
 app.get('/sheets', verifyUserExists, (req, res) => {
 	const { user } = req.headers;
-	const pathName = path.join(__dirname, "cryptoLogs", user, "cryptos.xlsx");
+	const pathName = path.join(__dirname, '..', "cryptoLogs", user, "cryptos.xlsx");
 	const workbook = new ExcelJS.Workbook();
 	
 	workbook.xlsx.readFile(pathName).then(() => {
@@ -112,7 +118,7 @@ app.get('/sheets', verifyUserExists, (req, res) => {
 app.get('/operations/:sheetNumber', verifyUserExists, (req, res) => {
 	const { sheetNumber } = req.params;
 	const { user } = req.headers;
-	const pathName = path.join(__dirname, "cryptoLogs", user, `sheet${sheetNumber}.json`);
+	const pathName = path.join(__dirname, '..', "cryptoLogs", user, `sheet${sheetNumber}.json`);
 
 	fs.readFile(pathName, 'utf8', (err, data) => {
 		if (err) {
@@ -138,7 +144,8 @@ app.put('/operations/:sheetNumber', verifyUserExists, (req, res) => {
 
 // Part of the study with the Rocketseat project
 app.get('/finances', (req, res) => {
-	fs.readFile('./finances.html', 'utf8', (err, data) => {
+	const namePath = path.join(__dirname, 'finances.html');
+	fs.readFile(namePath, 'utf8', (err, data) => {
 		if (err) console.log("Error reading finances:", err);
 		else {
 			console.log("Sending finances.html");
@@ -148,7 +155,8 @@ app.get('/finances', (req, res) => {
 })
 
 app.get('/finances.js', (req, res) => {
-	fs.readFile('./finances.js', 'utf8', (err, data) => {
+	const namePath = path.join(__dirname, 'finances.js');
+	fs.readFile(namePath, 'utf8', (err, data) => {
 		if (err) console.log("Error reading finance.js code:", err);
 		else {
 			console.log("Sending finances.js");
@@ -158,7 +166,7 @@ app.get('/finances.js', (req, res) => {
 })
 
 app.get('/transactionsLog', (req, res) => {
-	const fileName = path.join(__dirname, 'logs', 'transactions.json');
+	const fileName = path.join(__dirname, '..', 'logs', 'transactions.json');
 	fs.readFile(fileName, 'utf8', (err, data) => {
 		try {
 			console.log("Sending transaction log");
@@ -172,7 +180,7 @@ app.get('/transactionsLog', (req, res) => {
 
 app.post('/newTransaction', (req, res) => {
 	console.log("New transaction to be created");
-	const fileName = path.join(__dirname, 'logs', 'transactions.json');
+	const fileName = path.join(__dirname, '..', 'logs', 'transactions.json');
 	fs.readFile(fileName, 'utf8', (err, data) => {
 		let newData;
 		if (err) {
@@ -202,7 +210,7 @@ app.post('/editTransaction', (req, res) => {
 	console.log("Edit Transaction:\n", req.body);
 	
 	const {Description, Value, Date, transactionsIndex} = req.body;
-	const fileName = path.join(__dirname, 'logs', 'transactions.json');
+	const fileName = path.join(__dirname, '..', 'logs', 'transactions.json');
 	
 	fs.readFile(fileName, 'utf8', (err, data) => {
 		if (err) {
@@ -231,7 +239,7 @@ app.post('/editTransaction', (req, res) => {
 
 app.delete('/editTransaction', (req, res) => {
 	const {index} = req.body;
-	const fileName = path.join(__dirname, 'logs', 'transactions.json')
+	const fileName = path.join(__dirname, '..', 'logs', 'transactions.json')
 	
 	console.log("Delete function for transaction nº: ", index);
 	
