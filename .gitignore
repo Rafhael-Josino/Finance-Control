@@ -13,3 +13,4 @@ transactions.json
 .editorconfig
 yarn.lock
 cryptoLogs
+.vscode/

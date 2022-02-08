@@ -240,6 +240,9 @@ function readWorksheet(user, sheetNumber, fs, path, ExcelJS, res) {
 
         //console.log(cryptosBuyList);
         //console.log(cryptosSellList);
+
+        //Abstract repository functions!!!
+
         const dataJSON = {
             "purchases" : cryptosBuyList,
             "sellings" : cryptosSellList
