@@ -5,13 +5,12 @@ import { ICryptoRepository, ISheetOperationsDTO } from './ICryptoRespository';
 
 // parser is a service, should be called by the routes
 // the repository functions should be subtypes
-
-import { readWorkSheet } from '../parser.js'; // adapt parser to TS / solve assynchrony
+import { readWorkSheet } from '../services/parser'; // adapt parser to TS / solve assynchrony
 
 
 class CryptoRepository implements ICryptoRepository {
     getSheetsNames(user: string): string[] {
-        const pathName = path.join(__dirname, '..', "cryptoLogs", user, "cryptos.xlsx");
+        const pathName = path.join(__dirname, '..', '..', "cryptoLogs", user, "cryptos.xlsx");
 	    const workbook = new ExcelJS.Workbook();
 	
         workbook.xlsx.readFile(pathName).then(() => {

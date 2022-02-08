@@ -2,6 +2,7 @@ import { Router } from 'express';
 import path from 'path';
 import fs from 'fs';
 import { CryptoRepository} from '../repositories/cryptoRepositories';
+import { readWorkSheet } from '../services/parser'; // adapt parser to TS
 
 const cryptoRoutes = Router();
 const cryptoRepository = new CryptoRepository();
@@ -60,7 +61,10 @@ cryptoRoutes.get('/sheets', verifyUserExists, (req, res) => {
 	//const { user } = req.headers; // headers parameters are considerated as possibles arrays????
 	//cont { user } = req; // with middleware. Only this is not working. User not part of req's type
 	const { user } = req.body; // Must adjust in crypto.ts
+
+	// Must call a service and class of repository used
 	const sheetsNames = cryptoRepository.getSheetsNames(user); //How to handle assynchronism?
+	
 	// Must handle errors
 	res.json({ sheetsNames });
 });

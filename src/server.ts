@@ -4,7 +4,6 @@ import cors from 'cors';
 import fs from 'fs';
 import ExcelJS from 'exceljs';
 import { v4 as uuid } from 'uuid';
-import { readWorksheet } from './parser.js';
 import { cryptoRoutes } from './routers/crypto.routes';
 import { indexRoutes } from './routers/index.routes';
 

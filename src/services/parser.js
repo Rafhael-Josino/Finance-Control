@@ -199,7 +199,7 @@ function readWorksheet(user, sheetNumber, fs, path, ExcelJS, res) {
     }
 
     // test!
-    const pathName = path.join(__dirname, "..", "cryptoLogs", user, "cryptos.xlsx");
+    const pathName = path.join(__dirname, "..", "..", "cryptoLogs", user, "cryptos.xlsx");
 
     workbook.xlsx.readFile(pathName).then(() => {
         console.log("Parsing started");
@@ -251,7 +251,7 @@ function readWorksheet(user, sheetNumber, fs, path, ExcelJS, res) {
         
         
         const data = JSON.stringify(dataJSON);
-        const namePath = path.join(__dirname, "..", "cryptoLogs", user, `sheet${sheetNumber}.json`);
+        const namePath = path.join(__dirname, "..", "..", "cryptoLogs", user, `sheet${sheetNumber}.json`);
         fs.writeFile(namePath, data, err => {
             if (err) {
                 console.log("Write file failed", err);

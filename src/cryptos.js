@@ -209,7 +209,10 @@ function cryptoLogConstruct(cryptoIndex, purchases, sells) {
 /* ################# Initialization ################# */
 
 fetch(
-	'sheets', { headers: { user } }).then(respStream => respStream.json()).then(resp => {
+	'sheets', { 
+		headers: { "application-type": "json" },
+		body: { user } 
+	}).then(respStream => respStream.json()).then(resp => {
 	let index = 0;
 	
 	loadSheet.addEventListener('change', (event) => {
