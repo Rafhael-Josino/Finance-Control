@@ -30,8 +30,8 @@ Sells Report generated:
 
 import path from 'path';
 import ExcelJS from 'exceljs';
-import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellList } from "../model/Cryptos"; // BAD
-import { ICryptoRepository } from '../repositories/ICryptoRespository';
+import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellList } from "../../models/Cryptos"; // BAD
+import { ICryptoRepository } from '../../repositories/ICryptoRespository';
 
 interface IRequest {
     user: string;
@@ -261,8 +261,8 @@ class CryptoParser {
             }
         }
     
-        // test!
-        const pathName = path.join(__dirname, '..', '..', 'logs', user, 'cryptos', 'cryptos.xlsx');
+        // Parsing xlsx file:
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', user, 'cryptos', 'cryptos.xlsx');
     
         workbook.xlsx.readFile(pathName).then(() => {
             console.log("Parsing started");
@@ -315,10 +315,12 @@ class CryptoParser {
 
             //this.cryptoRepository.postSheetOperations({ user, sheetName, cryptosBuyList, cryptosSellList});
             this.cryptoRepository.postSheetOperations({ user, sheetName, cryptoPurchasesList } );
+        
         }).catch(err => {
             console.log("Parsing failed:");
             console.log(err);
-        })
+        });
+
     }
 }
 

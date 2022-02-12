@@ -1,4 +1,4 @@
-import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellList } from "../model/Cryptos";
+import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellList } from "../models/Cryptos";
 
 interface IGetSheetOperationsDTO {
     user: string;

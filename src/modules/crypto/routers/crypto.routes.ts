@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import path from 'path';
 import fs from 'fs';
-import { CryptoRepositoryJSON } from '../repositories/CryptoRepositoryJSON';
-import { CryptoParser } from '../services/CryptoParser';
+import { CryptoRepositoryJSON } from '../repositories/implementations/CryptoRepositoryJSON';
+import { CryptoParser } from '../useCases/parser/parserUseCase';
 
 const cryptoRoutes = Router();
 
@@ -13,7 +13,7 @@ const cryptoRepository = new CryptoRepositoryJSON();
 function verifyUserExists(req, res, next) {
 	const { user } = req.body;
 
-	fs.readdir(path.join(__dirname, '..', '..', 'logs'), (err, files) => {
+	fs.readdir(path.join(__dirname, '..', '..', '..', '..', 'logs'), (err, files) => {
 		if (err) {
 			console.log("Unable to read directory:", err);
 			res.status(500).json({error: "Unable to read directory: " + err.message});
@@ -92,7 +92,9 @@ cryptoRoutes.post('/operations/:sheetName', verifyUserExists, (req, res) => {
 	cryptoParser.execute({user, sheetName});
 	
 	// Must handle errors
+	// It sends the response before the execute above finishes!!!
 	res.status(200).send() // How to synchronize that?
+	//res.status(cryptoParser.execute({ user, sheetName })).send();
 })
 
 export { cryptoRoutes };

@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import fs from 'fs';
-import { cryptoRoutes } from './routers/crypto.routes';
+import { cryptoRoutes } from './modules/crypto/routers/crypto.routes';
 import { indexRoutes } from './routers/index.routes';
 
 const app = express();

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import ExcelJS from 'exceljs';
-import { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO } from './ICryptoRespository';
+import { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO } from '../ICryptoRespository';
 
 // parser is a service, should be called by the routes
 // the repository functions should be subtypes
@@ -35,7 +35,7 @@ class CryptoRepositoryJSON implements ICryptoRepository {
     }
 
     postSheetOperations({ user, sheetName, cryptoPurchasesList }: IPostSheetOperationsDTO): void{
-        const pathName = path.join(__dirname, '..', '..', 'logs', user, 'cryptos', `${sheetName}.json`);
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', user, 'cryptos', `${sheetName}.json`);
         //const data = JSON.stringify({cryptoPurchases, cryptoSells});
         const data = JSON.stringify(cryptoPurchasesList);
 
@@ -43,9 +43,7 @@ class CryptoRepositoryJSON implements ICryptoRepository {
             if (err) {
                 console.log("Write file failed", err);
             }
-            else {
-                console.log(`${sheetName}.json written successfully`);
-            }
+            console.log(`${sheetName}.json written successfully`);
         });
     }
 }
