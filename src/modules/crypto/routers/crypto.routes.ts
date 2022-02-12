@@ -89,11 +89,11 @@ cryptoRoutes.post('/operations/:sheetName', verifyUserExists, (req, res) => {
 
 	const cryptoParser = new CryptoParser(cryptoRepository);
 
-	cryptoParser.execute({user, sheetName});
+	cryptoParser.execute({user, sheetName, res});
 	
 	// Must handle errors
 	// It sends the response before the execute above finishes!!!
-	res.status(200).send() // How to synchronize that?
+	//res.status(200).send() // How to synchronize that?
 	//res.status(cryptoParser.execute({ user, sheetName })).send();
 })
 

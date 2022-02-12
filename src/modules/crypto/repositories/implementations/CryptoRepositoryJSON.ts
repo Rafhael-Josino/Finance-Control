@@ -34,7 +34,7 @@ class CryptoRepositoryJSON implements ICryptoRepository {
         });
     }
 
-    postSheetOperations({ user, sheetName, cryptoPurchasesList }: IPostSheetOperationsDTO): void{
+    postSheetOperations({ user, sheetName, cryptoPurchasesList, res }: IPostSheetOperationsDTO): void{
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', user, 'cryptos', `${sheetName}.json`);
         //const data = JSON.stringify({cryptoPurchases, cryptoSells});
         const data = JSON.stringify(cryptoPurchasesList);
@@ -42,8 +42,12 @@ class CryptoRepositoryJSON implements ICryptoRepository {
         fs.writeFile(pathName, data, err => {
             if (err) {
                 console.log("Write file failed", err);
+                res.status(500).json({error: err.message}); // BAD
             }
-            console.log(`${sheetName}.json written successfully`);
+            else {
+                console.log(`${sheetName}.json written successfully`);
+                res.status(201).json(cryptoPurchasesList); // BAD
+            }
         });
     }
 }

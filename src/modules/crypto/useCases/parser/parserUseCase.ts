@@ -30,18 +30,20 @@ Sells Report generated:
 
 import path from 'path';
 import ExcelJS from 'exceljs';
-import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellList } from "../../models/Cryptos"; // BAD
+import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellList } from "../../models/Cryptos"; // BAD?
 import { ICryptoRepository } from '../../repositories/ICryptoRespository';
+import { Response } from 'express' // BAD
 
 interface IRequest {
     user: string;
     sheetName: string;
+    res: Response;
 }
 
 class CryptoParser {
     constructor(private cryptoRepository: ICryptoRepository) {}
 
-    execute({ user, sheetName }: IRequest): void {
+    execute({ user, sheetName, res }: IRequest): void {
         const workbook = new ExcelJS.Workbook();
 
         // Object that represents a cell of the datasheet
@@ -314,7 +316,7 @@ class CryptoParser {
             console.log(cryptoPurchasesList);
 
             //this.cryptoRepository.postSheetOperations({ user, sheetName, cryptosBuyList, cryptosSellList});
-            this.cryptoRepository.postSheetOperations({ user, sheetName, cryptoPurchasesList } );
+            this.cryptoRepository.postSheetOperations({ user, sheetName, cryptoPurchasesList, res } );
         
         }).catch(err => {
             console.log("Parsing failed:");
