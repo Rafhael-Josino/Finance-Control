@@ -1,16 +1,19 @@
 import { Router } from 'express';
 import path from 'path';
 import fs from 'fs';
-import { CryptoRepository} from '../repositories/cryptoRepositories';
-import { readWorkSheet } from '../services/parser'; // adapt parser to TS
+import { CryptoRepositoryJSON } from '../repositories/CryptoRepositoryJSON';
+import { CryptoParser } from '../services/CryptoParser';
 
 const cryptoRoutes = Router();
-const cryptoRepository = new CryptoRepository();
+
+// Using JSON based repositories
+const cryptoRepository = new CryptoRepositoryJSON();
+
 
 function verifyUserExists(req, res, next) {
-	const { user } = req.headers;
+	const { user } = req.body;
 
-	fs.readdir(path.join(__dirname, '..', 'cryptoLogs'), (err, files) => {
+	fs.readdir(path.join(__dirname, '..', '..', 'logs'), (err, files) => {
 		if (err) {
 			console.log("Unable to read directory:", err);
 			res.status(500).json({error: "Unable to read directory: " + err.message});
@@ -22,7 +25,7 @@ function verifyUserExists(req, res, next) {
 				return next();
 			}
 			else {
-				console.log("User does not exist");
+				console.log("Server message: User does not exist");
 				return res.status(404).json({error: "User does not exist"});
 			}
 		}
@@ -62,31 +65,34 @@ cryptoRoutes.get('/sheets', verifyUserExists, (req, res) => {
 	//cont { user } = req; // with middleware. Only this is not working. User not part of req's type
 	const { user } = req.body; // Must adjust in crypto.ts
 
-	// Must call a service and class of repository used
 	const sheetsNames = cryptoRepository.getSheetsNames(user); //How to handle assynchronism?
 	
 	// Must handle errors
 	res.json({ sheetsNames });
 });
 
-cryptoRoutes.get('/operations/:sheetNumber', verifyUserExists, (req, res) => {
+cryptoRoutes.get('/operations/:sheetName', verifyUserExists, (req, res) => {
 	//const { user } = req.headers; // headers parameters are considerated as possibles arrays????
 	//cont { user } = req; // with middleware. Only this is not working. User not part of req's type
 	const { user } = req.body; // Must adjust in crypto.ts
-	const { sheetNumber } = req.params
-	const sheetOperations = cryptoRepository.getSheetOperations({ user, sheetNumber }); //How to handle assynchronism?
+	const { sheetName } = req.params
+	//const sheetOperations = cryptoRepository.getSheetOperations({ user, sheetName }); //How to handle assynchronism?
 	// Must handle errors
-	res.json({ sheetOperations });
+	//res.json({ sheetOperations });
 });
 
-cryptoRoutes.post('/operations/:sheetNumber', verifyUserExists, (req, res) => {
+cryptoRoutes.post('/operations/:sheetName', verifyUserExists, (req, res) => {
 	//const { user } = req.headers; // headers parameters are considerated as possibles arrays????
 	//cont { user } = req; // with middleware. Only this is not working. User not part of req's type
 	const { user } = req.body; // Must adjust in crypto.ts
-	const { sheetNumber } = req.params
-	const sheetOperations = cryptoRepository.putSheetOperations({ user, sheetNumber }); //How to handle assynchronism?
+	const { sheetName } = req.params;
+
+	const cryptoParser = new CryptoParser(cryptoRepository);
+
+	cryptoParser.execute({user, sheetName});
+	
 	// Must handle errors
-	res.json({ sheetOperations });
+	res.status(200).send() // How to synchronize that?
 })
 
-export { cryptoRoutes }
+export { cryptoRoutes };

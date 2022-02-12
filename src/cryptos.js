@@ -208,8 +208,7 @@ function cryptoLogConstruct(cryptoIndex, purchases, sells) {
 
 /* ################# Initialization ################# */
 
-fetch(
-	'sheets', { 
+fetch('sheets', { 
 		headers: { "application-type": "json" },
 		body: { user } 
 	}).then(respStream => respStream.json()).then(resp => {

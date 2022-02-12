@@ -2,8 +2,6 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import fs from 'fs';
-import ExcelJS from 'exceljs';
-import { v4 as uuid } from 'uuid';
 import { cryptoRoutes } from './routers/crypto.routes';
 import { indexRoutes } from './routers/index.routes';
 

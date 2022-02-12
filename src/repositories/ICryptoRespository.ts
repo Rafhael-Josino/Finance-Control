@@ -1,12 +1,20 @@
-interface ISheetOperationsDTO {
+import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellList } from "../model/Cryptos";
+
+interface IGetSheetOperationsDTO {
     user: string;
-    sheetNumber: string;
+    sheetName: string;
+}
+
+interface IPostSheetOperationsDTO {
+    user: string;
+    sheetName: string;
+    cryptoPurchasesList: CryptoPurchasesList;
 }
 
 interface ICryptoRepository {
     getSheetsNames(user: string): string[];
-    getSheetOperations({ user, sheetNumber }: ISheetOperationsDTO);
-    putSheetOperations({ user, sheetNumber }: ISheetOperationsDTO);
+    getSheetOperations({ user, sheetName }: IGetSheetOperationsDTO): any;
+    postSheetOperations({ user, sheetName, cryptoPurchasesList }: IPostSheetOperationsDTO): void;
 }
 
-export { ICryptoRepository, ISheetOperationsDTO };
+export { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO };
