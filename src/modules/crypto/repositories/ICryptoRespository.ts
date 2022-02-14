@@ -1,4 +1,4 @@
-import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellList } from "../models/Cryptos";
+import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellsList, CryptoSheet } from "../models/Cryptos";
 import { Response } from 'express'; // BAD
 
 interface IGetSheetOperationsDTO {
@@ -8,15 +8,14 @@ interface IGetSheetOperationsDTO {
 
 interface IPostSheetOperationsDTO {
     user: string;
-    sheetName: string;
-    cryptoPurchasesList: CryptoPurchasesList;
+    cryptoSheetList: CryptoSheet[];
     res: Response; // BAD
 }
 
 interface ICryptoRepository {
     getSheetsNames(user: string): string[];
     getSheetOperations({ user, sheetName }: IGetSheetOperationsDTO): any;
-    postSheetOperations({ user, sheetName, cryptoPurchasesList, res }: IPostSheetOperationsDTO): void;
+    postSheetOperations({ user, cryptoSheetList, res }: IPostSheetOperationsDTO): void;
 }
 
 export { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO };

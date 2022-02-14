@@ -34,21 +34,31 @@ class CryptoRepositoryJSON implements ICryptoRepository {
         });
     }
 
-    postSheetOperations({ user, sheetName, cryptoPurchasesList, res }: IPostSheetOperationsDTO): void{
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', user, 'cryptos', `${sheetName}.json`);
-        //const data = JSON.stringify({cryptoPurchases, cryptoSells});
-        const data = JSON.stringify(cryptoPurchasesList);
+    postSheetOperations({ user, cryptoSheetList, res }: IPostSheetOperationsDTO): void{
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', user, `${user}Cryptos.json`);
 
-        fs.writeFile(pathName, data, err => {
+        fs.readFile(pathName, 'utf8', (err, data) => {
             if (err) {
-                console.log("Write file failed", err);
+                console.log(`Server here - Error reading: ${user}'s crypto file`, err);
                 res.status(500).json({error: err.message}); // BAD
             }
             else {
-                console.log(`${sheetName}.json written successfully`);
-                res.status(201).json(cryptoPurchasesList); // BAD
+                const oldData = JSON.parse(data);
+                oldData.sheets = cryptoSheetList;
+                const newData = JSON.stringify(oldData);
+                fs.writeFile(pathName, newData, err => {
+                    if (err) {
+                        console.log(`Server here - Error reading: ${user}'s crypto file`, err);
+                        res.status(500).json({error: err.message}); // BAD
+                    }
+                    else {
+                        console.log(`${user}Cryptos.json written successfully`);
+                        res.status(201).send; // BAD
+                    }
+                });
+
             }
-        });
+        })
     }
 }
 

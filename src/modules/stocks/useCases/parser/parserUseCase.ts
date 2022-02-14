@@ -1,6 +1,6 @@
 import ExcelJS from 'exceljs';
 import path from 'path';
-import { IStocksRepository } from '../repositories/IStocksRepository';
+import { IStocksRepository } from '../../repositories/IStocksRepository';
 
 class StockParserService {
     constructor (private stocksRepository: IStocksRepository) {};

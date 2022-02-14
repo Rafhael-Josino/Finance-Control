@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { Stock } from '../model/Stock';
-import { IStockGetDTO, IStockOverwriteDTO, IStocksRepository } from './IStocksRepository';
+import { Stock } from '../../models/Stock';
+import { IStockGetDTO, IStockOverwriteDTO, IStocksRepository } from '../IStocksRepository';
 
 class StocksRepositoryJSON implements IStocksRepository {
     getStock({ user, stockName }: IStockGetDTO): Stock {

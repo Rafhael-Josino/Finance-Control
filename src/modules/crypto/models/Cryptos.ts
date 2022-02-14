@@ -58,7 +58,7 @@ class CryptoPurchasesList {
     
 }
 
-class CryptoSellList {
+class CryptoSellsList {
     BTC : CryptoSell[];
     ETH : CryptoSell[];
     LTC : CryptoSell[];
@@ -82,4 +82,16 @@ class CryptoSellList {
     }
 }
 
-export { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellList };
+class CryptoSheet {
+    cryptoPurchasesList: CryptoPurchasesList;
+    cryptoSellList: CryptoSellsList;
+    userName: string;
+    created_at: Date;
+    id?: string;
+
+    constructor() {
+        if (!this.id) this.id = uuidv4();
+    }
+}
+
+export { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellsList, CryptoSheet };

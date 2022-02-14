@@ -1,27 +1,25 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
-import { CryptoRepositoryJSON } from '../repositories/implementations/CryptoRepositoryJSON';
-import { CryptoParser } from '../useCases/parser/parserUseCase';
+import { parserCryptoController } from '../useCases/parser';
 
 const cryptoRoutes = Router();
 
-// Using JSON based repositories
-const cryptoRepository = new CryptoRepositoryJSON();
 
-
-function verifyUserExists(req, res, next) {
+// Transform middleware in a repository function that is just imported and called here
+// I do not know if it is the correct practice
+// but this way, the verification's responsibility passes to be owned by the repository
+function verifyUserExists(req: Request, res: Response, next: any): any {
 	const { user } = req.body;
 
 	fs.readdir(path.join(__dirname, '..', '..', '..', '..', 'logs'), (err, files) => {
 		if (err) {
-			console.log("Unable to read directory:", err);
-			res.status(500).json({error: "Unable to read directory: " + err.message});
+			console.log("Server here - unable to read directory:", err);
+			res.status(500).json({error: "Server here - unable to read directory: " + err.message});
 		}
 		else {
 			console.log(files);
 			if (files.includes(user)) {
-				//req.user = user; // only this is not working
 				return next();
 			}
 			else {
@@ -65,10 +63,10 @@ cryptoRoutes.get('/sheets', verifyUserExists, (req, res) => {
 	//cont { user } = req; // with middleware. Only this is not working. User not part of req's type
 	const { user } = req.body; // Must adjust in crypto.ts
 
-	const sheetsNames = cryptoRepository.getSheetsNames(user); //How to handle assynchronism?
+	//const sheetsNames = cryptoRepository.getSheetsNames(user); //How to handle assynchronism?
 	
 	// Must handle errors
-	res.json({ sheetsNames });
+	//res.json({ sheetsNames });
 });
 
 cryptoRoutes.get('/operations/:sheetName', verifyUserExists, (req, res) => {
@@ -82,19 +80,7 @@ cryptoRoutes.get('/operations/:sheetName', verifyUserExists, (req, res) => {
 });
 
 cryptoRoutes.post('/operations/:sheetName', verifyUserExists, (req, res) => {
-	//const { user } = req.headers; // headers parameters are considerated as possibles arrays????
-	//cont { user } = req; // with middleware. Only this is not working. User not part of req's type
-	const { user } = req.body; // Must adjust in crypto.ts
-	const { sheetName } = req.params;
-
-	const cryptoParser = new CryptoParser(cryptoRepository);
-
-	cryptoParser.execute({user, sheetName, res});
-	
-	// Must handle errors
-	// It sends the response before the execute above finishes!!!
-	//res.status(200).send() // How to synchronize that?
-	//res.status(cryptoParser.execute({ user, sheetName })).send();
+	parserCryptoController.handle(req, res);
 })
 
 export { cryptoRoutes };

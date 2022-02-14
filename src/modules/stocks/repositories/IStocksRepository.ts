@@ -1,4 +1,4 @@
-import { Stock } from '../model/Stock';
+import { Stock } from '../models/Stock';
 
 interface IStockGetDTO {
     user: string;

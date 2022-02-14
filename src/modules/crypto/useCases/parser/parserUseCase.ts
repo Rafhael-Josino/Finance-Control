@@ -30,32 +30,33 @@ Sells Report generated:
 
 import path from 'path';
 import ExcelJS from 'exceljs';
-import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellList } from "../../models/Cryptos"; // BAD?
+import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellsList, CryptoSheet } from "../../models/Cryptos"; // BAD?
 import { ICryptoRepository } from '../../repositories/ICryptoRespository';
 import { Response } from 'express' // BAD
 
 interface IRequest {
     user: string;
-    sheetName: string;
-    res: Response;
+    sheetNames?: string[];
+    res: Response; // BAD
 }
 
-class CryptoParser {
+class ParserCryptoUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
 
-    execute({ user, sheetName, res }: IRequest): void {
+    execute({ user, sheetNames, res }: IRequest): void {
         const workbook = new ExcelJS.Workbook();
 
         // Object that represents a cell of the datasheet
-        function Navigator(column: string, line: number) {
+        function Navigator(column: string, line: number): void {
             this.column = column;
             this.line = line;
-            this.pos = () => {return this.column + this.line}
-            this.moveLines = (move: number) => {this.line += move;}
-            this.moveToColumn = (toColumn: string) => {this.column = toColumn;}
+            this.pos = (): string => {return this.column + this.line}
+            this.moveLines = (move: number): void => {this.line += move;}
+            this.moveToColumn = (toColumn: string): void => {this.column = toColumn;}
         }
     
         // Probably to be removed - make more tests to substituting object
+    /*
         function CryptoOperation(date, asset, local, totalBought, purchaseMediumPrice, tax, newMediumPrice) {
             this.asset = asset;
             this.date = date;
@@ -66,7 +67,7 @@ class CryptoParser {
             this.remainQuant = totalBought - tax;
             this.newMediumPrice = newMediumPrice;
         }
-    
+    */
         // Probably to be removed - test new object
         function CryptoSell(sellingDate, asset, local, received, aquisitionDate, aquisitionValue, quantSold, buyIndexes, leftOverQuant) {
             // Attributes that are present in the sheet:
@@ -93,17 +94,18 @@ class CryptoParser {
         const parser = new Navigator('B', 2);
         const matchCrypto = new RegExp('\\w+');
         const cryptoInBRL = new RegExp('\\w+/BRL'); // In this case is used the FIAT coin BRL as parameter (brazillian coin)
-        
+
+
         // Probably to be removed or changed to an object
         const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX", "BUSD"];
         const cryptosBuyList = [[], [], [], [], [], [], [], [], []]; // Make more tests with CryptoPurchase
         const cryptosSellList  = [[], [], [], [], [], [], [], [], []];
 
-        const cryptoPurchasesList = new CryptoPurchasesList;
+        // To be removed
+        //const cryptoPurchasesList = new CryptoPurchasesList;
 
-        // Yet to test
-        const cryptoSellList = new CryptoSellList;
-    
+
+ 
         // ############################### Log Functions #############################
         // Each log function is called when the parser is already in its line from the sheet
     
@@ -113,7 +115,7 @@ class CryptoParser {
         // just parser each operation and call the pertinent logging function at each datasheet line
         // The logging functions return then the a CryptoSell or CryptoBuy object.
     
-        function logBuy(worksheet) {
+        function logBuy(worksheet: any): CryptoPurchase {
             parser.moveToColumn('A');
             const date = worksheet.getCell(parser.pos()).value;
     
@@ -160,7 +162,8 @@ class CryptoParser {
             
         }
     
-        function logSell(worksheet) {
+        // Must return a CryptoSell object
+        function logSell(worksheet: any) {
             parser.moveToColumn('A');
             const sellingDate = worksheet.getCell(parser.pos()).value;
     
@@ -263,60 +266,105 @@ class CryptoParser {
             }
         }
     
+      
+        // Must return a array of CryptoSheet objects
+        // The repository will add and update the corresonding sheets, after read the user file
+        // Afterwards, the repository will save the updated information
+
+        // The objects cryptoPurchasesList will be defined only inside parsing function
+        // There will be a global array of CryptoSheet objects
+        
+        
+        
+        // the purchase and sell lists objects must be passed as arguments to parsing
+        // that being, the are only created inside the functions that calls parsing
+        function parsing(
+            worksheet: any, 
+            cryptoPurchasesList: CryptoPurchasesList,
+            cryptoSellsList: CryptoSellsList
+        ): CryptoSheet {
+            
+            const cell = worksheet.getCell(parser.pos()).value;
+
+            // console.log(parser.pos()); // Used to find lines in the table with problemn
+            // If this line contains an operation with values equivalent in BRL
+            if (cell === null || cell === "STOP") {
+                console.log("Parsing finished");
+                const cryptoSheet = new CryptoSheet();
+                Object.assign(cryptoSheet, {
+                    cryptoPurchasesList,
+                    cryptoSellsList,
+                    userName: user,
+                    created_at: new Date(),
+                });
+                return cryptoSheet;
+            }
+
+            else if (typeof cell !== "string") {
+                parser.moveLines(1);
+                return parsing(worksheet, cryptoPurchasesList, cryptoSellsList);
+            }
+
+            else if (cell.match(cryptoInBRL)) {
+                parser.moveToColumn('C');
+                const operationType = worksheet.getCell(parser.pos()).value;
+                if (operationType === "Compra") { // Purchase
+                    const newOp = logBuy(worksheet);
+                    //cryptosBuyList[cryptoNamesList.findIndex((name) => name === newOp.asset)].push(newOp);
+
+                    cryptoPurchasesList[newOp.asset].push(newOp);
+                }
+                else if (operationType === "Venda") { // Sell
+                    const newOp = logSell(worksheet)
+                    cryptosSellList[cryptoNamesList.findIndex((name) => name === newOp.asset)].push(newOp);
+                }
+                parser.moveToColumn('B');
+                parser.moveLines(1);
+                return parsing(worksheet, cryptoPurchasesList, cryptoSellsList);
+            }
+
+            else {
+                parser.moveLines(1);
+                return parsing(worksheet, cryptoPurchasesList, cryptoSellsList);
+            }
+        }
+
         // Parsing xlsx file:
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', user, 'cryptos', 'cryptos.xlsx');
-    
+        const cryptoSheetList = [];
+
         workbook.xlsx.readFile(pathName).then(() => {
             console.log("Parsing started");
-            console.log(workbook.worksheets.length, "sheets in archive");
-            const worksheet = workbook.worksheets.find(worksheet => worksheet.name === sheetName);
-    
-            function parsing() {
-                const cell = worksheet.getCell(parser.pos()).value;
-    
-                // console.log(parser.pos()); // Used to find lines in the table with problemn
-                // If this line contains an operation with values equivalent in BRL
-                if (cell === null || cell === "STOP") {
-                    console.log("Parsing finished");
+            console.log("Sheets in archive:", sheetNames);
+            //const worksheet = workbook.worksheets.find(worksheet => worksheet.name === sheetName);
+            
+            workbook.worksheets.forEach(worksheet => {
+                // Create new instances for the purchases and sells lists, which are empty
+                const cryptoPurchasesList = new CryptoPurchasesList();
+                const cryptoSellsList = new CryptoSellsList();
+
+                // If the request contains the names of certain sheets, only those will be parsed
+                if (sheetNames) {
+                    if (sheetNames.includes(worksheet.name)) {
+                        cryptoSheetList.push(parsing(worksheet, cryptoPurchasesList, cryptoSellsList));
+                    }
                 }
 
-                else if (typeof cell !== "string") {
-                    parser.moveLines(1);
-                    parsing();
-                }
-    
-                else if (cell.match(cryptoInBRL)) {
-                    parser.moveToColumn('C');
-                    const operationType = worksheet.getCell(parser.pos()).value;
-                    if (operationType === "Compra") { // Purchase
-                        const newOp = logBuy(worksheet);
-                        //cryptosBuyList[cryptoNamesList.findIndex((name) => name === newOp.asset)].push(newOp);
-
-                        cryptoPurchasesList[newOp.asset].push(newOp);
-                    }
-                    else if (operationType === "Venda") { // Sell
-                        const newOp = logSell(worksheet)
-                        cryptosSellList[cryptoNamesList.findIndex((name) => name === newOp.asset)].push(newOp);
-                    }
-                    parser.moveToColumn('B');
-                    parser.moveLines(1);
-                    parsing();
-                }
-    
+                // Case none names were passed, all sheets will be parsed
                 else {
-                    parser.moveLines(1);
-                    parsing();
-                }
-            }
-            parsing()
+                    cryptoSheetList.push(parsing(worksheet, cryptoPurchasesList, cryptoSellsList));                }
+            })
+           
+            //parsing()
     
             //console.log(cryptosBuyList);
             //console.log(cryptosSellList);
 
-            console.log(cryptoPurchasesList);
+            //console.log(cryptoPurchasesList);
 
             //this.cryptoRepository.postSheetOperations({ user, sheetName, cryptosBuyList, cryptosSellList});
-            this.cryptoRepository.postSheetOperations({ user, sheetName, cryptoPurchasesList, res } );
+            //this.cryptoRepository.postSheetOperations({ user, sheetName, cryptoPurchasesList, res } );
+            
         
         }).catch(err => {
             console.log("Parsing failed:");
@@ -326,4 +374,4 @@ class CryptoParser {
     }
 }
 
-export { CryptoParser };
+export { ParserCryptoUseCase };
