@@ -85,7 +85,7 @@ class CryptoSellsList {
 class CryptoSheet {
     cryptoPurchasesList: CryptoPurchasesList;
     cryptoSellList: CryptoSellsList;
-    userName: string;
+    sheetName: string;
     created_at: Date;
     id?: string;
 

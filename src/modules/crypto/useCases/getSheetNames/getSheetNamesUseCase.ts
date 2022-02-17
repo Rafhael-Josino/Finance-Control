@@ -1,7 +1,5 @@
 import path from 'path';
 import ExcelJS from 'exceljs';
-import { v4 as uuidv4 } from 'uuid';
-import { ICryptoRepository } from '../../repositories/ICryptoRespository';
 import { Response } from 'express' // BAD
 
 interface IRequest {
@@ -9,24 +7,26 @@ interface IRequest {
     res: Response; // BAD
 }
 
-class SheetNamesUseCase {
-    constructor(private cryptoRepository: ICryptoRepository) {}
+class GetSheetNamesUseCase {
+    constructor() {}
 
-    execute({ user, res }: IRequest): void {
+    execute({ user, res}: IRequest) {
         const workbook = new ExcelJS.Workbook();
-        
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', user, 'cryptos', 'cryptos.xlsx');
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', user, 'cryptos.xlsx');
 
         workbook.xlsx.readFile(pathName).then(() => {
-            //const names= [];
+            const namesList = [];
+
             workbook.worksheets.forEach(worksheet => {
-                
+                namesList.push(worksheet.name);
             });
 
-
+            res.send(JSON.stringify(namesList));
         }).catch(err => {
             console.error("Server here - error reading .xlsx getting names:", err);
             res.status(500).json({ error: err.message});
-        })
+        });
     }
 }
+
+export { GetSheetNamesUseCase };

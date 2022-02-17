@@ -1,25 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import ExcelJS from 'exceljs';
-import { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO } from '../ICryptoRespository';
+import { IGetSheetNamesDTO, ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO } from '../ICryptoRespository';
 
 // parser is a service, should be called by the routes
 // the repository functions should be subtypes
 
 class CryptoRepositoryJSON implements ICryptoRepository {
-    getSheetsNames(user: string): string[] {
-        const pathName = path.join(__dirname, '..', '..', 'logs', user, 'cryptos');
-
-        fs.readdir(pathName, (err, files) => {
-            if (err) throw err;
-            else return files;
-        });
-
-        return [];
-    }
-
-    getSheetOperations({ user, sheetName }: IGetSheetOperationsDTO): any {
-        const pathName = path.join(__dirname, '..', '..', 'logs', user, 'cryptos', `${sheetName}.json`);
+    getSheetOperations({ userName, sheetName }: IGetSheetOperationsDTO): any {
+        const pathName = path.join(__dirname, '..', '..', 'logs', userName, 'cryptos', `${sheetName}.json`);
 
 	    fs.readFile(pathName, 'utf8', (err, data) => {
             if (err) {
@@ -34,12 +22,12 @@ class CryptoRepositoryJSON implements ICryptoRepository {
         });
     }
 
-    postSheetOperations({ user, cryptoSheetList, res }: IPostSheetOperationsDTO): void{
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', user, `${user}Cryptos.json`);
+    postSheetOperations({ userName, cryptoSheetList, res }: IPostSheetOperationsDTO): void{
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
 
         fs.readFile(pathName, 'utf8', (err, data) => {
             if (err) {
-                console.log(`Server here - Error reading: ${user}'s crypto file`, err);
+                console.log(`Server here - Error reading: ${userName}'s crypto file`, err);
                 res.status(500).json({error: err.message}); // BAD
             }
             else {
@@ -48,12 +36,12 @@ class CryptoRepositoryJSON implements ICryptoRepository {
                 const newData = JSON.stringify(oldData);
                 fs.writeFile(pathName, newData, err => {
                     if (err) {
-                        console.log(`Server here - Error reading: ${user}'s crypto file`, err);
+                        console.log(`Server here - Error writting ${userName}'s crypto file: `, err);
                         res.status(500).json({error: err.message}); // BAD
                     }
                     else {
-                        console.log(`${user}Cryptos.json written successfully`);
-                        res.status(201).send; // BAD
+                        console.log(`${userName}.json written successfully`);
+                        res.status(201).send(); // BAD
                     }
                 });
 

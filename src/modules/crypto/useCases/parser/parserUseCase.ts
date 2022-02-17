@@ -35,7 +35,7 @@ import { ICryptoRepository } from '../../repositories/ICryptoRespository';
 import { Response } from 'express' // BAD
 
 interface IRequest {
-    user: string;
+    userName: string;
     sheetNames?: string[];
     res: Response; // BAD
 }
@@ -43,7 +43,7 @@ interface IRequest {
 class ParserCryptoUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
 
-    execute({ user, sheetNames, res }: IRequest): void {
+    execute({ userName, sheetNames, res }: IRequest): void {
         const workbook = new ExcelJS.Workbook();
 
         // Object that represents a cell of the datasheet
@@ -53,6 +53,10 @@ class ParserCryptoUseCase {
             this.pos = (): string => {return this.column + this.line}
             this.moveLines = (move: number): void => {this.line += move;}
             this.moveToColumn = (toColumn: string): void => {this.column = toColumn;}
+            this.reset = (): void => {
+                this.column = 'B';
+                this.line = 2;
+            }
         }
     
         // Probably to be removed - make more tests to substituting object
@@ -294,7 +298,7 @@ class ParserCryptoUseCase {
                 Object.assign(cryptoSheet, {
                     cryptoPurchasesList,
                     cryptoSellsList,
-                    userName: user,
+                    sheetName: worksheet.name,
                     created_at: new Date(),
                 });
                 return cryptoSheet;
@@ -329,19 +333,20 @@ class ParserCryptoUseCase {
             }
         }
 
+
         // Parsing xlsx file:
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', user, 'cryptos', 'cryptos.xlsx');
-        const cryptoSheetList = [];
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.xlsx`);
 
         workbook.xlsx.readFile(pathName).then(() => {
             console.log("Parsing started");
             console.log("Sheets in archive:", sheetNames);
-            //const worksheet = workbook.worksheets.find(worksheet => worksheet.name === sheetName);
+            const cryptoSheetList = [];
             
             workbook.worksheets.forEach(worksheet => {
                 // Create new instances for the purchases and sells lists, which are empty
                 const cryptoPurchasesList = new CryptoPurchasesList();
                 const cryptoSellsList = new CryptoSellsList();
+                parser.reset();
 
                 // If the request contains the names of certain sheets, only those will be parsed
                 if (sheetNames) {
@@ -352,23 +357,18 @@ class ParserCryptoUseCase {
 
                 // Case none names were passed, all sheets will be parsed
                 else {
-                    cryptoSheetList.push(parsing(worksheet, cryptoPurchasesList, cryptoSellsList));                }
-            })
-           
-            //parsing()
-    
-            //console.log(cryptosBuyList);
-            //console.log(cryptosSellList);
+                    cryptoSheetList.push(parsing(worksheet, cryptoPurchasesList, cryptoSellsList));                
+                }
+            });
 
-            //console.log(cryptoPurchasesList);
-
+            this.cryptoRepository.postSheetOperations({ userName, cryptoSheetList, res});
             //this.cryptoRepository.postSheetOperations({ user, sheetName, cryptosBuyList, cryptosSellList});
             //this.cryptoRepository.postSheetOperations({ user, sheetName, cryptoPurchasesList, res } );
-            
         
         }).catch(err => {
             console.log("Parsing failed:");
             console.log(err);
+            res.status(500).json({ error: err.message});
         });
 
     }

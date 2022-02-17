@@ -10,6 +10,7 @@ class CryptoUser {
 
     constructor() {
         if (!this.id) this.id = uuidv4();
+        this.sheets = [];
     }
 }
 

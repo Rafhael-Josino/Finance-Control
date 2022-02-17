@@ -6,10 +6,9 @@ class ParserCryptoController {
 
     handle(req: Request, res: Response): void /* BAD - it should return a Response */ {
         //const { user } = req.headers; // headers parameters are considerated as possibles arrays????
-        const { user } = req.body; // Must adjust in crypto.ts
-        const { sheetName } = req.params;
+        const { userName, sheetNames } = req.body; // Must adjust in crypto.ts
 
-        this.parserCryptoUseCase.execute({user, sheetName, res});
+        this.parserCryptoUseCase.execute({userName, sheetNames, res});
         
         // Must handle errors
 
