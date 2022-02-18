@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 import { parserCryptoController } from '../useCases/parser';
-import { getSheetNamesController } from '../useCases/getSheetNames';
+import {listSheetsController } from '../useCases/listSheets';
 import { createUserController } from '../useCases/createUser';
 import { getUserController } from '../useCases/getUser';
 
@@ -109,7 +109,7 @@ cryptoRoutes.get('/cryptos.js', (req, res) => {
 });
 
 cryptoRoutes.get('/sheets', verifyUserExists, (req, res) => {
-	getSheetNamesController.handle(req, res);
+	listSheetsController.handle(req, res);
 	
 	// Must handle errors
 	//res.json({ sheetsNames });

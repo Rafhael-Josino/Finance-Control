@@ -11,6 +11,7 @@ interface ICryptoUserRepository {
     listUsers(res: Response): void;
     getUser({ userName, res}: ICryptoUserRepositoryDTO): void;
     createUser({ userName, res}: ICryptoUserRepositoryDTO): void;
+    listSheets({ userName, res}: ICryptoUserRepositoryDTO): void;
 }
 
 export { ICryptoUserRepository, ICryptoUserRepositoryDTO };

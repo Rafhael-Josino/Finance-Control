@@ -21,7 +21,7 @@ class CryptoSell {
 
     // Attributes that are obtained from previous purchases:
     aquisitionDate: string;
-    aquisitionValue: string;
+    aquisitionValue: number;
     buyIndexes: CryptoSoldLog[];
     leftOverQuant: string;
 }

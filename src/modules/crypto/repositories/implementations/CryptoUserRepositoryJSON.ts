@@ -61,6 +61,24 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
             }
         });
     }
+
+    listSheets({ userName, res}: ICryptoUserRepositoryDTO): void {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+
+        fs.readFile(pathName, 'utf8', (err, data) => {
+            if (err) {
+                console.log("Server here - unable to read file:", `${userName}.json` , err);
+                res.status(500).json({error: "Server here - unable to read file: " + `${userName}.json ` + err.message});
+            }
+            else {
+                const userData = JSON.parse(data);
+                const sheetNames = userData.sheets.map((sheet: any) => sheet.sheetName);
+
+                console.log(`Sending ${userName}.json's sheet names`);
+                res.send(JSON.stringify(sheetNames));
+            }
+        });
+    }
 }
 
 export { CryptoUserRepositoryJSON }
