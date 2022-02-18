@@ -73,6 +73,7 @@ class ParserCryptoUseCase {
         }
     */
         // Probably to be removed - test new object
+        /*
         function CryptoSell(sellingDate, asset, local, received, aquisitionDate, aquisitionValue, quantSold, buyIndexes, leftOverQuant) {
             // Attributes that are present in the sheet:
             this.sellingDate = sellingDate;
@@ -87,7 +88,7 @@ class ParserCryptoUseCase {
             this.buyIndexes = buyIndexes;
             this.leftOverQuant = leftOverQuant;
         }
-    /*
+    
         function CryptoSoldLog(index, date, quant, price) {
             this.index = index;
             this.date = date;
@@ -102,8 +103,12 @@ class ParserCryptoUseCase {
 
         // Probably to be removed or changed to an object
         const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX", "BUSD"];
-        const cryptosBuyList = [[], [], [], [], [], [], [], [], []]; // Make more tests with CryptoPurchase
+        //const cryptosBuyList = [[], [], [], [], [], [], [], [], []]; // Make more tests with CryptoPurchase
         const cryptosSellList  = [[], [], [], [], [], [], [], [], []];
+
+        // Declared here as global variables
+        let cryptoPurchasesList: CryptoPurchasesList;
+        let cryptoSellsList: CryptoSellsList;
 
         // To be removed
         //const cryptoPurchasesList = new CryptoPurchasesList;
@@ -166,8 +171,7 @@ class ParserCryptoUseCase {
             
         }
     
-        // Must return a CryptoSell object
-        function logSell(worksheet: any) {
+        function logSell(worksheet: any): CryptoSell {
             parser.moveToColumn('A');
             const sellingDate = worksheet.getCell(parser.pos()).value;
     
@@ -178,9 +182,9 @@ class ParserCryptoUseCase {
             const local = worksheet.getCell(parser.pos()).value;
     
             parser.moveToColumn('F');
-            let sellingQuant;
-            sellingQuant = worksheet.getCell(parser.pos()).value.result;
-            if (!sellingQuant) sellingQuant = worksheet.getCell(parser.pos()).value;
+            let quantSold: number;
+            quantSold = worksheet.getCell(parser.pos()).value.result;
+            if (!quantSold) quantSold = worksheet.getCell(parser.pos()).value;
     
             parser.moveToColumn('H');
             let received;
@@ -196,20 +200,29 @@ class ParserCryptoUseCase {
             */
     
             const indexCrypto = cryptoNamesList.findIndex((name) => name === asset);
-            let leftOver; // in cryptos
-            let debit = sellingQuant; // in cryptos
+            
+            let leftOver: number; // in cryptos
+            let debit = quantSold; // in cryptos
             let aquisitionValue = 0; // in FIAT coin
             let buyIndexes = [];
             // Searches for the first purchase operation that still has a remanescent value
             // Insert check code to define "i", depending on previous sells with leftOvers
-            for (let i = 0; i < cryptosBuyList[indexCrypto].length; i++) {
-                if (cryptosBuyList[indexCrypto][i].remainQuant) {
-                    leftOver = cryptosBuyList[indexCrypto][i].remainQuant - debit;
+
+            //for (let i = 0; i < cryptosBuyList[indexCrypto].length; i++) {
+            for (let i = 0; i < cryptoPurchasesList[asset].length; i++) {
+
+
+                //if (cryptosBuyList[indexCrypto][i].remainQuant) {
+                if (cryptoPurchasesList[asset][i].remainQuant) {
+                    //leftOver = cryptosBuyList[indexCrypto][i].remainQuant - debit;
+                    leftOver = cryptoPurchasesList[asset][i].remainQuant - debit;
                     // If the quantity of this purchase covers the sell (totally or the with a rest)
                     if (leftOver >= 0) {
-                        cryptosBuyList[indexCrypto][i].remainQuant = leftOver; // Updates the quantity remanescent
+                        //cryptosBuyList[indexCrypto][i].remainQuant = leftOver; // Updates the quantity remanescent
+                        cryptoPurchasesList[asset][i].remainQuant = leftOver; // Updates the quantity remanescent
                         // Aquisition value = this purchase medium price * quantity bought + previous purchase's values
-                        aquisitionValue += cryptosBuyList[indexCrypto][i].purchaseMediumPrice * debit; 
+                        //aquisitionValue += cryptosBuyList[indexCrypto][i].purchaseMediumPrice * debit; 
+                        aquisitionValue += cryptoPurchasesList[asset][i].purchaseMediumPrice * debit; 
                         /*
                         buyIndexes.push(new CryptoSoldLog(
                             i,
@@ -221,16 +234,17 @@ class ParserCryptoUseCase {
                         buyIndexes.push(
                             {
                                 index: i,
-                                date: cryptosBuyList[indexCrypto][i].date, 
+                                date: cryptoPurchasesList[asset][i].date, 
                                 quant: debit, 
-                                price: cryptosBuyList[indexCrypto][i].purchaseMediumPrice
+                                price: cryptoPurchasesList[asset][i].purchaseMediumPrice
                             }
                         );
                         break;
                     }
                     // If the buying cannot cover the sell and the next(s) one(s) must be checked
                     else {
-                        aquisitionValue += cryptosBuyList[indexCrypto][i].purchaseMediumPrice * cryptosBuyList[indexCrypto][i].remainQuant;
+                        //aquisitionValue += cryptosBuyList[indexCrypto][i].purchaseMediumPrice * cryptosBuyList[indexCrypto][i].remainQuant;
+                        aquisitionValue += cryptoPurchasesList[asset][i].purchaseMediumPrice * cryptoPurchasesList[asset][i].remainQuant;
                         /*
                         buyIndexes.push(new CryptoSoldLog(
                             i,
@@ -242,12 +256,13 @@ class ParserCryptoUseCase {
                         buyIndexes.push(
                             {
                                 index: i,
-                                date: cryptosBuyList[indexCrypto][i].date, 
+                                date: cryptoPurchasesList[asset][i].date, 
                                 quant: debit, 
-                                price: cryptosBuyList[indexCrypto][i].purchaseMediumPrice
+                                price: cryptoPurchasesList[asset][i].purchaseMediumPrice
                             }
                         );
-                        cryptosBuyList[indexCrypto][i].remainQuant = 0; // Updates the quantity remanescent, which is 0 in this case
+                        //cryptosBuyList[indexCrypto][i].remainQuant = 0; // Updates the quantity remanescent, which is 0 in this case
+                        cryptoPurchasesList[asset][i].remainQuant = 0; // Updates the quantity remanescent, which is 0 in this case
                         debit = -leftOver; // Updates the debit
                     }
                 }
@@ -257,17 +272,34 @@ class ParserCryptoUseCase {
             //return newSell;
 
             //(sellingDate, asset, local, received, aquisitionDate, aquisitionValue, quantSold, buyIndexes, leftOverQuant)
+            /*
             return {
                 sellingDate,
                 asset,
                 local,
                 received,
-                sellingQuant,
+                quantSold,
                 aquisitionDate: "See buy indexes",
                 aquisitionValue,
                 buyIndexes,
                 leftOver
             }
+            */
+
+            const newSell = new CryptoSell();
+            Object.assign(newSell, {
+                sellingDate,
+                asset,
+                local,
+                received,
+                quantSold,
+                aquisitionDate: "See buy indexes",
+                aquisitionValue,
+                buyIndexes,
+                leftOver
+            });
+
+            return newSell;
         }
     
       
@@ -282,11 +314,7 @@ class ParserCryptoUseCase {
         
         // the purchase and sell lists objects must be passed as arguments to parsing
         // that being, the are only created inside the functions that calls parsing
-        function parsing(
-            worksheet: any, 
-            cryptoPurchasesList: CryptoPurchasesList,
-            cryptoSellsList: CryptoSellsList
-        ): CryptoSheet {
+        function parsing(worksheet: any): CryptoSheet {
             
             const cell = worksheet.getCell(parser.pos()).value;
 
@@ -306,7 +334,7 @@ class ParserCryptoUseCase {
 
             else if (typeof cell !== "string") {
                 parser.moveLines(1);
-                return parsing(worksheet, cryptoPurchasesList, cryptoSellsList);
+                return parsing(worksheet);
             }
 
             else if (cell.match(cryptoInBRL)) {
@@ -319,17 +347,19 @@ class ParserCryptoUseCase {
                     cryptoPurchasesList[newOp.asset].push(newOp);
                 }
                 else if (operationType === "Venda") { // Sell
-                    const newOp = logSell(worksheet)
-                    cryptosSellList[cryptoNamesList.findIndex((name) => name === newOp.asset)].push(newOp);
+                    const newOp = logSell(worksheet);
+                    //cryptosSellList[cryptoNamesList.findIndex((name) => name === newOp.asset)].push(newOp);
+
+                    cryptoSellsList[newOp.asset].push(newOp);
                 }
                 parser.moveToColumn('B');
                 parser.moveLines(1);
-                return parsing(worksheet, cryptoPurchasesList, cryptoSellsList);
+                return parsing(worksheet);
             }
 
             else {
                 parser.moveLines(1);
-                return parsing(worksheet, cryptoPurchasesList, cryptoSellsList);
+                return parsing(worksheet);
             }
         }
 
@@ -343,21 +373,23 @@ class ParserCryptoUseCase {
             const cryptoSheetList = [];
             
             workbook.worksheets.forEach(worksheet => {
-                // Create new instances for the purchases and sells lists, which are empty
-                const cryptoPurchasesList = new CryptoPurchasesList();
-                const cryptoSellsList = new CryptoSellsList();
+                // "Resets" the variables below to start a new sheet parsing process
+
+                // Better make a new instance or create a reset method likewise parser object?
+                cryptoPurchasesList = new CryptoPurchasesList();
+                cryptoSellsList = new CryptoSellsList();
                 parser.reset();
 
                 // If the request contains the names of certain sheets, only those will be parsed
                 if (sheetNames) {
                     if (sheetNames.includes(worksheet.name)) {
-                        cryptoSheetList.push(parsing(worksheet, cryptoPurchasesList, cryptoSellsList));
+                        cryptoSheetList.push(parsing(worksheet));
                     }
                 }
 
                 // Case none names were passed, all sheets will be parsed
                 else {
-                    cryptoSheetList.push(parsing(worksheet, cryptoPurchasesList, cryptoSellsList));                
+                    cryptoSheetList.push(parsing(worksheet));                
                 }
             });
 
