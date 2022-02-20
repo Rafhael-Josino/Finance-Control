@@ -208,7 +208,7 @@ function cryptoLogConstruct(cryptoIndex, purchases, sells) {
 
 /* ################# Initialization ################# */
 
-fetch('sheets', { 
+fetch('/sheets', { 
 		headers: { "application-type": "json" },
 		body: { user } 
 	}).then(respStream => respStream.json()).then(resp => {
@@ -216,7 +216,7 @@ fetch('sheets', {
 	
 	loadSheet.addEventListener('change', (event) => {
 		fetch(
-			`operations/${event.target.value}`,
+			`user/${event.target.value}`,
 			{ headers: { user } }	
 		).then(resp => resp.json()).then(operationsData => {
 			currentSitTabConstruction(operationsData);
@@ -225,7 +225,7 @@ fetch('sheets', {
 
 	saveSheet.addEventListener('click', (event) => {
 		fetch(
-			`operations/${loadSheet.value}`,
+			`user/${loadSheet.value}`,
 			{ method: 'PUT', headers: { user } }
 		).then(resp => {
 			if (resp.status === 201) {
@@ -238,9 +238,9 @@ fetch('sheets', {
 		})
 	});
 
-	resp.forEach(sheet => {
+	resp.forEach(sheetName => {
 		const newOption = document.createElement('option');
-		newOption.innerHTML = sheet;
+		newOption.innerHTML = sheetName;
 		newOption.value = index++;
 		loadSheet.appendChild(newOption);
 	});

@@ -82,11 +82,11 @@ function verifyUserAlreadyExists(req: Request, res: Response, next: any): any {
 
 
 cryptoRoutes.get("/cryptos", (req, res) => {
-	const namePath = path.join(__dirname, '..', 'cryptos.html');
+	const namePath = path.join(__dirname, '..', 'pages', 'cryptos.html');
 	fs.readFile(namePath, 'utf8', (err, data) => {
 		if (err) {
             console.log("Error reading cryptos index:", err);
-            res.status(500).json({ error: "Error reading index: " + err.message });
+            res.status(500).json({ error: "Server here - error reading cryptos.html" + err.message });
         }
         else {
 			console.log("Sending cryptos.html");
@@ -96,11 +96,11 @@ cryptoRoutes.get("/cryptos", (req, res) => {
 });
 
 cryptoRoutes.get('/cryptos.js', (req, res) => {
-	const namePath = path.join(__dirname, '..', 'cryptos.js');
+	const namePath = path.join(__dirname, '..', 'pages', 'cryptos.js');
 	fs.readFile(namePath, 'utf8', (err, data) => {
 		if (err) {
-            console.log("Error reading cryptos index:", err);
-            res.status(500).json({ error: "Error reading index: " + err.message });
+            console.log("Error reading cryptos.js:", err);
+            res.status(500).json({ error: "Server here - error reading cryptos.js " + err.message });
         }
         else {
 			console.log("Sending cryptos.js");
