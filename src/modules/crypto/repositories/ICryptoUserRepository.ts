@@ -1,9 +1,13 @@
-import { CryptoUser } from '../models/CryptoUser';
 import { Response } from 'express'; // BAD
-import { ICryptoRepository } from './ICryptoRespository';
 
 interface ICryptoUserRepositoryDTO {
     userName: string;
+    res: Response; // BAD
+}
+
+interface ICryptoUserGetSheetDTO {
+    userName: string;
+    sheetName: string;
     res: Response; // BAD
 }
 
@@ -12,6 +16,7 @@ interface ICryptoUserRepository {
     getUser({ userName, res}: ICryptoUserRepositoryDTO): void;
     createUser({ userName, res}: ICryptoUserRepositoryDTO): void;
     listSheets({ userName, res}: ICryptoUserRepositoryDTO): void;
+    getSheet({ userName, sheetName, res }: ICryptoUserGetSheetDTO): void;
 }
 
-export { ICryptoUserRepository, ICryptoUserRepositoryDTO };
+export { ICryptoUserRepository, ICryptoUserRepositoryDTO, ICryptoUserGetSheetDTO };

@@ -6,6 +6,7 @@ import { parserCryptoController } from '../useCases/parser';
 import {listSheetsController } from '../useCases/listSheets';
 import { createUserController } from '../useCases/createUser';
 import { getUserController } from '../useCases/getUser';
+import { getSheetController} from '../useCases/getSheet';
 
 const cryptoRoutes = Router();
 
@@ -115,16 +116,6 @@ cryptoRoutes.get('/sheets', verifyUserExists, (req, res) => {
 	//res.json({ sheetsNames });
 });
 
-cryptoRoutes.get('/operations/:sheetName', verifyUserExists, (req, res) => {
-	//const { user } = req.headers; // headers parameters are considerated as possibles arrays????
-	//cont { user } = req; // with middleware. Only this is not working. User not part of req's type
-	const { user } = req.body; // Must adjust in crypto.ts
-	const { sheetName } = req.params
-	//const sheetOperations = cryptoRepository.getSheetOperations({ user, sheetName }); //How to handle assynchronism?
-	// Must handle errors
-	//res.json({ sheetOperations });
-});
-
 
 
 // Obs: Typed functions below:
@@ -143,5 +134,8 @@ cryptoRoutes.get('/user', verifyUserExists, (req, res) => {
 	getUserController.handle(req, res);
 });
 
+cryptoRoutes.get('/user/:sheetName', verifyUserExists, (req, res) => {
+	getSheetController.handle(req, res);	
+});
 
 export { cryptoRoutes };

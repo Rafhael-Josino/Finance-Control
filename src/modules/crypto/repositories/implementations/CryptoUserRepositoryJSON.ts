@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import { Response } from 'express';
-import { ICryptoUserRepository, ICryptoUserRepositoryDTO } from '../ICryptoUserRepository';
+import { ICryptoUserRepository, ICryptoUserRepositoryDTO, ICryptoUserGetSheetDTO } from '../ICryptoUserRepository';
 import { CryptoUser } from '../../models/CryptoUser';
+
 
 class CryptoUserRepositoryJSON implements ICryptoUserRepository {
     listUsers(res: Response): void {
@@ -76,6 +77,30 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
 
                 console.log(`Sending ${userName}.json's sheet names`);
                 res.send(JSON.stringify(sheetNames));
+            }
+        });
+    }
+
+    getSheet({ userName, sheetName, res}: ICryptoUserGetSheetDTO): void {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+
+        fs.readFile(pathName, 'utf8', (err, data) => {
+            if (err) {
+                console.log("Server here - unable to read file:", `${userName}.json` , err);
+                res.status(500).json({error: "Server here - unable to read file: " + `${userName}.json ` + err.message});
+            }
+            else {
+                const userData = JSON.parse(data);
+                const sheet = userData.sheets.find((sheet: any) => sheet.sheetName === sheetName);
+
+                if(!sheet) {
+                    console.log(`Server here - ${sheetName} not found in ${userName}.json`);
+                    res.status(404).send();
+                }
+                else {
+                    console.log(`Sending sheet ${sheet.sheetName} from ${userName}.json's`);
+                    res.send(JSON.stringify(sheet));
+                }
             }
         });
     }
