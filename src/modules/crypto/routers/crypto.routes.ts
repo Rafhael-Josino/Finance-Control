@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 import { parserCryptoController } from '../useCases/parser';
-import {listSheetsController } from '../useCases/listSheets';
+import { listSheetsController } from '../useCases/listSheets';
 import { createUserController } from '../useCases/createUser';
 import { getUserController } from '../useCases/getUser';
 import { getSheetController} from '../useCases/getSheet';
@@ -16,7 +16,7 @@ const cryptoRoutes = Router();
 // I do not know if it is the correct practice
 // but this way, the verification's responsibility passes to be owned by the repository
 function verifyUserExists(req: Request, res: Response, next: any): any {
-	const { userName } = req.body;
+	const { userName } = req.params;
 
 	fs.readdir(path.join(__dirname, '..', '..', '..', '..', 'logs', 'cryptos'), (err, files) => {
 		if (err) {
@@ -109,32 +109,33 @@ cryptoRoutes.get('/cryptos.js', (req, res) => {
 	});
 });
 
-cryptoRoutes.get('/sheets', verifyUserExists, (req, res) => {
+
+
+
+// Obs: Typed functions below:
+
+cryptoRoutes.get('/sheets/:userName', verifyUserExists, (req, res) => {
 	listSheetsController.handle(req, res);
 	
 	// Must handle errors
 	//res.json({ sheetsNames });
 });
 
-
-
-// Obs: Typed functions below:
-
-cryptoRoutes.post('/operations', verifyUserExists, verifyXLSXexists, (req, res) => {
+cryptoRoutes.post('/operations/:userName', verifyUserExists, verifyXLSXexists, (req, res) => {
 	parserCryptoController.handle(req, res);
 })
 
 // --------------------------- Crypto Users ------------------------------
 
-cryptoRoutes.post('/user', verifyUserAlreadyExists, (req, res) => {
+cryptoRoutes.post('/user/:userName', verifyUserAlreadyExists, (req, res) => {
 	createUserController.handle(req, res);
 });
 
-cryptoRoutes.get('/user', verifyUserExists, (req, res) => {
+cryptoRoutes.get('/user/:userName', verifyUserExists, (req, res) => {
 	getUserController.handle(req, res);
 });
 
-cryptoRoutes.get('/user/:sheetName', verifyUserExists, (req, res) => {
+cryptoRoutes.get('/sheet/:userName/:sheetName', verifyUserExists, (req, res) => {
 	getSheetController.handle(req, res);	
 });
 

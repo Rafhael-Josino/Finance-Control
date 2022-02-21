@@ -43,10 +43,12 @@ function formatDate(date) {
 }
 
 function currentSitTabConstruction(jsonFile) {
-	const cryptosList = jsonFile.purchases;
-	const sellingsTemp = jsonFile.sellings;
-	console.log(cryptosList);
-	const cryptoQuantity = cryptosList.length;
+	const cryptosList = jsonFile.cryptoPurchasesList;
+	const sellingsTemp = jsonFile.cryptoSellsList;
+
+	const listOfCryptos = [ 'BTC', 'ETH', 'LTC', 'EOS', 'USDT', 'TUSD', 'USDC', 'PAX', 'BUSD' ];
+
+	const cryptoQuantity = listOfCryptos.length; // According to CryptoPurchasesList's number of attributes
 	console.log(cryptoQuantity);
 
 	// Cleans all previous content
@@ -64,26 +66,29 @@ function currentSitTabConstruction(jsonFile) {
 	// For each cryptocoin:
 	for (let i = 0; i < cryptoQuantity; i++) {
 		let total = 0;
-		for (let j = 0; j < cryptosList[i].length; j++) {
-			total = total + cryptosList[i][j].remainQuant;
+		const purchases = cryptosList[listOfCryptos[i]];
+		const sells = sellingsTemp[listOfCryptos[i]];
+
+		for (let j = 0; j < purchases.length; j++) {
+			total = total + purchases[j].remainQuant;
 		}
 
 		if (total) {
 			const newLine = document.createElement("tr");
 			newLine.innerHTML = `
-				<td>${cryptosList[i][0].asset}</td>
+				<td>${listOfCryptos[i]}</td>
 				<td>${total}</td>
-				<td>${formatCurrency(cryptosList[i][cryptosList[i].length-1].newMediumPrice)}</td>
-				<td>${formatCurrency(cryptosList[i][cryptosList[i].length-1].newMediumPrice * total)}</td>
+				<td>${formatCurrency(purchases[purchases.length-1].newMediumPrice)}</td>
+				<td>${formatCurrency(purchases[purchases.length-1].newMediumPrice * total)}</td>
 			`
-			newLine.addEventListener("click", cryptoLogConstruct(i, cryptosList, sellingsTemp));
+			newLine.addEventListener("click", cryptoLogConstruct(purchases, sells)); // fix
 			newLine.setAttribute("class", "newLineClass");
 			currentSitTab.appendChild(newLine);
 		}
 	}
 }
 
-function cryptoLogConstruct(cryptoIndex, purchases, sells) {
+function cryptoLogConstruct(purchases, sells) {
 	function cryptoLog() {
 		// JSON objects directly printed
 		//purchasesList.textContent = JSON.stringify(purchases[cryptoIndex], undefined, 2);
@@ -94,7 +99,7 @@ function cryptoLogConstruct(cryptoIndex, purchases, sells) {
 		tablesS.innerHTML = "";
 		let index = 0;
 
-		purchases[cryptoIndex].forEach(purchase => {
+		purchases.forEach(purchase => {
 			tablesP.appendChild(document.createElement("table"));
 			tablesP.lastChild.innerHTML = `
 			<tr>
@@ -139,7 +144,7 @@ function cryptoLogConstruct(cryptoIndex, purchases, sells) {
 
 		index = 0;
 
-		sells[cryptoIndex].forEach(sell => {
+		sells.forEach(sell => {
 			tablesS.appendChild(document.createElement("table"));
 			tablesS.lastChild.innerHTML = `
 			<tr>
@@ -208,16 +213,12 @@ function cryptoLogConstruct(cryptoIndex, purchases, sells) {
 
 /* ################# Initialization ################# */
 
-fetch('/sheets', { 
-		headers: { "application-type": "json" },
-		body: { user } 
-	}).then(respStream => respStream.json()).then(resp => {
+fetch(`/sheets/${user}`).then(respStream => respStream.json()).then(resp => {
 	let index = 0;
 	
 	loadSheet.addEventListener('change', (event) => {
 		fetch(
-			`user/${event.target.value}`,
-			{ headers: { user } }	
+			`sheet/${user}/${event.target.value}`
 		).then(resp => resp.json()).then(operationsData => {
 			currentSitTabConstruction(operationsData);
 		});
@@ -225,7 +226,7 @@ fetch('/sheets', {
 
 	saveSheet.addEventListener('click', (event) => {
 		fetch(
-			`user/${loadSheet.value}`,
+			`sheet/${user}/${loadSheet.value}`,
 			{ method: 'PUT', headers: { user } }
 		).then(resp => {
 			if (resp.status === 201) {
@@ -241,7 +242,7 @@ fetch('/sheets', {
 	resp.forEach(sheetName => {
 		const newOption = document.createElement('option');
 		newOption.innerHTML = sheetName;
-		newOption.value = index++;
+		newOption.value = sheetName;
 		loadSheet.appendChild(newOption);
 	});
-})
+});
