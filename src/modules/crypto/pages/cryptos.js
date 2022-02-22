@@ -55,7 +55,7 @@ function currentSitTabConstruction(jsonFile) {
 	currentSitTab.innerHTML = `
 	<tr id="firstRoll">
 		<td><strong>Name</strong></td>
-		<td><strong>Total</strong></td>
+		<td><strong>Total Quantity</strong></td>
 		<td><strong>Medium Price</strong></td>
 		<td><strong>Aquisition Cost</strong></td>
 	</tr>
