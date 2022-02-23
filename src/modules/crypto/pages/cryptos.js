@@ -46,7 +46,7 @@ function currentSitTabConstruction(jsonFile) {
 	const cryptosList = jsonFile.cryptoPurchasesList;
 	const sellingsTemp = jsonFile.cryptoSellsList;
 
-	const listOfCryptos = [ 'BTC', 'ETH', 'LTC', 'EOS', 'USDT', 'TUSD', 'USDC', 'PAX', 'BUSD' ];
+	const listOfCryptos = [ 'BTC', 'ETH', 'LTC', 'EOS', 'USDT', 'TUSD', 'USDC', 'PAX', 'BUSD', 'LINK', 'MANA', 'SAND' ];
 
 	const cryptoQuantity = listOfCryptos.length; // According to CryptoPurchasesList's number of attributes
 	console.log(cryptoQuantity);
@@ -106,34 +106,42 @@ function cryptoLogConstruct(purchases, sells) {
 				<td>Asset:</td>
 				<td>${purchase.asset}</td>
 			</tr>
-			<tr>
+
+			<tr class="gray-background">
 				<td>Date:</td>
 				<td>${formatDate(purchase.date)}</td>
 			</tr>
+
 			<tr>
 				<td>Local:</td>
 				<td>${purchase.local}</td>
 			</tr>
-			<tr>
+
+			<tr class="gray-background">
 				<td>Total Bought:</td>
 				<td>${purchase.totalBought}</td>
 			</tr>
+
 			<tr>
 				<td>Purchase Medium Price:</td>
 				<td>${formatCurrency(purchase.purchaseMediumPrice)}</td>
 			</tr>
-			<tr>
+
+			<tr class="gray-background">
 				<td>Tax:</td>
 				<td>${purchase.tax}</td>
 			</tr>
+
 			<tr>
 				<td>Remain Quantity:</td>
 				<td>${purchase.remainQuant}</td>
 			</tr>
-			<tr>
+
+			<tr class="gray-background">
 				<td>New Medium Price:</td>
 				<td>${formatCurrency(purchase.newMediumPrice)}</td>
 			</tr>
+
 			<tr>
 				<td>Index:</td>
 				<td>${index}</td>
@@ -151,31 +159,38 @@ function cryptoLogConstruct(purchases, sells) {
 				<td>Asset:</td>
 				<td>${sell.asset}</td>
 			</tr>
-			<tr>
+
+			<tr class="gray-background">
 				<td>Date:</td>
 				<td>${formatDate(sell.sellingDate)}</td>
 			</tr>
+
 			<tr>
 				<td>Local:</td>
 				<td>${sell.local}</td>
 			</tr>
-			<tr>
+
+			<tr class="gray-background">
 				<td>Amount Received:</td>
 				<td>${formatCurrency(sell.received)}</td>
 			</tr>
+
 			<tr>
 				<td>Quantity Sold:</td>
 				<td>${sell.quantSold}</td>
 			</tr>
-			<tr>
+
+			<tr class="gray-background">
 				<td>Aquisition Amount:</td>
 				<td>${formatCurrency(sell.aquisitionValue)}</td>
 			</tr>
+
 			<tr>
 				<td>Leftover:</td>
-				<td>${sell.leftOverQuant}</td>
+				<td>${sell.leftOver}</td>
 			</tr>
-			<tr>
+
+			<tr class="gray-background">
 				<td>Index:</td>
 				<td>${index}</td>
 			</tr>
@@ -191,15 +206,18 @@ function cryptoLogConstruct(purchases, sells) {
 					<td>Purchase index:</td>
 					<td>${thisSellBuy.index}</td>
 				</tr>
-				<tr>
+
+				<tr class="gray-background">
 					<td>Date:</td>
 					<td>${formatDate(thisSellBuy.date)}</td>
 				</tr>
+
 				<tr>
-					<td>Quantity bought:</td>
+					<td>Quantity sold:</td>
 					<td>${thisSellBuy.quant}</td>
 				</tr>
-				<tr>
+
+				<tr class="gray-background">
 					<td>Purchase medium price:</td>
 					<td>${formatCurrency(thisSellBuy.price)}</td>
 				</tr>
@@ -210,39 +228,49 @@ function cryptoLogConstruct(purchases, sells) {
 	return cryptoLog;
 }
 
+loadSheet.addEventListener('change', (event) => {
+	fetch(`sheet/${user}/${event.target.value}`).then(resp => resp.json()).then(operationsData => currentSitTabConstruction(operationsData));
+});
+
+saveSheet.addEventListener('click', () => {
+	fetch(`saveSheet/${user}`, { method: 'POST' }).then(resp => {
+		if (resp.status === 201) {
+			console.log(`${user}.json written successfully`)
+			alert(`${user}.json written successfully`);
+			initialization();
+		}
+	}).catch(error => {
+		console.log("Error in callback - save sheet:", error);
+		alert(`sheet${loadSheet.value}.json writting failed`);
+	})
+});
 
 /* ################# Initialization ################# */
 
-fetch(`/sheets/${user}`).then(respStream => respStream.json()).then(resp => {
-	let index = 0;
-	
-	loadSheet.addEventListener('change', (event) => {
-		fetch(
-			`sheet/${user}/${event.target.value}`
-		).then(resp => resp.json()).then(operationsData => {
-			currentSitTabConstruction(operationsData);
+function initialization() {
+	fetch(`/sheets/${user}`).then(respStream => respStream.json()).then(resp => {
+		loadSheet.innerHTML = `
+			<option value="" class="option optionTitle">Load Sheet</option>
+		`;
+		currentSitTab.innerHTML = `
+			<tr id="firstRoll">
+				<td><strong>Name</strong></td>
+				<td><strong>Total Quantity</strong></td>
+				<td><strong>Medium Price</strong></td>
+				<td><strong>Aquisition Cost</strong></td>
+			</tr>
+		`;
+		tablesP.innerHTML = "";
+		tablesS.innerHTML = "";
+
+		resp.forEach(sheetName => {
+			const newOption = document.createElement('option');
+			newOption.innerHTML = sheetName;
+			newOption.value = sheetName;
+			loadSheet.appendChild(newOption);
 		});
-	});
+	});	
+}
 
-	saveSheet.addEventListener('click', (event) => {
-		fetch(
-			`sheet/${user}/${loadSheet.value}`,
-			{ method: 'PUT', headers: { user } }
-		).then(resp => {
-			if (resp.status === 201) {
-				resp.json().then(operationsData => {
-					currentSitTabConstruction(operationsData);
-					console.log(`sheet${loadSheet.value}.json written successfully`);
-				})
-				// print alert('Sheet created successfully') in screen
-			}
-		})
-	});
+initialization();
 
-	resp.forEach(sheetName => {
-		const newOption = document.createElement('option');
-		newOption.innerHTML = sheetName;
-		newOption.value = sheetName;
-		loadSheet.appendChild(newOption);
-	});
-});

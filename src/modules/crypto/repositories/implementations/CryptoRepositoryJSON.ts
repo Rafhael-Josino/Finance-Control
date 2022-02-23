@@ -44,7 +44,6 @@ class CryptoRepositoryJSON implements ICryptoRepository {
                         res.status(201).send(); // BAD
                     }
                 });
-
             }
         })
     }

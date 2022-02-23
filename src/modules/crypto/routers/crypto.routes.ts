@@ -24,7 +24,6 @@ function verifyUserExists(req: Request, res: Response, next: any): any {
 			res.status(500).json({error: "Server here - unable to read directory: " + err.message});
 		}
 		else {
-			console.log(files);
 			if (files.includes(`${userName}.json`)) {
 				return next();
 			}
@@ -37,7 +36,7 @@ function verifyUserExists(req: Request, res: Response, next: any): any {
 }
 
 function verifyXLSXexists(req: Request, res: Response, next: any): any {
-	const { userName } = req.body;
+	const { userName } = req.params;
 
 	fs.readdir(path.join(__dirname, '..', '..', '..', '..', 'logs', 'cryptos'), (err, files) => {
 		if (err) {
@@ -109,32 +108,36 @@ cryptoRoutes.get('/cryptos.js', (req, res) => {
 	});
 });
 
-
-
-
+// ---------------------------
 // Obs: Typed functions below:
+// ---------------------------
 
+
+// --------------------------- Crypto Sheets ------------------------------
+
+// Retrieves a list of all sheets parsed and stored
 cryptoRoutes.get('/sheets/:userName', verifyUserExists, (req, res) => {
 	listSheetsController.handle(req, res);
-	
-	// Must handle errors
-	//res.json({ sheetsNames });
 });
 
-cryptoRoutes.post('/operations/:userName', verifyUserExists, verifyXLSXexists, (req, res) => {
+// Parse sheets in the xlsx file uploaded and stores the data obtained
+cryptoRoutes.post('/saveSheet/:userName', verifyUserExists, verifyXLSXexists, (req, res) => {
 	parserCryptoController.handle(req, res);
-})
+});
 
 // --------------------------- Crypto Users ------------------------------
 
+// Create a new crypto user with empty data stored
 cryptoRoutes.post('/user/:userName', verifyUserAlreadyExists, (req, res) => {
 	createUserController.handle(req, res);
 });
 
+// Retrieves the crypto user data
 cryptoRoutes.get('/user/:userName', verifyUserExists, (req, res) => {
 	getUserController.handle(req, res);
 });
 
+// Retrieves a specified sheet data from a user
 cryptoRoutes.get('/sheet/:userName/:sheetName', verifyUserExists, (req, res) => {
 	getSheetController.handle(req, res);	
 });

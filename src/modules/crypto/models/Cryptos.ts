@@ -43,7 +43,10 @@ class CryptoPurchasesList {
     USDC: CryptoPurchase[];
     PAX: CryptoPurchase[];
     BUSD: CryptoPurchase[];
-
+    LINK: CryptoPurchase[];
+    MANA: CryptoPurchase[];
+    SAND: CryptoPurchase[];
+    
     constructor() {
         this.BTC = [];
         this.ETH = [];
@@ -54,9 +57,15 @@ class CryptoPurchasesList {
         this.USDC = [];
         this.PAX = [];
         this.BUSD = [];
+        this.LINK = [];
+        this.MANA = [];
+        this.SAND = [];
     }
     
+    
 }
+
+
 
 class CryptoSellsList {
     BTC : CryptoSell[];
@@ -68,7 +77,10 @@ class CryptoSellsList {
     USDC: CryptoSell[];
     PAX:  CryptoSell[];
     BUSD: CryptoSell[];
-
+    LINK: CryptoSell[];
+    MANA: CryptoSell[];
+    SAND: CryptoSell[];
+    
     constructor() {
         this.BTC = [];
         this.ETH = [];
@@ -79,6 +91,9 @@ class CryptoSellsList {
         this.USDC = [];
         this.PAX = [];
         this.BUSD = [];
+        this.LINK = [];
+        this.MANA = [];
+        this.SAND = [];
     }
 }
 

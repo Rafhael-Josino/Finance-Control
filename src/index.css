@@ -402,29 +402,31 @@ h1 {
     width: 100%;
 }
 
-#tablesP table {
+#tablesP table, #tablesS table {
     width: 100%;
     background-color: white;
-    font-size: 12px;
-    border: 1px solid var(--this-green);
+    font-size: 13px;
     margin-top: 1rem;
     overflow: auto;
+    table-layout: fixed;
+    text-align: center;
+}
+
+#tablesP table { 
+    border: 1px solid var(--this-green);
 }
 
 #tablesS table {
-    width: 100%;
-    background-color: white;
-    font-size: 12px;
     border: 1px solid red;
-    margin-top: 1rem;
-    overflow: auto;
 }
 
 #tablesS .subTable {
     margin-top: 0;
 }
 
-
+.gray-background {
+    background-color: rgb(216, 210, 210);
+}
 
 /* ############################## */
 /* ----- Responsive ------ */

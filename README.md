@@ -12,6 +12,7 @@ This project aims to practice Development, building up applications that stores 
 - Verify use of time interval to calculate gains and losses inside given interval
 - Finish stock functionality
 - Insert .xlsx files with exemplary transactions for users run tests
+- How to dinamically add new cryptocoins to cryptos objects?
 
 # Contability of gains and losses
 

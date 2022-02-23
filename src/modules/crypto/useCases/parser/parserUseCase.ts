@@ -36,14 +36,13 @@ import { Response } from 'express' // BAD
 
 interface IRequest {
     userName: string;
-    sheetNames?: string[];
     res: Response; // BAD
 }
 
 class ParserCryptoUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
 
-    execute({ userName, sheetNames, res }: IRequest): void {
+    execute({ userName, res }: IRequest): void {
         const workbook = new ExcelJS.Workbook();
 
         // Object that represents a cell of the datasheet
@@ -100,11 +99,9 @@ class ParserCryptoUseCase {
         const matchCrypto = new RegExp('\\w+');
         const cryptoInBRL = new RegExp('\\w+/BRL'); // In this case is used the FIAT coin BRL as parameter (brazillian coin)
 
-
-        // Probably to be removed or changed to an object
-        const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX", "BUSD"];
+        //const cryptoNamesList = ["BTC", "ETH", "LTC", "EOS", "USDT", "TUSD", "USDC", "PAX", "BUSD"];
         //const cryptosBuyList = [[], [], [], [], [], [], [], [], []]; // Make more tests with CryptoPurchase
-        const cryptosSellList  = [[], [], [], [], [], [], [], [], []];
+        //const cryptosSellList  = [[], [], [], [], [], [], [], [], []];
 
         // Declared here as global variables
         let cryptoPurchasesList: CryptoPurchasesList;
@@ -199,7 +196,7 @@ class ParserCryptoUseCase {
             Separate by operation's local
             */
     
-            const indexCrypto = cryptoNamesList.findIndex((name) => name === asset);
+            //const indexCrypto = cryptoNamesList.findIndex((name) => name === asset);
             
             let leftOver: number; // in cryptos
             let debit = quantSold; // in cryptos
@@ -369,7 +366,6 @@ class ParserCryptoUseCase {
 
         workbook.xlsx.readFile(pathName).then(() => {
             console.log("Parsing started");
-            console.log("Sheets in archive:", sheetNames);
             const cryptoSheetList = [];
             
             workbook.worksheets.forEach(worksheet => {
@@ -379,30 +375,15 @@ class ParserCryptoUseCase {
                 cryptoPurchasesList = new CryptoPurchasesList();
                 cryptoSellsList = new CryptoSellsList();
                 parser.reset();
-
-                // If the request contains the names of certain sheets, only those will be parsed
-                if (sheetNames) {
-                    if (sheetNames.includes(worksheet.name)) {
-                        cryptoSheetList.push(parsing(worksheet));
-                    }
-                }
-
-                // Case none names were passed, all sheets will be parsed
-                else {
-                    cryptoSheetList.push(parsing(worksheet));                
-                }
+                cryptoSheetList.push(parsing(worksheet));
             });
 
-            this.cryptoRepository.postSheetOperations({ userName, cryptoSheetList, res});
-            //this.cryptoRepository.postSheetOperations({ user, sheetName, cryptosBuyList, cryptosSellList});
-            //this.cryptoRepository.postSheetOperations({ user, sheetName, cryptoPurchasesList, res } );
-        
+            this.cryptoRepository.postSheetOperations({ userName, cryptoSheetList, res});        
         }).catch(err => {
             console.log("Parsing failed:");
             console.log(err);
             res.status(500).json({ error: err.message});
         });
-
     }
 }
 
