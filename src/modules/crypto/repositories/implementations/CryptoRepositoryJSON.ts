@@ -2,6 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import { IGetSheetNamesDTO, ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO } from '../ICryptoRespository';
 
+interface ICryptoResponse {
+    status: number;
+    message: string;
+}
+
 // parser is a service, should be called by the routes
 // the repository functions should be subtypes
 
@@ -22,30 +27,25 @@ class CryptoRepositoryJSON implements ICryptoRepository {
         });
     }
 
-    postSheetOperations({ userName, cryptoSheetList, res }: IPostSheetOperationsDTO): void{
+    postSheetOperations({ userName, cryptoSheetList, res }: IPostSheetOperationsDTO): ICryptoResponse {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
-
-        fs.readFile(pathName, 'utf8', (err, data) => {
-            if (err) {
-                console.log(`Server here - Error reading: ${userName}'s crypto file`, err);
-                res.status(500).json({error: err.message}); // BAD
+        try {
+            const oldData = JSON.parse(fs.readFileSync(pathName, 'utf8'));
+            oldData.sheets = cryptoSheetList;
+            const newData = JSON.stringify(oldData);
+            fs.writeFileSync(pathName, newData);
+            return {
+                status: 201,
+                message: `${userName}.json overwritten with success`
             }
-            else {
-                const oldData = JSON.parse(data);
-                oldData.sheets = cryptoSheetList;
-                const newData = JSON.stringify(oldData);
-                fs.writeFile(pathName, newData, err => {
-                    if (err) {
-                        console.log(`Server here - Error writting ${userName}'s crypto file: `, err);
-                        res.status(500).json({error: err.message}); // BAD
-                    }
-                    else {
-                        console.log(`${userName}.json written successfully`);
-                        res.status(201).send(); // BAD
-                    }
-                });
+        } catch (error) {
+            console.log("Error in postSheetOperations from CryptoRepositoryJSON:");
+            console.log(error);
+            return {
+                status: 500,
+                message: error.message
             }
-        })
+        }
     }
 }
 

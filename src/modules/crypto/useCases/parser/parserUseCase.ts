@@ -1,31 +1,16 @@
 /*
 Sheet's columns escription:
-A - Date
-B - Pair Asset/Coin evaluated
-C - Type of operation
-D - Operation medium price (formula or direct value)
-E - Total bought (formula or direct value -> fix to this)
-F - Total sold OR Tax (formula or direct value -> fix to this)
-G - Value paid (formula or direct value)
-H - Value received
-I - New asset's medium price
-J - Profit
-K - Operation's local
-
-Sells Report generated:
-- JSON file per criptocurrency:
-{
-    nº selling: {
-        aquisitionDate: "aDate",
-        aquisitionValue: aValue,
-        quantSold: quantValue,
-        sellingDate: "sDate",
-        sellingValue: sValue,
-        comission: cValue,
-        indexesOfBuyings: indexes,
-        leftOverQuant: loQuant,
-    }
-}
+    A - Date
+    B - Pair Asset/Coin evaluated
+    C - Type of operation
+    D - Operation medium price (formula or direct value)
+    E - Total bought (formula or direct value -> fix to this)
+    F - Total sold OR Tax (formula or direct value -> fix to this)
+    G - Value paid (formula or direct value)
+    H - Value received
+    I - New asset's medium price
+    J - Profit
+    K - Operation's local
 */
 
 import path from 'path';
@@ -39,11 +24,16 @@ interface IRequest {
     res: Response; // BAD
 }
 
+interface ICryptoResponse {
+    status: number;
+    message: string;
+}
+
+
 class ParserCryptoUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
 
-    execute({ userName, res }: IRequest): void {
-        const workbook = new ExcelJS.Workbook();
+    async execute({ userName, res }: IRequest): Promise<ICryptoResponse> {
 
         // Object that represents a cell of the datasheet
         function Navigator(column: string, line: number): void {
@@ -57,7 +47,7 @@ class ParserCryptoUseCase {
                 this.line = 2;
             }
         }
-    
+        
         const parser = new Navigator('B', 2);
         const matchCrypto = new RegExp('\\w+');
         const cryptoInBRL = new RegExp('\\w+/BRL'); // In this case is used the FIAT coin BRL as parameter (brazillian coin)
@@ -205,7 +195,7 @@ class ParserCryptoUseCase {
             return newSell;
         }
     
-        function parsing(worksheet: any): CryptoSheet {
+        function parsing(worksheet: ExcelJS.Worksheet): CryptoSheet {
             const cell = worksheet.getCell(parser.pos()).value;
             // console.log(parser.pos()); // Used to find lines in the table with problemn
 
@@ -251,27 +241,22 @@ class ParserCryptoUseCase {
 
         // Parsing xlsx file:
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.xlsx`);
-
-        workbook.xlsx.readFile(pathName).then(() => {
-            console.log("Parsing started");
-            const cryptoSheetList = [];
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(pathName);
+        const cryptoSheetList = [];    
+        
+        workbook.worksheets.forEach(worksheet => {
+            // "Resets" the variables below to start a new sheet parsing process
+            // Better make a new instance or create a reset method likewise parser object?
+            cryptoPurchasesList = new CryptoPurchasesList();
+            cryptoSellsList = new CryptoSellsList();
+            parser.reset();
             
-            workbook.worksheets.forEach(worksheet => {
-                // "Resets" the variables below to start a new sheet parsing process
-                // Better make a new instance or create a reset method likewise parser object?
-                cryptoPurchasesList = new CryptoPurchasesList();
-                cryptoSellsList = new CryptoSellsList();
-                parser.reset();
-
-                cryptoSheetList.push(parsing(worksheet));
-            });
-
-            this.cryptoRepository.postSheetOperations({ userName, cryptoSheetList, res});        
-        }).catch(err => {
-            console.log("Parsing failed at:", parser.pos());
-            console.log(err);
-            res.status(500).json({ error: err.message});
+            console.log(`Parsing of ${worksheet.name} started`);
+            cryptoSheetList.push(parsing(worksheet));  
         });
+        
+        return this.cryptoRepository.postSheetOperations({ userName, cryptoSheetList, res});
     }
 }
 

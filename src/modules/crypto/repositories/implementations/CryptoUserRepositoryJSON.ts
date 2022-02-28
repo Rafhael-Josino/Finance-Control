@@ -75,7 +75,7 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
                 const userData = JSON.parse(data);
                 const sheetNames = userData.sheets.map((sheet: any) => sheet.sheetName);
 
-                console.log(`Sending ${userName}.json's sheet names`);
+                console.log(`Server here - Sending ${userName}.json's sheet names`);
                 res.send(JSON.stringify(sheetNames));
             }
         });

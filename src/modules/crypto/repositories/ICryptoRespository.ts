@@ -17,9 +17,14 @@ interface IPostSheetOperationsDTO {
     res: Response; // BAD
 }
 
+interface ICryptoResponse {
+    status: number;
+    message: string;
+}
+
 interface ICryptoRepository {
     getSheetOperations({ userName, sheetName }: IGetSheetOperationsDTO): any;
-    postSheetOperations({ userName, cryptoSheetList, res }: IPostSheetOperationsDTO): void;
+    postSheetOperations({ userName, cryptoSheetList, res }: IPostSheetOperationsDTO): ICryptoResponse;
 }
 
 export { IGetSheetNamesDTO, ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO };

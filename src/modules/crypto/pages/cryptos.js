@@ -239,6 +239,9 @@ saveSheet.addEventListener('click', () => {
 			alert(`${user}.json written successfully`);
 			initialization();
 		}
+		else {
+			console.log("Error writting file - response: ", resp);
+		}
 	}).catch(error => {
 		console.log("Error in callback - save sheet:", error);
 		alert(`sheet${loadSheet.value}.json writting failed`);
