@@ -17,3 +17,5 @@ cryptoLogs
 cryptoLogs/
 logs/
 dist/
+src/modules/asset/
+src/modules/stocks/

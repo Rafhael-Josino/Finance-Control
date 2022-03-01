@@ -37,12 +37,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@types/cors", "npm:2.8.12"],
             ["@types/express", "npm:4.17.13"],
+            ["@types/swagger-ui-express", "npm:4.1.3"],
             ["cors", "npm:2.8.5"],
             ["exceljs", "npm:4.3.0"],
             ["express", "npm:4.17.2"],
             ["fs", "npm:0.0.1-security"],
             ["nodemon", "npm:2.0.15"],
             ["path", "npm:0.12.7"],
+            ["swagger-ui-express", "virtual:b8ab41e2bae906cbcb50a63fffce8568ff7f50135b0cb8437db60ef329470503774e34c2b9618cf80ae98c8de09b8ec2674e4290bdd45f03b4e3529cc8cf1177#npm:4.3.0"],
             ["ts-node-dev", "virtual:b8ab41e2bae906cbcb50a63fffce8568ff7f50135b0cb8437db60ef329470503774e34c2b9618cf80ae98c8de09b8ec2674e4290bdd45f03b4e3529cc8cf1177#npm:1.1.8"],
             ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=493e53"],
             ["uuid", "npm:8.3.2"]
@@ -287,6 +289,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@types/swagger-ui-express", [
+        ["npm:4.1.3", {
+          "packageLocation": "./.yarn/cache/@types-swagger-ui-express-npm-4.1.3-0c91a9cfb5-1c990fa8c1.zip/node_modules/@types/swagger-ui-express/",
+          "packageDependencies": [
+            ["@types/swagger-ui-express", "npm:4.1.3"],
+            ["@types/express", "npm:4.17.13"],
+            ["@types/serve-static", "npm:1.13.10"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["Finance Control", [
         ["workspace:.", {
           "packageLocation": "./",
@@ -294,12 +307,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["Finance Control", "workspace:."],
             ["@types/cors", "npm:2.8.12"],
             ["@types/express", "npm:4.17.13"],
+            ["@types/swagger-ui-express", "npm:4.1.3"],
             ["cors", "npm:2.8.5"],
             ["exceljs", "npm:4.3.0"],
             ["express", "npm:4.17.2"],
             ["fs", "npm:0.0.1-security"],
             ["nodemon", "npm:2.0.15"],
             ["path", "npm:0.12.7"],
+            ["swagger-ui-express", "virtual:b8ab41e2bae906cbcb50a63fffce8568ff7f50135b0cb8437db60ef329470503774e34c2b9618cf80ae98c8de09b8ec2674e4290bdd45f03b4e3529cc8cf1177#npm:4.3.0"],
             ["ts-node-dev", "virtual:b8ab41e2bae906cbcb50a63fffce8568ff7f50135b0cb8437db60ef329470503774e34c2b9618cf80ae98c8de09b8ec2674e4290bdd45f03b4e3529cc8cf1177#npm:1.1.8"],
             ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=493e53"],
             ["uuid", "npm:8.3.2"]
@@ -3170,6 +3185,38 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/supports-preserve-symlinks-flag-npm-1.0.0-f17c4d0028-53b1e247e6.zip/node_modules/supports-preserve-symlinks-flag/",
           "packageDependencies": [
             ["supports-preserve-symlinks-flag", "npm:1.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["swagger-ui-dist", [
+        ["npm:4.5.2", {
+          "packageLocation": "./.yarn/cache/swagger-ui-dist-npm-4.5.2-43fde122db-327da3c52e.zip/node_modules/swagger-ui-dist/",
+          "packageDependencies": [
+            ["swagger-ui-dist", "npm:4.5.2"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["swagger-ui-express", [
+        ["npm:4.3.0", {
+          "packageLocation": "./.yarn/cache/swagger-ui-express-npm-4.3.0-bc0c30982a-8d2e1e5389.zip/node_modules/swagger-ui-express/",
+          "packageDependencies": [
+            ["swagger-ui-express", "npm:4.3.0"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:b8ab41e2bae906cbcb50a63fffce8568ff7f50135b0cb8437db60ef329470503774e34c2b9618cf80ae98c8de09b8ec2674e4290bdd45f03b4e3529cc8cf1177#npm:4.3.0", {
+          "packageLocation": "./.yarn/__virtual__/swagger-ui-express-virtual-a4062617a7/0/cache/swagger-ui-express-npm-4.3.0-bc0c30982a-8d2e1e5389.zip/node_modules/swagger-ui-express/",
+          "packageDependencies": [
+            ["swagger-ui-express", "virtual:b8ab41e2bae906cbcb50a63fffce8568ff7f50135b0cb8437db60ef329470503774e34c2b9618cf80ae98c8de09b8ec2674e4290bdd45f03b4e3529cc8cf1177#npm:4.3.0"],
+            ["@types/express", "npm:4.17.13"],
+            ["express", "npm:4.17.2"],
+            ["swagger-ui-dist", "npm:4.5.2"]
+          ],
+          "packagePeers": [
+            "@types/express",
+            "express"
           ],
           "linkType": "HARD",
         }]
