@@ -6,9 +6,9 @@ class ParserCryptoController {
 
     async handle(req: Request, res: Response): Promise<Response> /* BAD - it should return a Response */ {
         //const { user } = req.headers; // headers parameters are considerated as possibles arrays????
-        const { userName } = req.params; // Must adjust in crypto.ts
+        const { userName } = req.params; // Fix to get parameter from header
 
-        const response = await this.parserCryptoUseCase.execute({userName, res});
+        const response = await this.parserCryptoUseCase.execute(userName);
         
         if (response.status === 201) {
             console.log("Controller received 201 - sending throught response");

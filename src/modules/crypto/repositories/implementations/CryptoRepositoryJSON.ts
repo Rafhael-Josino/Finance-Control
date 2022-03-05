@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { IGetSheetNamesDTO, ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO } from '../ICryptoRespository';
+import { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO } from '../ICryptoRespository';
 
 interface ICryptoResponse {
     status: number;
@@ -27,7 +27,7 @@ class CryptoRepositoryJSON implements ICryptoRepository {
         });
     }
 
-    postSheetOperations({ userName, cryptoSheetList, res }: IPostSheetOperationsDTO): ICryptoResponse {
+    postSheetOperations({ userName, cryptoSheetList }: IPostSheetOperationsDTO): ICryptoResponse {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
         try {
             const oldData = JSON.parse(fs.readFileSync(pathName, 'utf8'));

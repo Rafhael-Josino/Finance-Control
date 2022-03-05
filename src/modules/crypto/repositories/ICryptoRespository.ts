@@ -1,10 +1,6 @@
-import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellsList, CryptoSheet } from "../models/Cryptos";
-import { Response } from 'express'; // BAD
+import { CryptoSheet } from "../models/Cryptos";
 
-interface IGetSheetNamesDTO {
-    userName: string;
-    res: Response; // BAD
-}
+// Function arguments types
 
 interface IGetSheetOperationsDTO {
     userName: string;
@@ -14,17 +10,20 @@ interface IGetSheetOperationsDTO {
 interface IPostSheetOperationsDTO {
     userName: string;
     cryptoSheetList: CryptoSheet[];
-    res: Response; // BAD
 }
+
+// Function return types
 
 interface ICryptoResponse {
     status: number;
     message: string;
 }
 
+// Repository interface
+
 interface ICryptoRepository {
     getSheetOperations({ userName, sheetName }: IGetSheetOperationsDTO): any;
-    postSheetOperations({ userName, cryptoSheetList, res }: IPostSheetOperationsDTO): ICryptoResponse;
+    postSheetOperations({ userName, cryptoSheetList }: IPostSheetOperationsDTO): ICryptoResponse;
 }
 
-export { IGetSheetNamesDTO, ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO };
+export { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO, ICryptoResponse };

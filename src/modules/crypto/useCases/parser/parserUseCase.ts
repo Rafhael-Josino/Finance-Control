@@ -15,25 +15,13 @@ Sheet's columns escription:
 
 import path from 'path';
 import ExcelJS from 'exceljs';
-import { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellsList, CryptoSheet } from "../../models/Cryptos"; // BAD?
-import { ICryptoRepository } from '../../repositories/ICryptoRespository';
-import { Response } from 'express' // BAD
-
-interface IRequest {
-    userName: string;
-    res: Response; // BAD
-}
-
-interface ICryptoResponse {
-    status: number;
-    message: string;
-}
-
+import { CryptoPurchase, CryptoSell, CryptoPurchasesList, CryptoSellsList, CryptoSheet } from "../../models/Cryptos"; // BAD?
+import { ICryptoRepository, ICryptoResponse } from '../../repositories/ICryptoRespository';
 
 class ParserCryptoUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
 
-    async execute({ userName, res }: IRequest): Promise<ICryptoResponse> {
+    async execute( userName: string ): Promise<ICryptoResponse> {
 
         // Object that represents a cell of the datasheet
         function Navigator(column: string, line: number): void {
@@ -256,7 +244,7 @@ class ParserCryptoUseCase {
             cryptoSheetList.push(parsing(worksheet));  
         });
         
-        return this.cryptoRepository.postSheetOperations({ userName, cryptoSheetList, res});
+        return this.cryptoRepository.postSheetOperations({ userName, cryptoSheetList });
     }
 }
 
