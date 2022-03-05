@@ -2,17 +2,23 @@ import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import fs from 'fs';
+import swaggerUi from 'swagger-ui-express';
+
 import { cryptoRoutes } from './modules/crypto/routers/crypto.routes';
 import { indexRoutes } from './routers/index.routes';
 
-const app = express();
+//import * as swaggerFile2 from './swagger.json'; // why is not working?
 
+const swaggerPath = path.join(__dirname, 'swagger.json');
+const swaggerFile = JSON.parse(fs.readFileSync(swaggerPath, 'utf8'));
+const app = express();
 
 /* --------------------- Middleware -------------------- */
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 /* --------------------- Index -------------------- */
 

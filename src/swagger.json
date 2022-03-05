@@ -1,49 +1,51 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Praticando Swagger",
+        "title": "Praticando Swagger UI",
         "description": "Praticando documentação com swagger dentro do estudo de node js",
-        "version": "1.0.0",
-        "paths": {
-            "/sheets/:userName": {
-                "get": {
-                    "tags": ["crypto"],
-                    "summary": "Returns list of sheets parsed from XLSX file",
-                    "description": "Returns list of sheets objects, which were parsed each from XLSX file sheet",
-                    "requestBody": {
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/sheets": {
+            "get": {
+                "tags": ["Crypto"],
+                "summary": "Returns list of sheets parsed from XLSX file",
+                "description": "Returns list of sheets objects, which were parsed each from XLSX file sheet",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns array with list of the sheets that were parsed from the user's .xlsx file",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "email": {
-                                            "type": "string",
-                                            "description": "new user's email address"
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "description": "new user's name"
-                                        }
-                                    },
-                                    "example": {
-                                        "email": "example@example.com",
-                                        "name": "fulano"
+                                    "type": "array",
+                                    "description": "array of sheets's names",
+                                    "elements": {
+                                        "name": "string"
                                     }
                                 }
                             }
                         }
                     },
-                    "responses": {
-                        "201": {
-                            "description": "New user created",
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "type": "object",
-                                        "description": "custom User object instace of the user",
-                                        "properties": {
-                                            
-                                        }
+                    "404": {
+                        "description": "The user does not exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message",
+                                    "elements": {
+                                        "error": "string"
                                     }
                                 }
                             }
