@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { Response } from 'express';
-import { ICryptoUserRepository, ICryptoUserRepositoryDTO, ICryptoUserGetSheetDTO } from '../ICryptoUserRepository';
+import { Response } from 'express'; // BAD
+import { ICryptoUserRepository, ICryptoUserRepositoryDTO, ICryptoUserGetSheetDTO, ICryptoListSheetsResponse } from '../ICryptoUserRepository';
 import { CryptoUser } from '../../models/CryptoUser';
 
 
@@ -63,22 +63,24 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
         });
     }
 
-    listSheets({ userName, res}: ICryptoUserRepositoryDTO): void {
+    listSheets( userName: string ): ICryptoListSheetsResponse {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
 
-        fs.readFile(pathName, 'utf8', (err, data) => {
-            if (err) {
-                console.log("Server here - unable to read file:", `${userName}.json` , err);
-                res.status(500).json({error: "Server here - unable to read file: " + `${userName}.json ` + err.message});
+        try {
+            const userData = JSON.parse(fs.readFileSync(pathName, 'utf8'));
+            const sheetNames = userData.sheets.map((sheet: any) => sheet.sheetName);
+            console.log(`Server here - Sending ${userName}.json's sheet names`);
+            return {
+                status: 200,
+                sheetsList: sheetNames
             }
-            else {
-                const userData = JSON.parse(data);
-                const sheetNames = userData.sheets.map((sheet: any) => sheet.sheetName);
-
-                console.log(`Server here - Sending ${userName}.json's sheet names`);
-                res.send(JSON.stringify(sheetNames));
+        } catch (err) {
+            console.log("Server here - unable to read file:", `${userName}.json` , err);
+            return {
+                status: 500,
+                errorMessage: `Unable to read file ${userName}.json: ` + err.message
             }
-        });
+        }
     }
 
     getSheet({ userName, sheetName, res}: ICryptoUserGetSheetDTO): void {

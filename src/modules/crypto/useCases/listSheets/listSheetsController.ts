@@ -4,12 +4,20 @@ import { ListSheetsUseCase } from './listSheetsUseCase';
 class ListSheetsController {
     constructor(private listSheetsUseCase: ListSheetsUseCase) {}
 
-    handle(req: Request, res: Response): void {
-        //const { user } = req.headers; // headers parameters are considerated as possibles arrays????
+    handle(req: Request, res: Response): Response {
         //cont { user } = req; // with middleware. Only this is not working. User not part of req's type
-        const { userName } = req.params; // Must adjust in crypto.ts
+        const { username } = req.headers;
+        const userName = username as string; // username has type string │ string[]
         
-        this.listSheetsUseCase.execute({ userName, res});
+        const response = this.listSheetsUseCase.execute(userName);
+
+        if (response.status === 200) {
+            const sheetNames = JSON.stringify(response.sheetsList);
+            return res.send(sheetNames);
+        }
+        else if (response.status === 500) {
+            return res.status(500).json({ error: response.errorMessage});
+        }
     }
 }
 
