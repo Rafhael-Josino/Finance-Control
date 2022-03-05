@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
 
+import { CryptoUserVerifications } from '../middlewares/CryptoUserVerifications';
+
 import { parserCryptoController } from '../useCases/parser';
 import { listSheetsController } from '../useCases/listSheets';
 import { createUserController } from '../useCases/createUser';
@@ -11,10 +13,11 @@ import { getSheetController} from '../useCases/getSheet';
 const cryptoRoutes = Router();
 
 // ----------------------- Middlewares -----------------------------------------
+// This declarations will be totally substituted by an imported class containing them
+// Also, the userName variable will be obtained from the request's header
 
-// Transform middleware in a repository function that is just imported and called here
-// I do not know if it is the correct practice
-// but this way, the verification's responsibility passes to be owned by the repository
+const cryptoUserVerifications = new CryptoUserVerifications();
+
 function verifyUserExists(req: Request, res: Response, next: any): any {
 	const { userName } = req.params;
 
@@ -116,7 +119,7 @@ cryptoRoutes.get('/cryptos.js', (req, res) => {
 // --------------------------- Crypto Sheets ------------------------------
 
 // Retrieves a list of all sheets parsed and stored
-cryptoRoutes.get('/sheets/:userName', verifyUserExists, (req, res) => {
+cryptoRoutes.get('/sheets', cryptoUserVerifications.verifyUserExists, (req, res) => {
 	listSheetsController.handle(req, res);
 });
 
