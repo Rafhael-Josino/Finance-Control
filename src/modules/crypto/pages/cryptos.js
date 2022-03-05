@@ -233,7 +233,14 @@ loadSheet.addEventListener('change', (event) => {
 });
 
 saveSheet.addEventListener('click', () => {
-	fetch(`saveSheet/${user}`, { method: 'POST' }).then(resp => {
+	fetch(`saveSheet/${user}`, { 
+		method: 'POST',
+		headers: {
+			"Content-Type": "application/json",
+			username: user
+		}
+	 })
+	 .then(resp => {
 		if (resp.status === 201) {
 			console.log(`${user}.json written successfully`)
 			alert(`${user}.json written successfully`);
@@ -251,7 +258,13 @@ saveSheet.addEventListener('click', () => {
 /* ################# Initialization ################# */
 
 function initialization() {
-	fetch(`/sheets/${user}`).then(respStream => respStream.json()).then(resp => {
+	fetch(`/sheets`, {
+		headers: {
+			"Content-Type": "application/json",
+			username: user
+		}
+	})
+	.then(respStream => respStream.json()).then(resp => {
 		loadSheet.innerHTML = `
 			<option value="" class="option optionTitle">Load Sheet</option>
 		`;
