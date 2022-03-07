@@ -124,25 +124,26 @@ cryptoRoutes.get('/sheets', cryptoUserVerifications.verifyUserExists, (req, res)
 });
 
 // Parse sheets in the xlsx file uploaded and stores the data obtained
-cryptoRoutes.post('/saveSheet/:userName', verifyUserExists, verifyXLSXexists, (req, res) => {
+cryptoRoutes.post('/saveSheet/:userName', cryptoUserVerifications.verifyUserExists, cryptoUserVerifications.verifyXLSXexists, (req, res) => {
 	parserCryptoController.handle(req, res);
 });
+
+// Retrieves a specified sheet data from a user
+cryptoRoutes.get('/sheet/:sheetName', cryptoUserVerifications.verifyUserExists, (req, res) => {
+	getSheetController.handle(req, res);
+});
+
 
 // --------------------------- Crypto Users ------------------------------
 
 // Create a new crypto user with empty data stored
-cryptoRoutes.post('/user/:userName', verifyUserAlreadyExists, (req, res) => {
+cryptoRoutes.post('/user', cryptoUserVerifications.verifyUserAlreadyExists, (req, res) => {
 	createUserController.handle(req, res);
 });
 
 // Retrieves the crypto user data
 cryptoRoutes.get('/user/:userName', verifyUserExists, (req, res) => {
 	getUserController.handle(req, res);
-});
-
-// Retrieves a specified sheet data from a user
-cryptoRoutes.get('/sheet/:userName/:sheetName', verifyUserExists, (req, res) => {
-	getSheetController.handle(req, res);	
 });
 
 export { cryptoRoutes };

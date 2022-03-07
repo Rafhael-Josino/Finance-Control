@@ -1,15 +1,10 @@
 import { Response } from 'express'; // BAD
+import { CryptoUser } from '../models/CryptoUser';
 
 // Function arguments types
 
 interface ICryptoUserRepositoryDTO {
     userName: string;
-    res: Response; // BAD
-}
-
-interface ICryptoUserGetSheetDTO {
-    userName: string;
-    sheetName: string;
     res: Response; // BAD
 }
 
@@ -26,20 +21,32 @@ interface ICryptoListSheetsResponse {
     errorMessage?: string;
 }
 
+interface ICryptoListUsersResponse {
+    status: number;
+    usersList?: string[];
+    errorMessage?: string;
+}
+
+interface ICryptoUserResponse {
+    status: number;
+    cryptoUser?: CryptoUser;
+    errorMessage?: string;
+}
+
 // Repository interface
 
 interface ICryptoUserRepository {
-    listUsers(res: Response): void;
+    listUsers(): ICryptoListUsersResponse;
     getUser({ userName, res}: ICryptoUserRepositoryDTO): void;
-    createUser({ userName, res}: ICryptoUserRepositoryDTO): void;
+    createUser( userName: string ): ICryptoUserResponse;
     listSheets( userName: string ): ICryptoListSheetsResponse;
-    getSheet({ userName, sheetName, res }: ICryptoUserGetSheetDTO): void;
 }
 
 export { 
     ICryptoUserRepository,
     ICryptoUserRepositoryDTO,
-    ICryptoUserGetSheetDTO,
     ICryptoResponse,
-    ICryptoListSheetsResponse
+    ICryptoListUsersResponse,
+    ICryptoListSheetsResponse,
+    ICryptoUserResponse
 };

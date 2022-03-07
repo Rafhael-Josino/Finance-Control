@@ -229,7 +229,14 @@ function cryptoLogConstruct(purchases, sells) {
 }
 
 loadSheet.addEventListener('change', (event) => {
-	fetch(`sheet/${user}/${event.target.value}`).then(resp => resp.json()).then(operationsData => currentSitTabConstruction(operationsData));
+	fetch(`sheet/${event.target.value}`, {
+		headers: {
+			"Content-Type": "application/json",
+			username: user
+		}
+	})
+	.then(resp => resp.json())
+	.then(operationsData => currentSitTabConstruction(operationsData));
 });
 
 saveSheet.addEventListener('click', () => {
@@ -264,7 +271,8 @@ function initialization() {
 			username: user
 		}
 	})
-	.then(respStream => respStream.json()).then(resp => {
+	.then(respStream => respStream.json())
+	.then(resp => {
 		loadSheet.innerHTML = `
 			<option value="" class="option optionTitle">Load Sheet</option>
 		`;

@@ -1,33 +1,36 @@
 import fs from 'fs';
 import path from 'path';
-import { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO } from '../ICryptoRespository';
-
-interface ICryptoResponse {
-    status: number;
-    message: string;
-}
+import { CryptoSheet } from '../../models/Cryptos';
+import { 
+    ICryptoRepository,
+    IGetSheetOperationsDTO,
+    IPostSheetOperationsDTO,
+    ICryptoResponse
+} from '../ICryptoRepository';
 
 // parser is a service, should be called by the routes
 // the repository functions should be subtypes
 
 class CryptoRepositoryJSON implements ICryptoRepository {
-    getSheetOperations({ userName, sheetName }: IGetSheetOperationsDTO): any {
-        const pathName = path.join(__dirname, '..', '..', 'logs', userName, 'cryptos', `${sheetName}.json`);
+    getSheet({ userName, sheetName }: IGetSheetOperationsDTO): ICryptoResponse {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
 
-	    fs.readFile(pathName, 'utf8', (err, data) => {
-            if (err) {
-                console.log("Error reading cryptos file:", err);
-                console.log("Attempting to create file from cryptos.xlsx:");
-                return err;
+        try {
+            const cryptoUser = JSON.parse(fs.readFileSync(pathName, 'utf8'));
+            const sheet = cryptoUser.sheets.find((sheet: CryptoSheet) => sheet.sheetName === sheetName);
+            return {
+                status: 200,
+                sheet
             }
-            else {
-                console.log("Sending:", pathName);
-                return data;
+        } catch (err) {
+            return {
+                status: 500,
+                errorMessage: err.message
             }
-        });
+        }
     }
 
-    postSheetOperations({ userName, cryptoSheetList }: IPostSheetOperationsDTO): ICryptoResponse {
+    postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): ICryptoResponse {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
         try {
             const oldData = JSON.parse(fs.readFileSync(pathName, 'utf8'));
@@ -36,14 +39,14 @@ class CryptoRepositoryJSON implements ICryptoRepository {
             fs.writeFileSync(pathName, newData);
             return {
                 status: 201,
-                message: `${userName}.json overwritten with success`
+                errorMessage: `${userName}.json overwritten with success`
             }
         } catch (error) {
             console.log("Error in postSheetOperations from CryptoRepositoryJSON:");
             console.log(error);
             return {
                 status: 500,
-                message: error.message
+                errorMessage: error.message
             }
         }
     }

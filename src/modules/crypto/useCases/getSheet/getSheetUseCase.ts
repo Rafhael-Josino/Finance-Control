@@ -1,17 +1,15 @@
-import { ICryptoUserRepository } from '../../repositories/ICryptoUserRepository';
-import { Response } from 'express' // BAD
+import { ICryptoRepository, ICryptoResponse } from '../../repositories/ICryptoRepository';
 
 interface IRequest {
     userName: string;
     sheetName: string;
-    res: Response; // BAD
 }
 
 class GetSheetUseCase {
-    constructor(private cryptoUserRepository: ICryptoUserRepository) {}
+    constructor(private cryptoRepository: ICryptoRepository) {}
 
-    execute({ userName, sheetName, res}: IRequest) {
-        this.cryptoUserRepository.getSheet({ userName, sheetName, res });
+    execute({ userName, sheetName }: IRequest): ICryptoResponse {
+        return this.cryptoRepository.getSheet({ userName, sheetName });
     }
 }
 

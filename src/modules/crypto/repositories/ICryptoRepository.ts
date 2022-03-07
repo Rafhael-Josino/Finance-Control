@@ -16,14 +16,15 @@ interface IPostSheetOperationsDTO {
 
 interface ICryptoResponse {
     status: number;
-    message: string;
+    sheet?: CryptoSheet;
+    errorMessage?: string;
 }
 
 // Repository interface
 
 interface ICryptoRepository {
-    getSheetOperations({ userName, sheetName }: IGetSheetOperationsDTO): any;
-    postSheetOperations({ userName, cryptoSheetList }: IPostSheetOperationsDTO): ICryptoResponse;
+    getSheet({ userName, sheetName }: IGetSheetOperationsDTO): any;
+    postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): ICryptoResponse;
 }
 
 export { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO, ICryptoResponse };

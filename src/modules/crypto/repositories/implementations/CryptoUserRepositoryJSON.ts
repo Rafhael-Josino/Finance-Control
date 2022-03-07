@@ -1,30 +1,31 @@
 import fs from 'fs';
 import path from 'path';
-import { Response } from 'express'; // BAD
-import { ICryptoUserRepository, ICryptoUserRepositoryDTO, ICryptoUserGetSheetDTO, ICryptoListSheetsResponse } from '../ICryptoUserRepository';
 import { CryptoUser } from '../../models/CryptoUser';
+import {
+    ICryptoUserRepository,
+    ICryptoUserRepositoryDTO,
+    ICryptoListSheetsResponse,
+    ICryptoListUsersResponse,
+    ICryptoUserResponse
+} from '../ICryptoUserRepository';
 
 
 class CryptoUserRepositoryJSON implements ICryptoUserRepository {
-    listUsers(res: Response): void {
+    listUsers(): ICryptoListUsersResponse {
         const pathName = path.join(__dirname, '..', '..', 'logs', 'cryptos');
 
-        fs.readdir(pathName, (err, files) => {
-            if (err) {
-                console.log("Server here - unable to read directory:", err);
-                res.status(500).json({error: "Server here - unable to read directory: " + err.message});
+        try {
+            const dirFiles = fs.readdirSync(pathName, 'utf8');
+            return {
+                status: 200,
+                usersList: dirFiles
             }
-            else {
-                const jsonFile = new RegExp('\\w+.json');
-
-                files.filter(file => file.match(jsonFile));
-                console.log(files);
-                
-                const dataFiles = JSON.stringify(files);
-                res.send(dataFiles);
+        } catch (err) {
+            return {
+                status: 500,
+                errorMessage: `Error reading directory: ` + err.message
             }
-        })
-
+        }
     }
 
     getUser({ userName, res }: ICryptoUserRepositoryDTO): void {
@@ -42,25 +43,29 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
         });
     }
 
-    createUser({ userName, res}: ICryptoUserRepositoryDTO): void {
-        const newCryptoUServer = new CryptoUser();
-        Object.assign(newCryptoUServer, {
+    createUser( userName: string ): ICryptoUserResponse {
+        const cryptoUser = new CryptoUser();
+        Object.assign(cryptoUser, {
             name: userName,
             created_at: new Date(),
         });
 
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
         
-        fs.writeFile(pathName, JSON.stringify(newCryptoUServer), err => {
-            if (err) {
-                console.log(`Server here - Error writting ${userName}.json file:`, err);
-                res.status(500).json({error: err.message}); // BAD
+        try {
+            fs.writeFileSync(pathName, JSON.stringify(cryptoUser));
+            console.log(`${userName}.json written successfully`);
+            return {
+                status: 201,
+                cryptoUser
             }
-            else {
-                console.log(`${userName}.json written successfully`);
-                res.status(201).send(); // BAD
+        } catch (err) {
+            console.log(`Server here - Error writting ${userName}.json file:`, err);
+            return {
+                status: 500,
+                errorMessage: `Error writting ${userName}.json file: ` + err.message
             }
-        });
+        }
     }
 
     listSheets( userName: string ): ICryptoListSheetsResponse {
@@ -81,30 +86,6 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
                 errorMessage: `Unable to read file ${userName}.json: ` + err.message
             }
         }
-    }
-
-    getSheet({ userName, sheetName, res}: ICryptoUserGetSheetDTO): void {
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
-
-        fs.readFile(pathName, 'utf8', (err, data) => {
-            if (err) {
-                console.log("Server here - unable to read file:", `${userName}.json` , err);
-                res.status(500).json({error: "Server here - unable to read file: " + `${userName}.json ` + err.message});
-            }
-            else {
-                const userData = JSON.parse(data);
-                const sheet = userData.sheets.find((sheet: any) => sheet.sheetName === sheetName);
-
-                if(!sheet) {
-                    console.log(`Server here - ${sheetName} not found in ${userName}.json`);
-                    res.status(404).send();
-                }
-                else {
-                    console.log(`Sending sheet ${sheet.sheetName} from ${userName}.json's`);
-                    res.send(JSON.stringify(sheet));
-                }
-            }
-        });
     }
 }
 

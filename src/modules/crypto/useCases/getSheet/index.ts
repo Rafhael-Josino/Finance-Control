@@ -1,9 +1,9 @@
-import { CryptoUserRepositoryJSON } from '../../repositories/implementations/CryptoUserRepositoryJSON';
+import { CryptoRepositoryJSON } from '../../repositories/implementations/CryptoRepositoryJSON';
 import { GetSheetUseCase } from './getSheetUseCase';
 import { GetSheetController} from './getSheetController';
 
-const cryptoUserRepository = new CryptoUserRepositoryJSON();
-const getSheetUseCase = new GetSheetUseCase(cryptoUserRepository);
+const cryptoRepository = new CryptoRepositoryJSON();
+const getSheetUseCase = new GetSheetUseCase(cryptoRepository);
 const getSheetController = new GetSheetController(getSheetUseCase);
 
 export { getSheetController };
