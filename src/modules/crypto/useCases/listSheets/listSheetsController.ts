@@ -18,6 +18,10 @@ class ListSheetsController {
         else if (response.status === 500) {
             return res.status(500).json({ error: response.errorMessage});
         }
+        else {
+            console.log("No valid response received from parsing use case");
+            return res.status(500).json({ error: "Unknown error" });
+        }
     }
 }
 

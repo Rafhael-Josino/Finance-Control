@@ -1,16 +1,10 @@
-import { ICryptoUserRepository } from '../../repositories/ICryptoUserRepository';
-import { Response } from 'express' // BAD
-
-interface IRequest {
-    userName: string;
-    res: Response; // BAD
-}
+import { ICryptoUserRepository, ICryptoUserResponse } from '../../repositories/ICryptoUserRepository';
 
 class CreateUserUseCase {
     constructor(private cryptoUserRepository: ICryptoUserRepository) {}
 
-    execute({ userName, res}: IRequest) {
-        this.cryptoUserRepository.createUser({ userName, res });
+    execute( userName: string ): ICryptoUserResponse {
+        return this.cryptoUserRepository.createUser(userName);
     }
 }
 

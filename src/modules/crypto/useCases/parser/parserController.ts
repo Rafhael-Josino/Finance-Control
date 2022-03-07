@@ -5,9 +5,9 @@ class ParserCryptoController {
     constructor(private parserCryptoUseCase: ParserCryptoUseCase) {}
 
     async handle(req: Request, res: Response): Promise<Response> /* BAD - it should return a Response */ {
-        //const { user } = req.headers; // headers parameters are considerated as possibles arrays????
-        const { userName } = req.params; // Fix to get parameter from header
-
+        const { username } = req.headers;
+        const userName = username as string; // username has type string │ string[]
+        
         const response = await this.parserCryptoUseCase.execute(userName);
         
         if (response.status === 201) {

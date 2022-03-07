@@ -4,12 +4,22 @@ import { CreateUserUseCase } from './createUserUseCase';
 class CreateUserController {
     constructor(private createUserUseCase: CreateUserUseCase) {}
 
-    handle(req: Request, res: Response): void {
-        //const { user } = req.headers; // headers parameters are considerated as possibles arrays????
-        //cont { user } = req; // with middleware. Only this is not working. User not part of req's type
-        const { userName } = req.body; // Must adjust in crypto.ts
+    handle(req: Request, res: Response): Response {
+        const { username } = req.headers;
+        const userName = username as string; // username has type string │ string[]
         
-        this.createUserUseCase.execute({ userName, res});
+        const response = this.createUserUseCase.execute(userName);
+
+        if (response.status === 201) {
+            return res.status(201).json({ newUser: response.cryptoUser });
+        }
+        else if (response.status === 500) {
+            return res.status(500).json({ error: response.errorMessage });
+        }
+        else {
+            console.log("No valid response received from parsing use case");
+            return res.status(500).json({ error: "Unknown error" });
+        }
     }
 }
 

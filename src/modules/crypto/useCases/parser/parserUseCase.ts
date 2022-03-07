@@ -16,7 +16,7 @@ Sheet's columns escription:
 import path from 'path';
 import ExcelJS from 'exceljs';
 import { CryptoPurchase, CryptoSell, CryptoPurchasesList, CryptoSellsList, CryptoSheet } from "../../models/Cryptos"; // BAD?
-import { ICryptoRepository, ICryptoResponse } from '../../repositories/ICryptoRespository';
+import { ICryptoRepository, ICryptoResponse } from '../../repositories/ICryptoRepository';
 
 class ParserCryptoUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
@@ -244,7 +244,7 @@ class ParserCryptoUseCase {
             cryptoSheetList.push(parsing(worksheet));  
         });
         
-        return this.cryptoRepository.postSheetOperations({ userName, cryptoSheetList });
+        return this.cryptoRepository.postSheet({ userName, cryptoSheetList });
     }
 }
 
