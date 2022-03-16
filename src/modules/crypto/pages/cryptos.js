@@ -3,6 +3,8 @@ const menu = document.getElementById("menu");
 const saveSheet = document.getElementById("saveSheet");
 const loadSheet = document.getElementById("loadSheet");
 
+const sellsTimeSpan = document.getElementById("sellsTimeSpan");
+
 const currentSitTab = document.getElementById("currentSituationTab");
 const currentSitDiv = document.getElementById("currentSituationDiv");
 
@@ -88,6 +90,182 @@ function currentSitTabConstruction(jsonFile) {
 	}
 }
 
+function showAllPurchases(purchases) {
+	let index = 0;
+
+	purchases.forEach(purchase => {
+		tablesP.appendChild(document.createElement("table"));
+		tablesP.lastChild.innerHTML = `
+		<tr>
+			<td>Asset:</td>
+			<td>${purchase.asset}</td>
+		</tr>
+
+		<tr class="gray-background">
+			<td>Date:</td>
+			<td>${formatDate(purchase.date)}</td>
+		</tr>
+
+		<tr>
+			<td>Local:</td>
+			<td>${purchase.local}</td>
+		</tr>
+
+		<tr class="gray-background">
+			<td>Total Bought:</td>
+			<td>${purchase.totalBought}</td>
+		</tr>
+
+		<tr>
+			<td>Purchase Medium Price:</td>
+			<td>${formatCurrency(purchase.purchaseMediumPrice)}</td>
+		</tr>
+
+		<tr class="gray-background">
+			<td>Tax:</td>
+			<td>${purchase.tax}</td>
+		</tr>
+
+		<tr>
+			<td>Remain Quantity:</td>
+			<td>${purchase.remainQuant}</td>
+		</tr>
+
+		<tr class="gray-background">
+			<td>New Medium Price:</td>
+			<td>${formatCurrency(purchase.newMediumPrice)}</td>
+		</tr>
+
+		<tr>
+			<td>Index:</td>
+			<td>${index}</td>
+		</tr>
+		`
+		index++;
+	});
+}
+
+function showAllSells(sells) {
+	let index = 0;
+
+	sells.forEach(sell => {
+		tablesS.appendChild(document.createElement("table"));
+		tablesS.lastChild.innerHTML = `
+		<tr>
+			<td>Index:</td>
+			<td>${index}</td>
+		</tr>
+
+		<tr class="gray-background">
+			<td>Date:</td>
+			<td>${formatDate(sell.sellingDate)}</td>
+		</tr>
+
+		<tr>
+			<td>Local:</td>
+			<td>${sell.local}</td>
+		</tr>
+
+		<tr class="gray-background">
+			<td>Amount Received:</td>
+			<td>${formatCurrency(sell.received)}</td>
+		</tr>
+
+		<tr>
+			<td>Quantity Sold:</td>
+			<td>${sell.quantSold}</td>
+		</tr>
+
+		<tr class="gray-background">
+			<td>Aquisition Amount:</td>
+			<td>${formatCurrency(sell.aquisitionValue)}</td>
+		</tr>
+
+		<tr>
+			<td>Leftover:</td>
+			<td>${sell.leftOver}</td>
+		</tr>
+		`
+
+		index++;
+		
+		sell.buyIndexes.forEach(thisSellBuy => {
+			tablesS.appendChild(document.createElement("table"));
+			tablesS.lastChild.classList.add("subTable");
+			tablesS.lastChild.innerHTML = `
+			<tr>
+				<td>Purchase index:</td>
+				<td>${thisSellBuy.index}</td>
+			</tr>
+
+			<tr class="gray-background">
+				<td>Date:</td>
+				<td>${formatDate(thisSellBuy.date)}</td>
+			</tr>
+
+			<tr>
+				<td>Quantity sold:</td>
+				<td>${thisSellBuy.quant}</td>
+			</tr>
+
+			<tr class="gray-background">
+				<td>Purchase medium price:</td>
+				<td>${formatCurrency(thisSellBuy.price)}</td>
+			</tr>
+			`
+		});
+	});
+}
+
+function showSellsPerMonth(sells) {
+	let thisMonth;
+	const monthlySells = [];
+	sells.forEach(sell => {
+		// New month
+		const sellMonth = Number(sell.sellingDate[5] + sell.sellingDate[6]);
+		//console.log(sellMonth);
+
+		if (sellMonth !== thisMonth) {
+			thisMonth = sellMonth;
+			monthlySells.push({
+				date: sell.sellingDate,
+				aquisitionValue: sell.aquisitionValue,
+				quantSold: sell.quantSold,
+				receivedValue: sell.received
+			});
+		}
+
+		// Same month -> add values to the last monthlySells's object
+		else {
+			monthlySells[monthlySells.length - 1].aquisitionValue += sell.aquisitionValue;
+			monthlySells[monthlySells.length - 1].quantSold += sell.quantSold;
+			monthlySells[monthlySells.length - 1].receivedValue += sell.received;
+		}
+	});
+
+	monthlySells.forEach(monthlySell => {
+		tablesS.appendChild(document.createElement("table"));
+		tablesS.lastChild.innerHTML = `
+		<tr>
+			<td>1st Sell Date:</td>
+			<td>${formatDate(monthlySell.date)}</td>
+		</tr>
+		<tr class="gray-background">
+			<td>Aquisition cost</td>
+			<td>${formatCurrency(monthlySell.aquisitionValue)}</td>
+		</tr>
+		<tr>
+			<td>Quantity Sold:</td>
+			<td>${monthlySell.quantSold}</td>
+		</tr>
+		<tr class="gray-background">
+			<td>Received value:</td>
+			<td>${formatCurrency(monthlySell.receivedValue)}</td>
+		</tr>
+		`
+	});
+}
+
 function cryptoLogConstruct(purchases, sells) {
 	function cryptoLog() {
 		// JSON objects directly printed
@@ -97,134 +275,15 @@ function cryptoLogConstruct(purchases, sells) {
 		// Cleans all previous content
 		tablesP.innerHTML = "";
 		tablesS.innerHTML = "";
-		let index = 0;
 
-		purchases.forEach(purchase => {
-			tablesP.appendChild(document.createElement("table"));
-			tablesP.lastChild.innerHTML = `
-			<tr>
-				<td>Asset:</td>
-				<td>${purchase.asset}</td>
-			</tr>
-
-			<tr class="gray-background">
-				<td>Date:</td>
-				<td>${formatDate(purchase.date)}</td>
-			</tr>
-
-			<tr>
-				<td>Local:</td>
-				<td>${purchase.local}</td>
-			</tr>
-
-			<tr class="gray-background">
-				<td>Total Bought:</td>
-				<td>${purchase.totalBought}</td>
-			</tr>
-
-			<tr>
-				<td>Purchase Medium Price:</td>
-				<td>${formatCurrency(purchase.purchaseMediumPrice)}</td>
-			</tr>
-
-			<tr class="gray-background">
-				<td>Tax:</td>
-				<td>${purchase.tax}</td>
-			</tr>
-
-			<tr>
-				<td>Remain Quantity:</td>
-				<td>${purchase.remainQuant}</td>
-			</tr>
-
-			<tr class="gray-background">
-				<td>New Medium Price:</td>
-				<td>${formatCurrency(purchase.newMediumPrice)}</td>
-			</tr>
-
-			<tr>
-				<td>Index:</td>
-				<td>${index}</td>
-			</tr>
-			`
-			index++;
-		});
-
-		index = 0;
-
-		sells.forEach(sell => {
-			tablesS.appendChild(document.createElement("table"));
-			tablesS.lastChild.innerHTML = `
-			<tr>
-				<td>Asset:</td>
-				<td>${sell.asset}</td>
-			</tr>
-
-			<tr class="gray-background">
-				<td>Date:</td>
-				<td>${formatDate(sell.sellingDate)}</td>
-			</tr>
-
-			<tr>
-				<td>Local:</td>
-				<td>${sell.local}</td>
-			</tr>
-
-			<tr class="gray-background">
-				<td>Amount Received:</td>
-				<td>${formatCurrency(sell.received)}</td>
-			</tr>
-
-			<tr>
-				<td>Quantity Sold:</td>
-				<td>${sell.quantSold}</td>
-			</tr>
-
-			<tr class="gray-background">
-				<td>Aquisition Amount:</td>
-				<td>${formatCurrency(sell.aquisitionValue)}</td>
-			</tr>
-
-			<tr>
-				<td>Leftover:</td>
-				<td>${sell.leftOver}</td>
-			</tr>
-
-			<tr class="gray-background">
-				<td>Index:</td>
-				<td>${index}</td>
-			</tr>
-			`
-
-			index++;
-			
-			sell.buyIndexes.forEach(thisSellBuy => {
-				tablesS.appendChild(document.createElement("table"));
-				tablesS.lastChild.classList.add("subTable");
-				tablesS.lastChild.innerHTML = `
-				<tr>
-					<td>Purchase index:</td>
-					<td>${thisSellBuy.index}</td>
-				</tr>
-
-				<tr class="gray-background">
-					<td>Date:</td>
-					<td>${formatDate(thisSellBuy.date)}</td>
-				</tr>
-
-				<tr>
-					<td>Quantity sold:</td>
-					<td>${thisSellBuy.quant}</td>
-				</tr>
-
-				<tr class="gray-background">
-					<td>Purchase medium price:</td>
-					<td>${formatCurrency(thisSellBuy.price)}</td>
-				</tr>
-				`
-			})
-		});
+		showAllPurchases(purchases);
+		
+		if (sellsTimeSpan.value === "month") showSellsPerMonth(sells);
+		else showAllSells(sells);
+		
+		//showSellsPerMonth(sells);
 	}
+
 	return cryptoLog;
 }
 
