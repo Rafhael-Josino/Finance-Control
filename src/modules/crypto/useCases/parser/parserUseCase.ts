@@ -109,7 +109,7 @@ class ParserCryptoUseCase {
             if (!quantSold) quantSold = worksheet.getCell(parser.pos()).value;
     
             parser.moveToColumn('H');
-            let received;
+            let received: number;
             received = worksheet.getCell(parser.pos()).value.result;
             if (!received) received = worksheet.getCell(parser.pos()).value;
     
@@ -157,7 +157,7 @@ class ParserCryptoUseCase {
                             {
                                 index: i,
                                 date: cryptoPurchasesList[asset][i].date, 
-                                quant: debit, 
+                                quant: cryptoPurchasesList[asset][i].remainQuant, 
                                 price: cryptoPurchasesList[asset][i].purchaseMediumPrice
                             }
                         );
