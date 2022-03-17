@@ -402,6 +402,10 @@ h1 {
     width: 100%;
 }
 
+.tableHover:hover {
+    font-weight: bold;
+}
+
 #tablesP table, #tablesS table {
     width: 100%;
     background-color: white;

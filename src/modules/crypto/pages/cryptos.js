@@ -221,25 +221,28 @@ function showSellsPerMonth(sells) {
 	let thisMonth;
 	const monthlySells = [];
 	sells.forEach(sell => {
-		// New month
-		const sellMonth = Number(sell.sellingDate[5] + sell.sellingDate[6]);
-		//console.log(sellMonth);
-
-		if (sellMonth !== thisMonth) {
-			thisMonth = sellMonth;
-			monthlySells.push({
-				date: sell.sellingDate,
-				aquisitionValue: sell.aquisitionValue,
-				quantSold: sell.quantSold,
-				receivedValue: sell.received
-			});
-		}
-
-		// Same month -> add values to the last monthlySells's object
-		else {
-			monthlySells[monthlySells.length - 1].aquisitionValue += sell.aquisitionValue;
-			monthlySells[monthlySells.length - 1].quantSold += sell.quantSold;
-			monthlySells[monthlySells.length - 1].receivedValue += sell.received;
+		// Only sells with profit are accounted
+		if (sell.received >= sell.aquisitionValue) {
+			// New month
+			const sellMonth = Number(sell.sellingDate[5] + sell.sellingDate[6]);
+			//console.log(sellMonth);
+	
+			if (sellMonth !== thisMonth) {
+				thisMonth = sellMonth;
+				monthlySells.push({
+					date: sell.sellingDate,
+					aquisitionValue: sell.aquisitionValue,
+					quantSold: sell.quantSold,
+					receivedValue: sell.received
+				});
+			}
+	
+			// Same month -> add values to the last monthlySells's object
+			else {
+				monthlySells[monthlySells.length - 1].aquisitionValue += sell.aquisitionValue;
+				monthlySells[monthlySells.length - 1].quantSold += sell.quantSold;
+				monthlySells[monthlySells.length - 1].receivedValue += sell.received;
+			}
 		}
 	});
 
@@ -263,6 +266,7 @@ function showSellsPerMonth(sells) {
 			<td>${formatCurrency(monthlySell.receivedValue)}</td>
 		</tr>
 		`
+		tablesS.lastChild.classList.add("tableHover");
 	});
 }
 
