@@ -17,12 +17,12 @@ class ParserCryptoController {
         // Must handle errors
         else if (response.status === 500) {
             console.log("Controller received 500 - sending throught response");
-            console.log(response.message);
-            return res.status(500).send(response.message);
+            console.log(response.errorMessage);
+            return res.status(500).send(response.errorMessage);
         }
         else {
             console.log("No valid response received from parsing use case");
-            console.log(response.message);
+            console.log(response.errorMessage);
             return res.status(500).send("Unknow error");
         }
     }

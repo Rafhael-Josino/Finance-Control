@@ -303,7 +303,7 @@ loadSheet.addEventListener('change', (event) => {
 });
 
 saveSheet.addEventListener('click', () => {
-	fetch(`saveSheet/${user}`, { 
+	fetch(`saveSheet/`, { 
 		method: 'POST',
 		headers: {
 			"Content-Type": "application/json",

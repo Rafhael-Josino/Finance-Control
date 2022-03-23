@@ -123,14 +123,14 @@ cryptoRoutes.get('/sheets', cryptoUserVerifications.verifyUserExists, (req, res)
 	listSheetsController.handle(req, res);
 });
 
-// Parse sheets in the xlsx file uploaded and stores the data obtained
-cryptoRoutes.post('/saveSheet/:userName', cryptoUserVerifications.verifyUserExists, cryptoUserVerifications.verifyXLSXexists, (req, res) => {
-	parserCryptoController.handle(req, res);
-});
-
 // Retrieves a specified sheet data from a user
 cryptoRoutes.get('/sheet/:sheetName', cryptoUserVerifications.verifyUserExists, (req, res) => {
 	getSheetController.handle(req, res);
+});
+
+// Parse sheets in the xlsx file uploaded and stores the data obtained
+cryptoRoutes.post('/saveSheet', cryptoUserVerifications.verifyUserExists, cryptoUserVerifications.verifyXLSXexists, (req, res) => {
+	parserCryptoController.handle(req, res);
 });
 
 
