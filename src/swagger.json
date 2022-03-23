@@ -32,7 +32,11 @@
                                     "description": "array of sheets's names",
                                     "elements": {
                                         "name": "string"
-                                    }
+                                    },
+                                    "example": [
+                                        "sheet1",
+                                        "sheet2"
+                                    ]
                                 }
                             }
                         }
@@ -46,6 +50,49 @@
                                     "description": "error message",
                                     "elements": {
                                         "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Server's middleware here - exampleUser does not exist"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/saveSheet": {
+            "post": {
+                "tags": ["Crypto"],
+                "summary": "Saves the info present in the user's .xlsx file",
+                "description": "Parses the .xlsx file. The operations logged must have a determined format according to (put github link)",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Informs that the .xlsx file was read and its info stored successfully"
+                    },
+                    "400": {
+                        "description": "Either the user or his .xlsx file does not exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Server's middleware here - exampleUser does not exist"
                                     }
                                 }
                             }
