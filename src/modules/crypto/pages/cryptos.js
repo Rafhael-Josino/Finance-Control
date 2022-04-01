@@ -67,12 +67,13 @@ function currentSitTabConstruction(jsonFile) {
 
 	// For each cryptocoin:
 	for (let i = 0; i < cryptoQuantity; i++) {
-		let total = 0;
+		let total = 0, totalValue = 0;
 		const purchases = cryptosList[listOfCryptos[i]];
 		const sells = sellingsTemp[listOfCryptos[i]];
 
 		for (let j = 0; j < purchases.length; j++) {
-			total = total + purchases[j].remainQuant;
+			total +=purchases[j].remainQuant;
+			totalValue += purchases[j].remainQuant * purchases[j].purchaseMediumPrice;
 		}
 
 		if (total) {
@@ -80,8 +81,8 @@ function currentSitTabConstruction(jsonFile) {
 			newLine.innerHTML = `
 				<td>${listOfCryptos[i]}</td>
 				<td>${total}</td>
-				<td>${formatCurrency(purchases[purchases.length-1].newMediumPrice)}</td>
-				<td>${formatCurrency(purchases[purchases.length-1].newMediumPrice * total)}</td>
+				<td>${formatCurrency(totalValue/total)}</td>
+				<td>${formatCurrency(totalValue)}</td>
 			`
 			newLine.addEventListener("click", cryptoLogConstruct(purchases, sells)); // fix
 			newLine.setAttribute("class", "newLineClass");
@@ -225,7 +226,6 @@ function showSellsPerMonth(sells) {
 		if (sell.received >= sell.aquisitionValue) {
 			// New month
 			const sellMonth = Number(sell.sellingDate[5] + sell.sellingDate[6]);
-			//console.log(sellMonth);
 	
 			if (sellMonth !== thisMonth) {
 				thisMonth = sellMonth;

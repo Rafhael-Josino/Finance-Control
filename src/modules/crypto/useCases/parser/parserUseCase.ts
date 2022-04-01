@@ -212,7 +212,7 @@ class ParserCryptoUseCase {
                     const newOp = logBuy(worksheet);
                     cryptoPurchasesList[newOp.asset].push(newOp);
                 }
-                else if (operationType === "Venda") { // Sell
+                else if (operationType === "Venda" || operationType === "Transf") { // Sell
                     const newOp = logSell(worksheet);
                     cryptoSellsList[newOp.asset].push(newOp);
                 }
