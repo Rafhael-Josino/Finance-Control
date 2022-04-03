@@ -47,7 +47,7 @@ class CryptoUserVerifications {
             const pathName = path.join(__dirname, '..', '..', '..', '..', 'logs', 'cryptos');
             const dirFiles = fs.readdirSync(pathName, 'utf8');
             if (dirFiles.includes(`${username}.json`)) {
-                return res.status(500).json({ error: `${username} already exists` });
+                return res.status(403).json({ error: `Server's middleware here - ${username} already exists` });
             }
             return next();
         } catch (err) {
