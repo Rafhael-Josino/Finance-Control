@@ -16,12 +16,12 @@ Sheet's columns escription:
 import path from 'path';
 import ExcelJS from 'exceljs';
 import { CryptoPurchase, CryptoSell, CryptoPurchasesList, CryptoSellsList, CryptoSheet } from "../../models/Cryptos"; // BAD?
-import { ICryptoRepository, ICryptoResponse } from '../../repositories/ICryptoRepository';
+import { ICryptoRepository, IPostSheetOperationsResponse } from '../../repositories/ICryptoRepository';
 
 class ParserCryptoUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
 
-    async execute( userName: string ): Promise<ICryptoResponse> {
+    async execute( userName: string ): Promise<IPostSheetOperationsResponse> {
 
         // Object that represents a cell of the datasheet
         function Navigator(column: string, line: number): void {
