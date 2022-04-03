@@ -5,7 +5,8 @@ import {
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
-    ICryptoResponse
+    ICryptoResponse,
+    IPostSheetOperationsResponse
 } from '../ICryptoRepository';
 
 // parser is a service, should be called by the routes
@@ -30,16 +31,17 @@ class CryptoRepositoryJSON implements ICryptoRepository {
         }
     }
 
-    postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): ICryptoResponse {
+    postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): IPostSheetOperationsResponse {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
         try {
             const oldData = JSON.parse(fs.readFileSync(pathName, 'utf8'));
             oldData.sheets = cryptoSheetList;
             const newData = JSON.stringify(oldData);
             fs.writeFileSync(pathName, newData);
+            const sheetsList = cryptoSheetList.map((sheet: CryptoSheet) => sheet.sheetName)
             return {
                 status: 201,
-                errorMessage: `${userName}.json overwritten with success`
+                sheetsList
             }
         } catch (error) {
             console.log("Error in postSheetOperations from CryptoRepositoryJSON:");
