@@ -6,6 +6,7 @@ import { CryptoUserVerifications } from '../middlewares/CryptoUserVerifications'
 
 import { parserCryptoController } from '../useCases/parser';
 import { listSheetsController } from '../useCases/listSheets';
+import { listUsersController } from '../useCases/listUsers';
 import { createUserController } from '../useCases/createUser';
 import { getUserController } from '../useCases/getUser';
 import { getSheetController} from '../useCases/getSheet';
@@ -135,6 +136,11 @@ cryptoRoutes.post('/saveSheet', cryptoUserVerifications.verifyUserExists, crypto
 
 
 // --------------------------- Crypto Users ------------------------------
+
+// List users
+cryptoRoutes.get('/users', (req, res) => {
+	listUsersController.handle(req, res);
+})
 
 // Create a new crypto user with empty data stored
 cryptoRoutes.post('/user', cryptoUserVerifications.verifyUserAlreadyExists, (req, res) => {

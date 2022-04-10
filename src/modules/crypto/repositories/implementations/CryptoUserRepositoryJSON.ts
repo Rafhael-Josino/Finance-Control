@@ -12,13 +12,15 @@ import {
 
 class CryptoUserRepositoryJSON implements ICryptoUserRepository {
     listUsers(): ICryptoListUsersResponse {
-        const pathName = path.join(__dirname, '..', '..', 'logs', 'cryptos');
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos');
 
         try {
             const dirFiles = fs.readdirSync(pathName, 'utf8');
+            const filesFilter = new RegExp('\\w+.json');
+            const jsonFiles = dirFiles.filter(file => file.match(filesFilter));
             return {
                 status: 200,
-                usersList: dirFiles
+                usersList: jsonFiles
             }
         } catch (err) {
             return {
