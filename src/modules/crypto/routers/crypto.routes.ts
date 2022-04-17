@@ -150,7 +150,7 @@ cryptoRoutes.post('/user', cryptoUserVerifications.verifyUserAlreadyExists, (req
 });
 
 // Retrieves the crypto user data
-cryptoRoutes.get('/user/:userName', verifyUserExists, (req, res) => {
+cryptoRoutes.get('/user', cryptoUserVerifications.verifyUserExists, (req, res) => {
 	getUserController.handle(req, res);
 });
 

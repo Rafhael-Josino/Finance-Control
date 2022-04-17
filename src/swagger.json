@@ -178,7 +178,60 @@
             "get": {
                 "tags": ["User"],
                 "summary": "Returns user's data",
-                "description": "Returns object with information of user"
+                "description": "Returns object with user's information. If there a XLSX file was parsed, only the sheets's names are shown here",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User's information (only names of XLSX parsed sheets)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "Custom object with user information",
+                                    "elements": {
+                                        "id": "string",
+                                        "name": "string",
+                                        "created_at": "Date",
+                                        "sheets": "array"
+                                    },
+                                    "example": {
+                                        "id": "c6b8431a-cabb-4143-b016-6cfb91f1c604",
+                                        "name": "NewUser",
+                                        "created_at": "01-01-2022T22:00:00.701Z",
+                                        "sheets": ["sheet1", "sheet2"]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The user does not exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Server's middleware here - exampleUser does not exist"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/users": {

@@ -12,7 +12,7 @@ class CryptoUserVerifications {
             
             const resPG = await PG.query('SELECT username FROM users where username = $1', [userName]);
 
-            console.log(resPG.rows);
+            //console.log(resPG.rows);
 
             if (resPG.rows.length) {
                 return next();
@@ -24,6 +24,7 @@ class CryptoUserVerifications {
 
         } catch (err) {
             console.log("Server's middleware (verifyUserExists) here:", err);
+            // change error message
             res.status(500).json({error: "Server's middleware here - unable to read directory: " + err.message});
         }
     }
