@@ -1,8 +1,8 @@
-import { CryptoRepositoryJSON } from '../../repositories/implementations/CryptoRepositoryJSON';
+import { CryptoRepositoryPG } from '../../repositories/implementations/CryptoRepositoryPG';
 import { ParserCryptoUseCase } from './parserUseCase';
 import { ParserCryptoController } from './parserController';
 
-const cryptoRepository = new CryptoRepositoryJSON();
+const cryptoRepository = new CryptoRepositoryPG();
 const parserCryptoUseCase = new ParserCryptoUseCase(cryptoRepository);
 const parserCryptoController = new ParserCryptoController(parserCryptoUseCase);
 

@@ -3,8 +3,8 @@ import { ICryptoUserRepository, ICryptoListUsersResponse } from '../../repositor
 class ListUsersUseCase {
     constructor(private cryptoUserRepository: ICryptoUserRepository) {}
 
-    execute(): ICryptoListUsersResponse {
-        return this.cryptoUserRepository.listUsers();
+    async execute(): Promise<ICryptoListUsersResponse> {
+        return await this.cryptoUserRepository.listUsers();
     }
 }
 

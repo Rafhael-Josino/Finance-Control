@@ -36,9 +36,12 @@ interface ICryptoUserResponse {
 // Repository interface
 
 interface ICryptoUserRepository {
-    listUsers(): ICryptoListUsersResponse;
-    getUser({ userName, res}: ICryptoUserRepositoryDTO): void;
-    createUser( userName: string ): ICryptoUserResponse;
+    listUsers(): Promise<ICryptoListUsersResponse>;
+
+    // getUser should return user info. but instead of all the CryptoSheets, only their names
+    getUser( username: string ): Promise<ICryptoUserResponse>;
+    
+    createUser( userName: string ): Promise<ICryptoUserResponse>;
     listSheets( userName: string ): ICryptoListSheetsResponse;
 }
 

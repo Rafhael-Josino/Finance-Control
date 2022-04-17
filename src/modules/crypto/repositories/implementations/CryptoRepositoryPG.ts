@@ -1,3 +1,4 @@
+import { PG } from '../../../../database';
 import fs from 'fs';
 import path from 'path';
 import { CryptoSheet } from '../../models/Cryptos';
@@ -9,10 +10,10 @@ import {
     IPostSheetOperationsResponse
 } from '../ICryptoRepository';
 
-// parser is a service, should be called by the routes
-// the repository functions should be subtypes
-
-class CryptoRepositoryJSON implements ICryptoRepository {
+class CryptoRepositoryPG implements ICryptoRepository {
+    
+    // Still using JSON files
+    
     getSheet({ userName, sheetName }: IGetSheetOperationsDTO): ICryptoResponse {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
 
@@ -32,26 +33,27 @@ class CryptoRepositoryJSON implements ICryptoRepository {
     }
 
     async postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse> {
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+
+        // tests
         try {
-            const oldData = JSON.parse(fs.readFileSync(pathName, 'utf8'));
-            oldData.sheets = cryptoSheetList;
-            const newData = JSON.stringify(oldData);
-            fs.writeFileSync(pathName, newData);
-            const sheetsList = cryptoSheetList.map((sheet: CryptoSheet) => sheet.sheetName)
-            return {
-                status: 201,
-                sheetsList
-            }
-        } catch (error) {
-            console.log("Error in postSheetOperations from CryptoRepositoryJSON:");
-            console.log(error);
+            const res = await PG.query('SELECT $1::text as message', ['Hello world!']);
+            console.log(res.rows[0].message) // Hello world!
+            
+            const test1 = await  PG.query('SELECT datname FROM pg_database', []);
+            test1.rows.forEach((row) => console.log(row.message));
+            //const test1 = await PG.query('CREATE DATABASE databaseTest', []);
             return {
                 status: 500,
-                errorMessage: error.message
+                errorMessage: "not ready"
+            }
+        } catch (err) {
+            return {
+                status: 500,
+                errorMessage: "not ready with error: " + err.message
             }
         }
+
     }
 }
 
-export { CryptoRepositoryJSON }
+export { CryptoRepositoryPG }

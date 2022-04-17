@@ -4,11 +4,11 @@ import { CreateUserUseCase } from './createUserUseCase';
 class CreateUserController {
     constructor(private createUserUseCase: CreateUserUseCase) {}
 
-    handle(req: Request, res: Response): Response {
+    async handle(req: Request, res: Response): Promise<Response> {
         const { username } = req.headers;
         const userName = username as string; // username has type string │ string[]
         
-        const response = this.createUserUseCase.execute(userName);
+        const response = await this.createUserUseCase.execute(userName);
 
         if (response.status === 201) {
             return res.status(201).json({ newUser: response.cryptoUser });

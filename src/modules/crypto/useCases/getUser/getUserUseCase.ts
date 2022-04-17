@@ -1,4 +1,4 @@
-import { ICryptoUserRepository } from '../../repositories/ICryptoUserRepository';
+import { ICryptoUserRepository, ICryptoUserResponse } from '../../repositories/ICryptoUserRepository';
 import { Response } from 'express' // BAD
 
 interface IRequest {
@@ -9,8 +9,8 @@ interface IRequest {
 class GetUserUseCase {
     constructor(private cryptoUserRepository: ICryptoUserRepository) {}
 
-    execute({ userName, res}: IRequest) {
-        this.cryptoUserRepository.getUser({ userName, res });
+    async execute( userName: string ): Promise<ICryptoUserResponse> {
+        return await this.cryptoUserRepository.getUser(userName);
     }
 }
 

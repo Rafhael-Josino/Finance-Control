@@ -30,7 +30,7 @@ interface IPostSheetOperationsResponse {
 
 interface ICryptoRepository {
     getSheet({ userName, sheetName }: IGetSheetOperationsDTO): any;
-    postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): IPostSheetOperationsResponse;
+    postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse>;
 }
 
 export { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO, ICryptoResponse, IPostSheetOperationsResponse };

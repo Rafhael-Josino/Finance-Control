@@ -7,7 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import { cryptoRoutes } from './modules/crypto/routers/crypto.routes';
 import { indexRoutes } from './routers/index.routes';
 
-import "./database";
+//import { pool, client } from "./database";
 //import { dataSource } from './database'; // to typeorm@0.3.4
 
 //import * as swaggerFile2 from './swagger.json'; // why is not working?

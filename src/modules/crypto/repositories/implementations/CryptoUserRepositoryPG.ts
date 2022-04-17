@@ -1,3 +1,4 @@
+import { PG } from '../../../../database';
 import fs from 'fs';
 import path from 'path';
 import { CryptoUser } from '../../models/CryptoUser';
@@ -9,45 +10,47 @@ import {
     ICryptoUserResponse
 } from '../ICryptoUserRepository';
 
+/*
+try / catch blocks aren't handling when the API can't connect with DB
+*/
 
-class CryptoUserRepositoryJSON implements ICryptoUserRepository {
+class CryptoUserRepositoryPG implements ICryptoUserRepository {
     async listUsers(): Promise<ICryptoListUsersResponse> {
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos');
-
         try {
-            const dirFiles = fs.readdirSync(pathName, 'utf8');
-            const filesFilter = new RegExp('\\w+.json');
-            const jsonFiles = dirFiles.filter(file => file.match(filesFilter));
+            const resPG = await PG.query('SELECT username FROM users', []);
+            const usersList = resPG.rows.map((row) => row.username);
+
             return {
                 status: 200,
-                usersList: jsonFiles
+                usersList
             }
         } catch (err) {
             return {
                 status: 500,
-                errorMessage: `Error reading directory: ` + err.message
+                errorMessage: `Error getting list of users: ` + err.message
             }
         }
     }
 
     async getUser( userName: string): Promise<ICryptoUserResponse> {
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
-
         try {
-            const data = fs.readFileSync(pathName, 'utf8');
-
-            console.log(`Sending ${userName}.json`);
+            const resPG = await PG.query('SELECT * FROM users WHERE username = $1', [userName]);
             return {
                 status: 200,
-                //cryptoUser: data // fix this part -> parse the string onto the CryptoUser custom object
-            }           
+                cryptoUser: {
+                    id: resPG.rows[0].user_id,
+                    name: resPG.rows[0].username,
+                    created_at: resPG.rows[0].created_on,
+                    sheets: []
+                }
+            }
         } catch (err) {
-            console.log("Server here - unable to read file:", `${userName}.json` , err);
             return {
                 status: 500,
-                errorMessage: err.message
+                errorMessage: 'Error getting user: ' + err.message  
             }
         }
+
     }
 
     async createUser( userName: string ): Promise<ICryptoUserResponse> {
@@ -57,20 +60,20 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
             created_at: new Date(),
         });
 
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
-        
         try {
-            fs.writeFileSync(pathName, JSON.stringify(cryptoUser));
-            console.log(`${userName}.json written successfully`);
+            const resPG = await PG.query(
+                'INSERT INTO users (user_id, username, created_on) VALUES ($1, $2, $3)',
+                [cryptoUser.id, cryptoUser.name, JSON.stringify(cryptoUser.created_at)]
+            );
             return {
                 status: 201,
                 cryptoUser
             }
         } catch (err) {
-            console.log(`Server here - Error writting ${userName}.json file:`, err);
+            console.log(`Server here - Error creating user ${userName}:`, err);
             return {
                 status: 500,
-                errorMessage: `Error writting ${userName}.json file: ` + err.message
+                errorMessage: `Error creating user ${userName}: ` + err.message
             }
         }
     }
@@ -96,4 +99,4 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
     }
 }
 
-export { CryptoUserRepositoryJSON }
+export { CryptoUserRepositoryPG }
