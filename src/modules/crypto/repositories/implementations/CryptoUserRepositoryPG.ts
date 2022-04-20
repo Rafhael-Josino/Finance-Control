@@ -4,7 +4,6 @@ import path from 'path';
 import { CryptoUser } from '../../models/CryptoUser';
 import {
     ICryptoUserRepository,
-    ICryptoUserRepositoryDTO,
     ICryptoListSheetsResponse,
     ICryptoListUsersResponse,
     ICryptoUserResponse
@@ -95,6 +94,21 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
             return {
                 status: 500,
                 errorMessage: `Unable to read file ${userName}.json: ` + err.message
+            }
+        }
+    }
+
+    async deleteUser( userName: string ): Promise<ICryptoUserResponse> {
+        try {
+            const resPG = await PG.query('DELETE FROM users WHERE userName = $1', [userName]);
+            return {
+                status: 204
+            }
+        } catch (err) {
+            console.log(`Server here - Error deleting user ${userName}:`, err);
+            return {
+                status: 500,
+                errorMessage: `Error deleting user ${userName}: ` + err.message
             }
         }
     }

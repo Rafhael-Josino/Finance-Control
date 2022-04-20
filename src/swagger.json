@@ -232,6 +232,44 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "tags": ["User"],
+                "summary": "Delete user",
+                "description": "Delete the user's information",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "User's information was deleted"
+                    },
+                    "404": {
+                        "description": "The user does not exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Server's middleware here - exampleUser does not exist"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/users": {
