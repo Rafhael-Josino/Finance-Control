@@ -17,6 +17,9 @@ class GetSheetController {
             const sheetNames = JSON.stringify(response.sheet);
             return res.send(sheetNames);
         }
+        else if (response.status === 404) {
+            return res.status(404).json({ error: response.errorMessage});
+        }
         else if (response.status === 500) {
             return res.status(500).json({ error: response.errorMessage});
         }
