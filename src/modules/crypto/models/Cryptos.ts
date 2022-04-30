@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
+//const cryptoNames = ['BTC', 'ETH', 'LTC', 'EOS', 'USDT', 'TUSD', 'USDC', 'PAX', 'BUSD', 'LINK', 'MANA', 'SAND'];
+
 class CryptoPurchase {
     asset: string;
     date: Date;
@@ -34,6 +36,24 @@ class CryptoSoldLog {
 }
 
 class CryptoPurchasesList {
+    assets: Object;
+    
+    constructor() {
+        this.assets = {}
+    }
+
+    addPurchase(newPurchase: CryptoPurchase): void {
+        if (Object.getOwnPropertyNames(this.assets).includes(newPurchase.asset)) {
+            this.assets[newPurchase.asset].push(newPurchase);
+        }
+        else {
+            this.assets[newPurchase.asset] = [];
+            this.assets[newPurchase.asset].push(newPurchase);
+        }
+    }
+}
+
+class CryptoPurchasesList_old {
     BTC: CryptoPurchase[];
     ETH: CryptoPurchase[];
     LTC: CryptoPurchase[];
@@ -64,8 +84,6 @@ class CryptoPurchasesList {
     
     
 }
-
-
 
 class CryptoSellsList {
     BTC : CryptoSell[];

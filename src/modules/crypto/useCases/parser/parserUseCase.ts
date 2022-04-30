@@ -210,7 +210,8 @@ class ParserCryptoUseCase {
                 const operationType = worksheet.getCell(parser.pos()).value;
                 if (operationType === "Compra") { // Purchase
                     const newOp = logBuy(worksheet);
-                    cryptoPurchasesList[newOp.asset].push(newOp);
+                    //cryptoPurchasesList[newOp.asset].push(newOp);
+                    cryptoPurchasesList.addPurchase(newOp);
                 }
                 else if (operationType === "Venda" || operationType === "Transf") { // Sell
                     const newOp = logSell(worksheet);

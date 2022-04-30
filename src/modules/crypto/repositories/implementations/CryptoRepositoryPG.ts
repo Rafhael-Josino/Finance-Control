@@ -33,9 +33,13 @@ class CryptoRepositoryPG implements ICryptoRepository {
     }
 
     async postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse> {
-
-        // tests
+        // First testing only with purchases table
+        
         try {
+            cryptoSheetList.forEach((cryptoSheet) => {
+                
+            })
+
             const res = await PG.query('SELECT $1::text as message', ['Hello world!']);
             console.log(res.rows[0].message) // Hello world!
             

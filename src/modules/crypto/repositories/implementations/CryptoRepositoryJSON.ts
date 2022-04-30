@@ -19,6 +19,12 @@ class CryptoRepositoryJSON implements ICryptoRepository {
         try {
             const cryptoUser = JSON.parse(fs.readFileSync(pathName, 'utf8'));
             const sheet = cryptoUser.sheets.find((sheet: CryptoSheet) => sheet.sheetName === sheetName);
+            if (!sheet) {
+                return {
+                    status: 404,
+                    errorMessage: `${sheetName} not found`
+                }
+            }
             return {
                 status: 200,
                 sheet

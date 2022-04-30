@@ -1,4 +1,3 @@
-import { Response } from 'express'; // BAD
 import { CryptoUser } from '../models/CryptoUser';
 
 // Function arguments types
