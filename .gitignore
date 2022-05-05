@@ -20,3 +20,4 @@ dist/
 src/modules/asset/
 src/modules/stocks/
 node_modules/
+src/modules/crypto/useCases/parser/parserUseCase_copy.ts

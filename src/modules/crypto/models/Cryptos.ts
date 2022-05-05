@@ -51,6 +51,10 @@ class CryptoPurchasesList {
             this.assets[newPurchase.asset].push(newPurchase);
         }
     }
+
+    presentAssets(): string[] {
+        return Object.getOwnPropertyNames(this.assets);
+    }
 }
 
 class CryptoPurchasesList_old {

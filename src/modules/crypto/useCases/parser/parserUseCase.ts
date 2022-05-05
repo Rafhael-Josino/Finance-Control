@@ -245,7 +245,7 @@ class ParserCryptoUseCase {
             cryptoSheetList.push(parsing(worksheet));  
         });
         
-        return this.cryptoRepository.postSheet({ userName, cryptoSheetList });
+        return await this.cryptoRepository.postSheet({ userName, cryptoSheetList });
     }
 }
 
