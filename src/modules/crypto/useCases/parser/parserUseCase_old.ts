@@ -15,20 +15,12 @@ Sheet's columns escription:
 
 import path from 'path';
 import ExcelJS from 'exceljs';
-import { 
-    CryptoPurchase,
-    CryptoSell,
-    CryptoPurchasesList,
-    CryptoSellsList,
-    CryptoSheet,
-    CryptoPurchaseSellList 
-} from "../../models/Cryptos"; // BAD?
+import { CryptoPurchase, CryptoSell, CryptoPurchasesList, CryptoSellsList, CryptoSheet } from "../../models/Cryptos"; // BAD?
 import { ICryptoRepository, IPostSheetOperationsResponse } from '../../repositories/ICryptoRepository';
 
 class ParserCryptoUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
 
-    // If this code will be used as a repository class, the return shall be an object with status e possible ok/error messages
     async execute( userName: string ): Promise<IPostSheetOperationsResponse> {
 
         // Object that represents a cell of the datasheet
@@ -51,8 +43,6 @@ class ParserCryptoUseCase {
         // Declared here as global variables
         let cryptoPurchasesList: CryptoPurchasesList;
         let cryptoSellsList: CryptoSellsList;
-        let cryptoRelationList: CryptoPurchaseSellList;
-        
 
  
         // ############################### Log Functions #############################
@@ -72,7 +62,7 @@ class ParserCryptoUseCase {
             const asset = worksheet.getCell(parser.pos()).value.match(matchCrypto)[0];
             
             parser.moveToColumn('D');
-            let purchaseMediumPrice: number; 
+            let purchaseMediumPrice; 
             purchaseMediumPrice = worksheet.getCell(parser.pos()).value.result;
             if (!purchaseMediumPrice) purchaseMediumPrice = worksheet.getCell(parser.pos()).value;
             
@@ -80,34 +70,25 @@ class ParserCryptoUseCase {
             const local = worksheet.getCell(parser.pos()).value;
             
             parser.moveToColumn('E');
-            let totalBought: number;
+            let totalBought;
             totalBought = worksheet.getCell(parser.pos()).value.result;
             if (!totalBought) totalBought = worksheet.getCell(parser.pos()).value;
     
             parser.moveToColumn('F');
-            let tax: number;
+            let tax;
             tax = worksheet.getCell(parser.pos()).value.result;
             if (!tax) tax = worksheet.getCell(parser.pos()).value;
     
             parser.moveToColumn('I');
-            let newMediumPrice: number;
+            let newMediumPrice;
             newMediumPrice = worksheet.getCell(parser.pos()).value.result; // Yet to test
             // If the cell has a value not calculated by formula
             if (!newMediumPrice) newMediumPrice = worksheet.getCell(parser.pos()).value;
             
             const remainQuant = totalBought - tax;
-
+            
             const newOp = new CryptoPurchase();
-            Object.assign(newOp, {
-                date,
-                asset,
-                local,
-                totalBought,
-                purchaseMediumPrice,
-                tax,
-                remainQuant,
-                newMediumPrice
-            });
+            Object.assign(newOp, {date, asset, local, totalBought, purchaseMediumPrice, tax, remainQuant, newMediumPrice});
            
             return newOp;
         }
@@ -132,10 +113,59 @@ class ParserCryptoUseCase {
             received = worksheet.getCell(parser.pos()).value.result;
             if (!received) received = worksheet.getCell(parser.pos()).value;
     
+            /*
+            Always iterates through the buying list, but could it not start from the last purchase?
+            All the elements would check if the previous sell has leftOvers
+            If it is the case, the loop would start from this buy, whose index is stored in the previous sell
+    
+            Separate by operation's local
+            */
+    
+            //const indexCrypto = cryptoNamesList.findIndex((name) => name === asset);
+            
             let leftOver: number; // in cryptos
-            //let debit = quantSold; // in cryptos
+            let debit = quantSold; // in cryptos
             let aquisitionValue = 0; // in FIAT coin
             let buyIndexes = [];
+            // Searches for the first purchase operation that still has a remanescent value
+            // Insert check code to define "i", depending on previous sells with leftOvers
+
+            //for (let i = 0; i < cryptosBuyList[indexCrypto].length; i++) {
+            for (let i = 0; i < cryptoPurchasesList[asset].length; i++) {
+                if (cryptoPurchasesList[asset][i].remainQuant) {
+                    leftOver = cryptoPurchasesList[asset][i].remainQuant - debit;
+                    // If the quantity of this purchase covers the sell (totally or the with a rest)
+                    if (leftOver >= 0) {
+                        cryptoPurchasesList[asset][i].remainQuant = leftOver; // Updates the quantity remanescent
+                        
+                        aquisitionValue += cryptoPurchasesList[asset][i].purchaseMediumPrice * debit; 
+                       
+                        buyIndexes.push(
+                            {
+                                index: i,
+                                date: cryptoPurchasesList[asset][i].date,
+                                quant: debit, 
+                                price: cryptoPurchasesList[asset][i].purchaseMediumPrice
+                            }
+                        );
+                        break;
+                    }
+                    // If the buying cannot cover the sell and the next(s) one(s) must be checked
+                    else {
+                        aquisitionValue += cryptoPurchasesList[asset][i].purchaseMediumPrice * cryptoPurchasesList[asset][i].remainQuant;
+                        buyIndexes.push(
+                            {
+                                index: i,
+                                date: cryptoPurchasesList[asset][i].date, 
+                                quant: cryptoPurchasesList[asset][i].remainQuant, 
+                                price: cryptoPurchasesList[asset][i].purchaseMediumPrice
+                            }
+                        );
+                        cryptoPurchasesList[asset][i].remainQuant = 0; // Updates the quantity remanescent, which is 0 in this case
+                        debit = -leftOver; // Updates the debit
+                    }
+                }
+            }
 
             const newSell = new CryptoSell();
             Object.assign(newSell, {
@@ -152,7 +182,7 @@ class ParserCryptoUseCase {
 
             return newSell;
         }
-
+    
         function parsing(worksheet: ExcelJS.Worksheet): CryptoSheet {
             const cell = worksheet.getCell(parser.pos()).value;
             // console.log(parser.pos()); // Used to find lines in the table with problemn
@@ -164,7 +194,6 @@ class ParserCryptoUseCase {
                 Object.assign(cryptoSheet, {
                     cryptoPurchasesList,
                     cryptoSellsList,
-                    cryptoRelationList,
                     sheetName: worksheet.name,
                     created_at: new Date(),
                 });
@@ -186,8 +215,7 @@ class ParserCryptoUseCase {
                 }
                 else if (operationType === "Venda" || operationType === "Transf") { // Sell
                     const newOp = logSell(worksheet);
-                    //cryptoSellsList[newOp.asset].push(newOp);
-                    cryptoSellsList.addSell(newOp);
+                    cryptoSellsList[newOp.asset].push(newOp);
                 }
                 parser.moveToColumn('B');
                 parser.moveLines(1);
@@ -200,89 +228,24 @@ class ParserCryptoUseCase {
             }
         }
 
-        // Recursive function to update purchases object whose assets were sold
-        // Each recursion iteration corresponds to a CryptoPurchase object that is been sold (totally or partially);
-        function updatePurchases (asset: string, purchaseIndex: number, sellIndex: number, debit: number): number {
-            if (cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant) {
-                const leftOver = cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant - debit;
-
-                // If the quantity of this purchase covers the sell (totally or with a rest)
-                if (leftOver >= 0) {
-                    // Fill an entry of the purchase/sell relation table
-                    cryptoRelationList.addRelation({
-                        asset,
-                        purchaseIndex,
-                        sellIndex,
-                        quantSold: debit
-                    });
-                    
-                    // Update the quantity of cryptocoins present in the CryptoPurchase object sold
-                    cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant = leftOver;
-                   
-                    // Returns the index of CryptoPurchasesList where the last sell was made
-                    // The next sell shall start from this point in the CryptoPurchasesList's array (assets's property)
-                    return purchaseIndex;
-                }
-
-                // If the buying cannot cover the sell and the next(s) one(s) must be checked
-                else {
-                    // Fill an entry of the purchase/sell relation table
-                    cryptoRelationList.addRelation({
-                        asset,
-                        purchaseIndex,
-                        sellIndex,
-                        quantSold: cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant
-                    });
-                    
-                    // Update the quantity of cryptocoins present in the CryptoPurchase object sold
-                    cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant = 0;
-
-                    // Calls a new recursion to retrieve the remanescent cryptocoins from the next(s) purchase(s)
-                    // The purchaseIndex passed is incremented in one (1) to verify the consecutive purchase and
-                    // The value of the debit passed is the rest to be quited (in cryptocoins, not its value in FIAT money)
-                    return updatePurchases(asset, ++purchaseIndex, sellIndex, -leftOver);
-                }
-            }
-            // The verified purchase has not cryptocoins registerd to be sold, so the next one will be checked
-            else {
-                return updatePurchases(asset, ++purchaseIndex, sellIndex, debit);
-            }
-        }
-
         // Parsing xlsx file:
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.xlsx`);
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(pathName);
         const cryptoSheetList = [];    
         
-        try {   
-            // The assynchronims here will be a problem due the forEach
-            workbook.worksheets.forEach(async worksheet => {
-                // "Resets" the variables below to start a new sheet parsing process
-                // Better make a new instance or create a reset method likewise parser object?
-                cryptoPurchasesList = new CryptoPurchasesList();
-                cryptoSellsList = new CryptoSellsList();
-                cryptoRelationList = new CryptoPurchaseSellList();
-                parser.reset();
-                
-                console.log(`Parsing of ${worksheet.name} started`);
-                cryptoSheetList.push(parsing(worksheet));
-                
-                cryptoSellsList.presentAssets().forEach(asset => {
-                    // Each reduce iteration corresponds to a CryptoSell object 
-                    cryptoSellsList.assets[asset].reduce(
-                        (purchaseIndex: number, cryptoSell: CryptoSell, index: number): number => { 
-                            return updatePurchases(asset, purchaseIndex, index, cryptoSell.quantSold);
-                        },
-                        0
-                    );
-                });
-            });
+        workbook.worksheets.forEach(worksheet => {
+            // "Resets" the variables below to start a new sheet parsing process
+            // Better make a new instance or create a reset method likewise parser object?
+            cryptoPurchasesList = new CryptoPurchasesList();
+            cryptoSellsList = new CryptoSellsList();
+            parser.reset();
             
-            return await this.cryptoRepository.postSheet({ userName, cryptoSheetList });
-        } catch (err) {
-            
-        }
+            console.log(`Parsing of ${worksheet.name} started`);
+            cryptoSheetList.push(parsing(worksheet));  
+        });
+        
+        return await this.cryptoRepository.postSheet({ userName, cryptoSheetList });
     }
 }
 

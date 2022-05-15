@@ -3,7 +3,6 @@ import path from 'path';
 import { CryptoUser } from '../../models/CryptoUser';
 import {
     ICryptoUserRepository,
-    ICryptoUserRepositoryDTO,
     ICryptoListSheetsResponse,
     ICryptoListUsersResponse,
     ICryptoUserResponse
@@ -77,7 +76,7 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
 
     listSheets( userName: string ): ICryptoListSheetsResponse {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
-
+        
         try {
             const userData = JSON.parse(fs.readFileSync(pathName, 'utf8'));
             const sheetNames = userData.sheets.map((sheet: any) => sheet.sheetName);
@@ -91,6 +90,22 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
             return {
                 status: 500,
                 errorMessage: `Unable to read file ${userName}.json: ` + err.message
+            }
+        }
+    }
+    
+    async deleteUser( userName: string ): Promise<ICryptoUserResponse> {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+        
+        try {
+            fs.unlinkSync(pathName);
+            return {
+                status: 204,
+            }
+        } catch (err) {
+            return {
+                status: 500,
+                errorMessage: `Unable to delete user ${userName}: ` + err.message 
             }
         }
     }

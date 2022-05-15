@@ -18,6 +18,7 @@ import { createUserController } from '../useCases/createUser';
 import { deleteUserController } from '../useCases/deleteUser';
 import { getUserController } from '../useCases/getUser';
 import { getSheetController} from '../useCases/getSheet';
+import { getSheetSummaryController} from '../useCases/getSheetSummary';
 
 
 const cryptoRoutes = Router();
@@ -68,6 +69,10 @@ cryptoRoutes.get('/sheets', cryptoUserVerifications.verifyUserExists, (req, res)
 // Retrieves a specified sheet data from a user
 cryptoRoutes.get('/sheet/:sheetName', cryptoUserVerifications.verifyUserExists, (req, res) => {
 	getSheetController.handle(req, res);
+});
+
+cryptoRoutes.get('/sheetSummary/:sheetName', cryptoUserVerifications.verifyUserExists, (req, res) => {
+	getSheetSummaryController.handle(req, res);
 });
 
 // Parse sheets in the xlsx file uploaded and stores the data obtained

@@ -1,4 +1,4 @@
-import { CryptoSheet } from "../models/Cryptos";
+import { CryptoSheet, CryptoSummary } from "../models/Cryptos";
 
 // Function arguments types
 
@@ -20,6 +20,12 @@ interface ICryptoResponse {
     errorMessage?: string;
 }
 
+interface ICryptoSummary {
+    status: number;
+    sheetSummary?: CryptoSummary[];
+    errorMessage?: string;
+}
+
 interface IPostSheetOperationsResponse {
     status: number;
     sheetsList?: string[];
@@ -29,8 +35,16 @@ interface IPostSheetOperationsResponse {
 // Repository interface
 
 interface ICryptoRepository {
-    getSheet({ userName, sheetName }: IGetSheetOperationsDTO): any;
+    getSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoResponse>;
+    getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary>;
     postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse>;
 }
 
-export { ICryptoRepository, IGetSheetOperationsDTO, IPostSheetOperationsDTO, ICryptoResponse, IPostSheetOperationsResponse };
+export { 
+    ICryptoRepository,
+    IGetSheetOperationsDTO,
+    IPostSheetOperationsDTO,
+    ICryptoResponse,
+    IPostSheetOperationsResponse,
+    ICryptoSummary
+ };

@@ -8,8 +8,8 @@ interface IRequest {
 class GetSheetUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
 
-    execute({ userName, sheetName }: IRequest): ICryptoResponse {
-        return this.cryptoRepository.getSheet({ userName, sheetName });
+    async execute({ userName, sheetName }: IRequest): Promise<ICryptoResponse> {
+        return await this.cryptoRepository.getSheet({ userName, sheetName });
     }
 }
 

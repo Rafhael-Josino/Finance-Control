@@ -15,24 +15,32 @@ class CryptoPurchase {
 
 class CryptoSell {
     // Attributes that are present in the sheet:
-    sellingDate: Date;
     asset: string;
+    sellingDate: Date;
     local: string;
     received: string;
-    quantSold: string;
-
+    quantSold: number;
+    
     // Attributes that are obtained from previous purchases:
     aquisitionDate: string;
     aquisitionValue: number;
-    buyIndexes: CryptoSoldLog[];
+    buyIndexes: CryptoSoldLog[]; // will be ereased 
     leftOverQuant: string;
 }
 
+// Substituted for CryptoPruchaseSellRelation - delete after validation of the new one
 class CryptoSoldLog {
     index: number;
     date: Date;
     quant: number;
     price: number;
+}
+
+class CryptoPurchaseSellRelation {
+    asset: string;
+    purchaseIndex: number;
+    sellIndex: number;
+    quantSold: number;
 }
 
 class CryptoPurchasesList {
@@ -57,6 +65,7 @@ class CryptoPurchasesList {
     }
 }
 
+// Validate new object before delete this one
 class CryptoPurchasesList_old {
     BTC: CryptoPurchase[];
     ETH: CryptoPurchase[];
@@ -90,6 +99,28 @@ class CryptoPurchasesList_old {
 }
 
 class CryptoSellsList {
+    assets: Object;
+    
+    constructor() {
+        this.assets = {}
+    }
+
+    addSell(newSell: CryptoSell): void {
+        if (Object.getOwnPropertyNames(this.assets).includes(newSell.asset)) {
+            this.assets[newSell.asset].push(newSell);
+        }
+        else {
+            this.assets[newSell.asset] = [];
+            this.assets[newSell.asset].push(newSell);
+        }
+    }
+
+    presentAssets(): string[] {
+        return Object.getOwnPropertyNames(this.assets);
+    }
+}
+
+class CryptoSellsList_old {
     BTC : CryptoSell[];
     ETH : CryptoSell[];
     LTC : CryptoSell[];
@@ -119,9 +150,36 @@ class CryptoSellsList {
     }
 }
 
+class CryptoPurchaseSellList {
+    private assets: Object; // verify this
+    
+    constructor() {
+        this.assets = {}
+    }
+
+    addRelation(newRelation: CryptoPurchaseSellRelation): void {
+        if (Object.getOwnPropertyNames(this.assets).includes(newRelation.asset)) {
+            this.assets[newRelation.asset].push(newRelation);
+        }
+        else {
+            this.assets[newRelation.asset] = [];
+            this.assets[newRelation.asset].push(newRelation);
+        }
+    }
+
+    presentAssets(): string[] {
+        return Object.getOwnPropertyNames(this.assets);
+    }
+
+    returnAsset(asset: string): CryptoPurchaseSellRelation[] {
+        return this.assets[asset];
+    } 
+}
+
 class CryptoSheet {
     cryptoPurchasesList: CryptoPurchasesList;
     cryptoSellList: CryptoSellsList;
+    cryptoRelation: CryptoPurchaseSellList;
     sheetName: string;
     created_at: Date;
     id?: string;
@@ -131,4 +189,20 @@ class CryptoSheet {
     }
 }
 
-export { CryptoPurchase, CryptoSell, CryptoSoldLog, CryptoPurchasesList, CryptoSellsList, CryptoSheet };
+class CryptoSummary {
+    asset: string;
+    totalQuant: number;
+    totalValue: number;
+}
+
+export { 
+    CryptoPurchase,
+    CryptoSell,
+    CryptoSoldLog,
+    CryptoPurchasesList,
+    CryptoSellsList,
+    CryptoPurchaseSellRelation,
+    CryptoPurchaseSellList,
+    CryptoSheet,
+    CryptoSummary
+};

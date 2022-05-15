@@ -1,19 +1,20 @@
 import fs from 'fs';
 import path from 'path';
-import { CryptoSheet } from '../../models/Cryptos';
+import { CryptoPurchase, CryptoSheet, CryptoSummary } from '../../models/Cryptos';
 import { 
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
     ICryptoResponse,
-    IPostSheetOperationsResponse
+    IPostSheetOperationsResponse,
+    ICryptoSummary
 } from '../ICryptoRepository';
 
 // parser is a service, should be called by the routes
 // the repository functions should be subtypes
 
 class CryptoRepositoryJSON implements ICryptoRepository {
-    getSheet({ userName, sheetName }: IGetSheetOperationsDTO): ICryptoResponse {
+    async getSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoResponse> {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
 
         try {
@@ -36,6 +37,51 @@ class CryptoRepositoryJSON implements ICryptoRepository {
             }
         }
     }
+    
+    async getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary> {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+        
+        try {
+            const cryptoUser = JSON.parse(fs.readFileSync(pathName, 'utf8'));
+            const sheet = cryptoUser.sheets.find((sheet: CryptoSheet) => sheet.sheetName === sheetName);
+            
+            if (!sheet) {
+                return {
+                    status: 404,
+                    errorMessage: `${sheetName} not found`
+                }
+            }
+            
+            const summary = Object.getOwnPropertyNames(sheet.cryptoPurchasesList.assets).map((asset: string) => {
+                return sheet.cryptoPurchasesList.assets[asset].reduce(
+                    (cryptoSummary: CryptoSummary, cryptoPurchase: CryptoPurchase) => {
+                        return {
+                            asset,
+                            totalQuant: cryptoSummary.totalQuant + cryptoPurchase.remainQuant,
+                            totalValue: cryptoSummary.totalValue + (cryptoPurchase.remainQuant * cryptoPurchase.purchaseMediumPrice)
+                        }
+                    },
+                    {
+                        asset,
+                        totalQuant: 0,
+                        totalValue: 0
+                    }
+                );
+            });
+
+            return {
+                status: 200,
+                sheetSummary: summary
+            }
+        } catch (err) {
+            console.log("Error in getSheetSummary from CryptoRepositoryJSON:");
+            console.log(err);
+            return {
+                status: 500,
+                errorMessage: err.message
+            }
+        }
+    }
 
     async postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse> {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
@@ -49,12 +95,12 @@ class CryptoRepositoryJSON implements ICryptoRepository {
                 status: 201,
                 sheetsList
             }
-        } catch (error) {
+        } catch (err) {
             console.log("Error in postSheetOperations from CryptoRepositoryJSON:");
-            console.log(error);
+            console.log(err);
             return {
                 status: 500,
-                errorMessage: error.message
+                errorMessage: err.message
             }
         }
     }

@@ -8,14 +8,15 @@ import {
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
     ICryptoResponse,
-    IPostSheetOperationsResponse
+    IPostSheetOperationsResponse,
+    ICryptoSummary
 } from '../ICryptoRepository';
 
 class CryptoRepositoryPG implements ICryptoRepository {
     
     // Still using JSON files
     
-    getSheet({ userName, sheetName }: IGetSheetOperationsDTO): ICryptoResponse {
+    async getSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoResponse> {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
 
         try {
@@ -31,6 +32,10 @@ class CryptoRepositoryPG implements ICryptoRepository {
                 errorMessage: err.message
             }
         }
+    }
+
+    async getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary> {
+        return 
     }
 
     async postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse> {
@@ -68,7 +73,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
                     );
                     // still without order, so the index must be saved in the object beforehand
                     // this repository function has the objetive of solely save the object in the database
-                    cryptoSheet.cryptoPurchasesList.presentAssets().map(async cryptoAsset => {
+                    cryptoSheet.cryptoPurchasesList.presentAssets().forEach(async cryptoAsset => {
                         await cryptoSheet.cryptoPurchasesList.assets[cryptoAsset].map(async (cryptoPurchase: CryptoPurchase) => {
                             
                             console.log("inserting purchase of sheet", cryptoSheet.sheetName);
@@ -90,59 +95,17 @@ class CryptoRepositoryPG implements ICryptoRepository {
                             );
                         })
                     });
+
+                    console.log('after insert data in DB');
+                    //cryptoSheet.cryptoSellList.presentAssets().forEach(as)
                 },
                 Promise.resolve()
             );
-
-            /*
-            for (const cryptoSheet of cryptoSheetList) {
-                console.log('1th iteration');
-    
-                const sheetID = uuidv4();
-                await PG.query(
-                    'INSERT INTO sheets (sheet_id, upload_id, sheetname) VALUES ($1, $2, $3)',
-                    [sheetID, uploadID, cryptoSheet.sheetName]
-                );
-
-                for (const cryptoAsset of cryptoSheet.cryptoPurchasesList.presentAssets()) {
-                    let index = 0;
-
-                    console.log("per asset included");//not ok
-
-                    for (const cryptoPurchase of cryptoSheet.cryptoPurchasesList.assets[cryptoAsset]) {
-                        console.log("per asset purchase element");
-                        await PG.query(
-                            "INSERT INTO purchases (purchase_index, asset, purchase_date, purchase_local, totalbought, purchase_medium_price, tax, remain_quant, new_medium_price, sheet_id) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7, $8, $9, $10)",
-                            [
-                                uuidv4(),
-                                cryptoPurchase.asset,
-                                formatDate(cryptoPurchase.date),
-                                cryptoPurchase.local,
-                                String(cryptoPurchase.totalBought),
-                                String(cryptoPurchase.purchaseMediumPrice),
-                                String(cryptoPurchase.tax),
-                                String(cryptoPurchase.remainQuant),
-                                String(cryptoPurchase.newMediumPrice),
-                                sheetID
-                            ]
-                        );
-                    }
-                }
-            }
-            */
-/*
-            cryptoSheetList.forEach(async (cryptoSheet) => {
-
-                cryptoSheet.cryptoPurchasesList.presentAssets().forEach(async (cryptoAsset) => {
-                    
-                    cryptoSheet.cryptoPurchasesList.assets[cryptoAsset].forEach(async (cryptoPurchase: CryptoPurchase) => {
-                    });
-                });
-            });
-*/
+            
+            const sheetsList = cryptoSheetList.map((sheet: CryptoSheet) => sheet.sheetName)
             return {
-                status: 500,
-                errorMessage: "still testing"
+                status: 201,
+                sheetsList
             }
         } catch (err) {
             return {

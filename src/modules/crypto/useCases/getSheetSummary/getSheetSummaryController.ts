@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { GetSheetUseCase } from './getSheetUseCase';
+import { GetSheetSummaryUseCase } from './getSheetSummaryUseCase';
 
-class GetSheetController {
-    constructor(private getSheetUseCase: GetSheetUseCase) {}
+class GetSheetSummaryController {
+    constructor(private getSheetSummaryUseCase: GetSheetSummaryUseCase) {}
 
     async handle(req: Request, res: Response): Promise<Response> {
         //const { user } = req.headers; // headers parameters are considerated as possibles arrays????
@@ -11,11 +11,11 @@ class GetSheetController {
         const { username } = req.headers;
         const userName = username as string; // username has type string │ string[]
         
-        const response = await this.getSheetUseCase.execute({ sheetName, userName });
+        const response = await this.getSheetSummaryUseCase.execute({ sheetName, userName });
 
         if (response.status === 200) {
-            const sheetNames = JSON.stringify(response.sheet);
-            return res.send(sheetNames);
+            const sheetSummary = JSON.stringify(response.sheetSummary);
+            return res.send(sheetSummary);
         }
         else if (response.status === 404) {
             return res.status(404).json({ error: response.errorMessage});
@@ -30,4 +30,4 @@ class GetSheetController {
     }
 }
 
-export { GetSheetController };
+export { GetSheetSummaryController };
