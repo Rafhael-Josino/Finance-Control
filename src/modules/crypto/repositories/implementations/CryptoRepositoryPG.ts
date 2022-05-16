@@ -1,40 +1,60 @@
 import { PG } from '../../../../database';
 import { v4 as uuidv4 } from 'uuid';
-import fs from 'fs';
-import path from 'path';
-import { CryptoSheet, CryptoPurchase } from '../../models/Cryptos';
+import { 
+    CryptoPurchase,
+    CryptoSell,
+    CryptoPurchaseSellRelation,
+    CryptoSheet,
+    CryptoSummary 
+} from '../../models/Cryptos';
 import { 
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
+    IGetAssetDTO,
     ICryptoResponse,
     IPostSheetOperationsResponse,
-    ICryptoSummary
+    ICryptoSummary,
+    ICryptoAsset
 } from '../ICryptoRepository';
 
 class CryptoRepositoryPG implements ICryptoRepository {
-    
-    // Still using JSON files
-    
     async getSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoResponse> {
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+        return
+    }
 
+    async getAsset({ userName, sheetName, assetName}: IGetAssetDTO): Promise<ICryptoAsset> {
+        return 
+    }
+
+    async getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary> {
         try {
-            const cryptoUser = JSON.parse(fs.readFileSync(pathName, 'utf8'));
-            const sheet = cryptoUser.sheets.find((sheet: CryptoSheet) => sheet.sheetName === sheetName);
+            const summary = await PG.query(
+                `SELECT asset,
+                    sum (remain_quant) as total_quant,
+                    sum (remain_quant * purchase_medium_price) as total_value
+                from purchases
+                where
+                    sheet_id in (select sheet_id from sheets where upload_id = (select upload_id from uploads order by created_at desc limit 1))
+                and 
+                    sheet_id in (select sheet_id from sheets where sheetname = 'novadax')
+                group by asset;
+                `,
+                []
+            );
+
             return {
                 status: 200,
-                sheet
+                sheetSummary: summary.rows
             }
         } catch (err) {
+            console.log("Error in getsummary from CryptoRepositoryPG:");
+            console.log(err);
             return {
                 status: 500,
                 errorMessage: err.message
             }
         }
-    }
-
-    async getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary> {
         return 
     }
 
@@ -93,7 +113,40 @@ class CryptoRepositoryPG implements ICryptoRepository {
                                     sheetID
                                 ]
                             );
-                        })
+                        });
+                    });
+
+                    cryptoSheet.cryptoSellsList.presentAssets().forEach(async cryptoAsset => {
+                        await cryptoSheet.cryptoSellsList.assets[cryptoAsset].map(async (cryptoSell: CryptoSell) => {
+                            
+                            console.log("inserting sell of sheet", cryptoSheet.sheetName);
+
+                            await PG.query(
+                                "INSERT INTO sells (sell_id, asset, sell_date, sell_local, received, quant_sold, sheet_id) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7)",
+                                [
+                                    uuidv4(),
+                                    cryptoSell.asset,
+                                    formatDate(cryptoSell.sellingDate),
+                                    cryptoSell.local,
+                                    String(cryptoSell.received),
+                                    String(cryptoSell.quantSold),
+                                    sheetID
+                                ]
+                            );
+                        });
+                    });
+
+                    cryptoSheet.cryptoRelation.presentAssets().forEach(async cryptoAsset => {
+                        await cryptoSheet.cryptoSellsList.assets[cryptoAsset].map(async (cryptoRelation: CryptoPurchaseSellRelation) => {
+                            
+                            console.log("inserting relation between purchase and sell of sheet", cryptoSheet.sheetName);
+
+                            await PG.query(
+                                "INSERT INTO sells (sell_id, asset, sell_date, sell_local, received, quant_sold, sheet_id) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7)",
+                                [            
+                                ]
+                            );
+                        });
                     });
 
                     console.log('after insert data in DB');

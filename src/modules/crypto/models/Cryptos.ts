@@ -22,10 +22,10 @@ class CryptoSell {
     quantSold: number;
     
     // Attributes that are obtained from previous purchases:
-    aquisitionDate: string;
-    aquisitionValue: number;
+    aquisitionDate: string; // will be ereased
+    aquisitionValue: number; // will be ereased
     buyIndexes: CryptoSoldLog[]; // will be ereased 
-    leftOverQuant: string;
+    leftOverQuant: string; // will be ereased
 }
 
 // Substituted for CryptoPruchaseSellRelation - delete after validation of the new one
@@ -178,7 +178,7 @@ class CryptoPurchaseSellList {
 
 class CryptoSheet {
     cryptoPurchasesList: CryptoPurchasesList;
-    cryptoSellList: CryptoSellsList;
+    cryptoSellsList: CryptoSellsList;
     cryptoRelation: CryptoPurchaseSellList;
     sheetName: string;
     created_at: Date;

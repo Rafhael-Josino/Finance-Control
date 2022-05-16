@@ -1,10 +1,16 @@
-import { CryptoSheet, CryptoSummary } from "../models/Cryptos";
+import { CryptoSheet, CryptoSummary, CryptoPurchase, CryptoSell, CryptoPurchaseSellRelation } from "../models/Cryptos";
 
 // Function arguments types
 
 interface IGetSheetOperationsDTO {
     userName: string;
     sheetName: string;
+}
+
+interface IGetAssetDTO {
+    userName: string;
+    sheetName: string;
+    assetName: string;
 }
 
 interface IPostSheetOperationsDTO {
@@ -17,6 +23,14 @@ interface IPostSheetOperationsDTO {
 interface ICryptoResponse {
     status: number;
     sheet?: CryptoSheet;
+    errorMessage?: string;
+}
+
+interface ICryptoAsset {
+    status: number;
+    purchases?: CryptoPurchase[];
+    sells?: CryptoSell[]
+    relations?: CryptoPurchaseSellRelation[];
     errorMessage?: string;
 }
 
@@ -36,6 +50,7 @@ interface IPostSheetOperationsResponse {
 
 interface ICryptoRepository {
     getSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoResponse>;
+    getAsset({ userName, sheetName, assetName}: IGetAssetDTO): Promise<ICryptoAsset>;
     getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary>;
     postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse>;
 }
@@ -44,7 +59,9 @@ export {
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
+    IGetAssetDTO,
     ICryptoResponse,
     IPostSheetOperationsResponse,
-    ICryptoSummary
+    ICryptoSummary,
+    ICryptoAsset
  };

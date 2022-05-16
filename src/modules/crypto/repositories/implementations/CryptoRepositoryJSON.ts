@@ -1,13 +1,21 @@
 import fs from 'fs';
 import path from 'path';
-import { CryptoPurchase, CryptoSheet, CryptoSummary } from '../../models/Cryptos';
+import { 
+    CryptoPurchase,
+    CryptoSell,
+    CryptoPurchaseSellRelation,
+    CryptoSheet,
+    CryptoSummary 
+} from '../../models/Cryptos';
 import { 
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
+    IGetAssetDTO,
     ICryptoResponse,
     IPostSheetOperationsResponse,
-    ICryptoSummary
+    ICryptoSummary,
+    ICryptoAsset
 } from '../ICryptoRepository';
 
 // parser is a service, should be called by the routes
@@ -38,6 +46,50 @@ class CryptoRepositoryJSON implements ICryptoRepository {
         }
     }
     
+    async getAsset({ userName, sheetName, assetName}: IGetAssetDTO): Promise<ICryptoAsset> {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+
+        try {
+            const cryptoUser = JSON.parse(fs.readFileSync(pathName, 'utf8'));
+            const sheet = cryptoUser.sheets.find((sheet: CryptoSheet) => sheet.sheetName === sheetName);
+            if (!sheet) {
+                return {
+                    status: 404,
+                    errorMessage: `${sheetName} not found`
+                }
+            }
+            if (assetName in sheet.cryptoPurchasesList.assets) {
+                if (assetName in sheet.cryptoSellsList.assets) {
+                    return {
+                        status: 200,
+                        purchases: sheet.cryptoPurchasesList.assets[assetName],
+                        sells: sheet.cryptoSellsList.assets[assetName],
+                        relations: sheet.cryptoPurchaseSellRelations[assetName]
+                    }
+                }
+                else {
+                    return {
+                        status: 200,
+                        purchases: sheet.cryptoPurchasesList.assets[assetName],
+                        sells: [],
+                        relations: []
+                    }
+                }
+            }
+            return {
+                status: 404,
+                errorMessage: `${assetName} not present in the sheet ${sheetName}`
+            }
+        } catch (err) {
+            console.log("Error in getAsset from CryptoRepositoryJSON:");
+            console.log(err);
+            return {
+                status: 500,
+                errorMessage: err.message
+            }
+        }
+    }
+
     async getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary> {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
         
