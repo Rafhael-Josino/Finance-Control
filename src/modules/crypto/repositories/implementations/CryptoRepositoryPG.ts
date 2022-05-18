@@ -74,7 +74,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
             */
            
             await PG.query(
-               'INSERT INTO uploads (upload_id, user_id) VALUES ($1, (SELECT user_id FROM users WHERE username = $2))',
+               'INSERT INTO uploads (upload_id, user_id) VALUES ($1, (SELECT user_id FROM users WHERE user_name = $2))',
                [uploadID, userName]
             );
 
@@ -88,20 +88,20 @@ class CryptoRepositoryPG implements ICryptoRepository {
                     console.log("inserting sheet", cryptoSheet.sheetName);
 
                     await PG.query(
-                        'INSERT INTO sheets (sheet_id, upload_id, sheetname) VALUES ($1, $2, $3)',
+                        'INSERT INTO sheets (sheet_id, upload_id, sheet_name) VALUES ($1, $2, $3)',
                         [sheetID, uploadID, cryptoSheet.sheetName]
                     );
                     // still without order, so the index must be saved in the object beforehand
                     // this repository function has the objetive of solely save the object in the database
                     cryptoSheet.cryptoPurchasesList.presentAssets().forEach(async cryptoAsset => {
-                        await cryptoSheet.cryptoPurchasesList.assets[cryptoAsset].map(async (cryptoPurchase: CryptoPurchase) => {
+                        await cryptoSheet.cryptoPurchasesList.assets[cryptoAsset].map(async (cryptoPurchase: CryptoPurchase, index: number) => {
                             
                             console.log("inserting purchase of sheet", cryptoSheet.sheetName);
 
                             await PG.query(
-                                "INSERT INTO purchases (purchase_id, asset, purchase_date, purchase_local, total_bought, purchase_medium_price, tax, remain_quant, new_medium_price, sheet_id) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7, $8, $9, $10)",
+                                "INSERT INTO purchases (purchase_index, asset, purchase_date, purchase_local, total_bought, purchase_medium_price, tax, remain_quant, new_medium_price, sheet_id) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7, $8, $9, $10)",
                                 [
-                                    uuidv4(),
+                                    String(index),
                                     cryptoPurchase.asset,
                                     formatDate(cryptoPurchase.date),
                                     cryptoPurchase.local,
@@ -115,16 +115,16 @@ class CryptoRepositoryPG implements ICryptoRepository {
                             );
                         });
                     });
-
+                    
                     cryptoSheet.cryptoSellsList.presentAssets().forEach(async cryptoAsset => {
-                        await cryptoSheet.cryptoSellsList.assets[cryptoAsset].map(async (cryptoSell: CryptoSell) => {
+                        await cryptoSheet.cryptoSellsList.assets[cryptoAsset].map(async (cryptoSell: CryptoSell, index: number) => {
                             
                             console.log("inserting sell of sheet", cryptoSheet.sheetName);
 
                             await PG.query(
-                                "INSERT INTO sells (sell_id, asset, sell_date, sell_local, received, quant_sold, sheet_id) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7)",
+                                "INSERT INTO sells (sell_index, asset, sell_date, sell_local, received, quant_sold, sheet_id) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7)",
                                 [
-                                    uuidv4(),
+                                    String(index),
                                     cryptoSell.asset,
                                     formatDate(cryptoSell.sellingDate),
                                     cryptoSell.local,
@@ -135,7 +135,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
                             );
                         });
                     });
-
+                    /*
                     cryptoSheet.cryptoRelation.presentAssets().forEach(async cryptoAsset => {
                         await cryptoSheet.cryptoSellsList.assets[cryptoAsset].map(async (cryptoRelation: CryptoPurchaseSellRelation) => {
                             
@@ -148,7 +148,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
                             );
                         });
                     });
-
+                    */
                     console.log('after insert data in DB');
                     //cryptoSheet.cryptoSellList.presentAssets().forEach(as)
                 },
@@ -163,7 +163,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
         } catch (err) {
             return {
                 status: 500,
-                errorMessage: "not ready with error: " + err.message
+                errorMessage: "Crypto Repository PG (post sheet) here - internal error: " + err.message
             }
         }
 

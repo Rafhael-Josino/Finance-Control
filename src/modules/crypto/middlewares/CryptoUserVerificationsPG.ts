@@ -10,7 +10,7 @@ class CryptoUserVerifications {
             const { username } = req.headers;
             const userName = username as string;
             
-            const resPG = await PG.query('SELECT username FROM users where username = $1', [userName]);
+            const resPG = await PG.query('SELECT user_name FROM users where user_name = $1', [userName]);
 
             //console.log(resPG.rows);
 
@@ -25,7 +25,7 @@ class CryptoUserVerifications {
         } catch (err) {
             console.log("Server's middleware (verifyUserExists) here:", err);
             // change error message
-            res.status(500).json({error: "Server's middleware here - unable to read directory: " + err.message});
+            res.status(500).json({error: "Server's middleware here - internal error: " + err.message});
         }
     }
 
@@ -55,7 +55,7 @@ class CryptoUserVerifications {
             const { username } = req.headers;
             const userName = username as string;
             
-            const resPG = await PG.query('SELECT username FROM users where username = $1', [userName]);
+            const resPG = await PG.query('SELECT user_name FROM users where user_name = $1', [userName]);
 
             console.log(resPG.rows);
 
