@@ -1,0 +1,370 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Praticando Swagger UI",
+        "description": "Praticando documentação com swagger dentro do estudo de node js",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/saveSheet": {
+            "post": {
+                "tags": ["Crypto"],
+                "summary": "Saves the info present in the user's .xlsx file",
+                "description": "Parses the .xlsx file. The operations logged must have a determined format according to (put github link)",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Informs that the .xlsx file was read and its info stored successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "description": "array of sheets's names that were parsed and stored successfully",
+                                    "elements": {
+                                        "name": "string"
+                                    },
+                                    "example": [
+                                        "sheet1",
+                                        "sheet2"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Either the user or his .xlsx file does not exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Server's middleware here - exampleUser does not exist"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sheets": {
+            "get": {
+                "tags": ["Crypto"],
+                "summary": "Returns list of sheets parsed from XLSX file",
+                "description": "Returns list of sheets objects, which were parsed each from XLSX file sheet",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns array with list of the sheets that were parsed from the user's .xlsx file",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "description": "array of sheets's names",
+                                    "elements": {
+                                        "name": "string"
+                                    },
+                                    "example": [
+                                        "sheet1",
+                                        "sheet2"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The user does not exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Server's middleware here - exampleUser does not exist"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sheet/{sheetName}": {
+            "get": {
+                "tags": ["Crypto"],
+                "summary": "Returns the information of a sheet parsed",
+                "description": "Returns the information of a specified sheet, where is contained all transactions of crypto coins",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    },
+                    {
+                        "name": "sheetName",
+                        "in": "path",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Selected sheet's name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns information of all transactions obtained from a selected sheet of the user's .xlsx file",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "CryptoSheet",
+                                    "description": "Custom object with list of purchases, sells and its own information",
+                                    "elements": {
+                                        "List of purchases": "CryptoPurchasesList",
+                                        "List of sells": "CryptoSellList",
+                                        "Sheet's name": "string",
+                                        "created_at": "Date",
+                                        "id": "uuid"
+                                    },
+                                    "example": [
+                                       
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data from selected sheet was not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message: data from selected sheet not found",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Example_sheet not found"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "post": {
+                "tags": ["User"],
+                "summary": "Creates a new user account",
+                "description": "Creates a new user object where the .xlsx info will be stored after parsed",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "New user's name"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Informs that the user was successfully created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "Custom object with user information",
+                                    "elements": {
+                                        "id": "string",
+                                        "name": "string",
+                                        "created_at": "Date",
+                                        "sheets": "CryptoSheet"
+                                    },
+                                    "example": {
+                                        "id": "c6b8431a-cabb-4143-b016-6cfb91f1c604",
+                                        "name": "NewUser",
+                                        "created_at": "01-01-2022T22:00:00.701Z",
+                                        "sheets": []
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "User asked to be created already exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Server's middleware here - NewUser already exists "
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": ["User"],
+                "summary": "Returns user's data",
+                "description": "Returns object with user's information. If there a XLSX file was parsed, only the sheets's names are shown here",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User's information (only names of XLSX parsed sheets)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "Custom object with user information",
+                                    "elements": {
+                                        "id": "string",
+                                        "name": "string",
+                                        "created_at": "Date",
+                                        "sheets": "array"
+                                    },
+                                    "example": {
+                                        "id": "c6b8431a-cabb-4143-b016-6cfb91f1c604",
+                                        "name": "NewUser",
+                                        "created_at": "01-01-2022T22:00:00.701Z",
+                                        "sheets": ["sheet1", "sheet2"]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "The user does not exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Server's middleware here - exampleUser does not exist"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["User"],
+                "summary": "Delete user",
+                "description": "Delete the user's information",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "User's information was deleted"
+                    },
+                    "404": {
+                        "description": "The user does not exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Server's middleware here - exampleUser does not exist"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": ["User"],
+                "summary": "Returns list of users",
+                "description": "Returns array with list of user names",
+                "responses": {
+                    "200": {
+                        "description": "List of user names",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "description": "array of user names",
+                                    "elements": {
+                                        "name": "string"
+                                    },
+                                    "example": [
+                                        "user1",
+                                        "user2"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

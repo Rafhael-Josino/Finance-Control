@@ -1,0 +1,114 @@
+import fs from 'fs';
+import path from 'path';
+import { CryptoUser } from '../../models/CryptoUser';
+import {
+    ICryptoUserRepository,
+    ICryptoListSheetsResponse,
+    ICryptoListUsersResponse,
+    ICryptoUserResponse
+} from '../ICryptoUserRepository';
+
+
+class CryptoUserRepositoryJSON implements ICryptoUserRepository {
+    async listUsers(): Promise<ICryptoListUsersResponse> {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos');
+
+        try {
+            const dirFiles = fs.readdirSync(pathName, 'utf8');
+            const filesFilter = new RegExp('\\w+.json');
+            const jsonFiles = dirFiles.filter(file => file.match(filesFilter));
+            return {
+                status: 200,
+                usersList: jsonFiles
+            }
+        } catch (err) {
+            return {
+                status: 500,
+                errorMessage: `Error reading directory: ` + err.message
+            }
+        }
+    }
+
+    async getUser( userName: string): Promise<ICryptoUserResponse> {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+
+        try {
+            const data = fs.readFileSync(pathName, 'utf8');
+
+            console.log(`Sending ${userName}.json`);
+            return {
+                status: 200,
+                //cryptoUser: data // fix this part -> parse the string onto the CryptoUser custom object
+            }           
+        } catch (err) {
+            console.log("Server here - unable to read file:", `${userName}.json` , err);
+            return {
+                status: 500,
+                errorMessage: err.message
+            }
+        }
+    }
+
+    async createUser( userName: string ): Promise<ICryptoUserResponse> {
+        const cryptoUser = new CryptoUser();
+        Object.assign(cryptoUser, {
+            name: userName,
+            created_at: new Date(),
+        });
+
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+        
+        try {
+            fs.writeFileSync(pathName, JSON.stringify(cryptoUser));
+            console.log(`${userName}.json written successfully`);
+            return {
+                status: 201,
+                cryptoUser
+            }
+        } catch (err) {
+            console.log(`Server here - Error writting ${userName}.json file:`, err);
+            return {
+                status: 500,
+                errorMessage: `Error writting ${userName}.json file: ` + err.message
+            }
+        }
+    }
+
+    listSheets( userName: string ): ICryptoListSheetsResponse {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+        
+        try {
+            const userData = JSON.parse(fs.readFileSync(pathName, 'utf8'));
+            const sheetNames = userData.sheets.map((sheet: any) => sheet.sheetName);
+            console.log(`Server here - Sending ${userName}.json's sheet names`);
+            return {
+                status: 200,
+                sheetsList: sheetNames
+            }
+        } catch (err) {
+            console.log("Server here - unable to read file:", `${userName}.json` , err);
+            return {
+                status: 500,
+                errorMessage: `Unable to read file ${userName}.json: ` + err.message
+            }
+        }
+    }
+    
+    async deleteUser( userName: string ): Promise<ICryptoUserResponse> {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+        
+        try {
+            fs.unlinkSync(pathName);
+            return {
+                status: 204,
+            }
+        } catch (err) {
+            return {
+                status: 500,
+                errorMessage: `Unable to delete user ${userName}: ` + err.message 
+            }
+        }
+    }
+}
+
+export { CryptoUserRepositoryJSON }

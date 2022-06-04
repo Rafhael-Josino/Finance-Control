@@ -1,144 +1,35 @@
-const express = require('express');
-const path = require('path');
-const app = express();
-const cors = require('cors');
-const fs = require('fs');
-const ExcelJS = require('exceljs');
-const { v4: uuid } = require('uuid');
-const { readWorksheet } = require('./parser.js');
+import express from 'express';
+import path from 'path';
+import cors from 'cors';
+import fs from 'fs';
+import swaggerUi from 'swagger-ui-express';
 
+import { cryptoRoutes } from './modules/crypto/routers/crypto.routes';
+import { indexRoutes } from './routers/index.routes';
+
+//import { pool, client } from "./database";
+//import { dataSource } from './database'; // to typeorm@0.3.4
+
+//import * as swaggerFile2 from './swagger.json'; // why is not working?
+
+const swaggerPath = path.join(__dirname, 'swagger.json');
+const swaggerFile = JSON.parse(fs.readFileSync(swaggerPath, 'utf8'));
+const app = express();
 
 /* --------------------- Middleware -------------------- */
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-
-function verifyUserExists(req, res, next) {
-	const { user } = req.headers;
-
-	fs.readdir(path.join(__dirname, '..', 'cryptoLogs'), (err, files) => {
-		if (err) {
-			console.log("Unable to read directory:", err);
-			res.status(500).json({error: "Unable to read directory: " + err.message});
-		}
-		else {
-			console.log(files);
-			if (files.includes(user)) return next();
-			else {
-				console.log("User does not exist");
-				return res.status(404).json({error: "User does not exist"});
-			}
-		}
-	})
-}
-
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 /* --------------------- Index -------------------- */
 
-app.get('/index.css', (req, res) => {
-	const options = {
-		root: __dirname
-	}
-	res.sendFile("index.css", options, (err) => {
-		if (err) console.log("error sendFile");
-		else console.log("index.css sent");
-	})
-});
-
-
-app.get('/index', (req, res) => {
-	const namePath = path.join(__dirname, 'index.html');
-	fs.readFile(namePath, 'utf8', (err, data) => {
-		if (err) console.log("Error reading cryptos index:", err);
-		else {
-			console.log("Sending index.html");
-			res.send(data);
-		}
-	})
-})
-
-app.get('/images/:image', (req, res) => {
-	console.log("Loading image", req.params.image);
-	const namePath = path.join(__dirname, "images", req.params.image);
-	fs.readFile(namePath, (err, data) => {
-		if (err) {
-			console.log("Error:", err);
-			res.status(404).json({ error: "Image not found: " + err.message });
-		}
-		else {
-			console.log("Sending image", req.params.image);
-			res.send(data);
-		}
-	})
-})
-
+app.use(indexRoutes);
 
 /* --------------------- Crypto Operations ---------------------- */
 
-app.get('/cryptos', (req, res) => {
-	const namePath = path.join(__dirname, 'cryptos.html');
-	fs.readFile(namePath, 'utf8', (err, data) => {
-		if (err) console.log("Error reading cryptos file:", err);
-		else {
-			console.log("Sending cryptos.js");
-			res.send(data);
-		}
-	})
-})
-
-app.get('/cryptos.js', (req, res) => {
-	const namePath = path.join(__dirname, 'cryptos.js');
-	fs.readFile(namePath, 'utf8', (err, data) => {
-		if (err) console.log("Error reading cryptos code:", err);
-		else {
-			console.log("Sending cryptos.js");
-			res.send(data);
-		}
-	})
-})
-
-app.get('/sheets', verifyUserExists, (req, res) => {
-	const { user } = req.headers;
-	const pathName = path.join(__dirname, '..', "cryptoLogs", user, "cryptos.xlsx");
-	const workbook = new ExcelJS.Workbook();
-	
-	workbook.xlsx.readFile(pathName).then(() => {
-		if (workbook.worksheets.length > 0) {
-			const namesList = [];
-			workbook.worksheets.forEach(sheet => namesList.push(sheet.name));
-			res.send(namesList);
-		}
-	}).catch(err => {
-		console.log("Error reading file:", err.message);
-		res.status(500).json({ error: "Error reading file:" + err.message})
-	})
-})
-
-app.get('/operations/:sheetNumber', verifyUserExists, (req, res) => {
-	const { sheetNumber } = req.params;
-	const { user } = req.headers;
-	const pathName = path.join(__dirname, '..', "cryptoLogs", user, `sheet${sheetNumber}.json`);
-
-	fs.readFile(pathName, 'utf8', (err, data) => {
-		if (err) {
-			console.log("Error reading cryptos file:", err);
-			console.log("Attempting to create file from cryptos.xlsx:");
-			readWorksheet(user, sheetNumber, fs, path, ExcelJS, res);
-		}
-		else {
-			console.log("Sending:", pathName);
-			res.send(data);
-		}
-	});
-});
-
-app.put('/operations/:sheetNumber', verifyUserExists, (req, res) => {
-	const { sheetNumber } = req.params;
-	const { user } = req.headers;
-	readWorksheet(user, sheetNumber, fs, path, ExcelJS, res);
-});
-
+app.use(cryptoRoutes);
 
 /* --------------------- Finances ---------------------- */
 
@@ -222,7 +113,7 @@ app.post('/editTransaction', (req, res) => {
 			oldData[transactionsIndex].Description = Description;
 			oldData[transactionsIndex].Value = Value;
 			oldData[transactionsIndex].Date = Date;
-			newData = JSON.stringify(oldData);
+			const newData = JSON.stringify(oldData);
 			fs.writeFile(fileName, newData, err => {
 				if (err) {
 					console.log("Error at file edition:", err);

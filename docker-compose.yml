@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  database:
+    image: postgres
+    container_name: database_fin
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=finctrl
+      - POSTGRES_DB=fin_ctrl
+    volumes:
+      - pgdata:/data/postgres
+
+  app:
+    build: .
+    container_name: fin_ctrl
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/usr/app
+    links:
+      - database
+    depends_on:
+      - database
+
+volumes:
+  pgdata:
+    driver: local

@@ -322,15 +322,17 @@ button:hover {
 /* ################## cryptos.html ###################*/
 /* ################################################## */
 
+#cryptosMenu {
+    width: 730px;
+    margin: auto;
+}
+
 #navCryptos {
     margin-top: 1rem;
     padding: .5rem;
     background-color: green;
     font-weight: bold;
     border-radius: 0.25rem;
-    width: 70vw;
-    margin-left: 15vw;
-    margin-right: 15vw;
 }
 
 #loadSheet {
@@ -343,10 +345,8 @@ button:hover {
 }
 
 #currentSituationTab {
+    width: 100%;
     margin-top: 1rem;
-    width: 70vw;
-    margin-left: 15vw;
-    margin-right: 15vw;
 }
 
 .newLineClass {
@@ -364,6 +364,7 @@ h1 {
 }
 
 #firstRoll {
+    text-align: center;
     background-color: green;
     color: white;
 }
@@ -373,54 +374,62 @@ h1 {
     margin-top: 10px;
 }
 
-#operationsDiv {
-    width: 70vw;
+#operationsSec {
     display: flex;
-    gap: 0.5rem;
-    margin-left: 23vw;
-    margin-right: 25vw;
+    justify-content: center;
+    gap: 1rem;
+}
+
+#purchasesDiv {
+    width: 50%;
+}
+
+#sellsDiv {
+    width: 50%;
 }
 
 #h2purchases {
     background-color: green;
     color: white;
     text-align: center;
+    width: 100%;
 }
 
 #h2sells {
     background-color: red;
     color: white;
     text-align: center;
+    width: 100%;
 }
 
-#purchasesDiv {
-    width: 25vw;
+.tableHover:hover {
+    font-weight: bold;
 }
 
-#sellsDiv {
-    width: 25vw;
-}
-
-#tablesP table {
+#tablesP table, #tablesS table {
+    width: 100%;
     background-color: white;
-    font-size: 12px;
-    border: 1px solid var(--this-green);
+    font-size: 13px;
     margin-top: 1rem;
-    width: 25vw;
     overflow: auto;
+    table-layout: fixed;
+    text-align: center;
+}
+
+#tablesP table { 
+    border: 1px solid var(--this-green);
 }
 
 #tablesS table {
-    background-color: white;
-    font-size: 12px;
     border: 1px solid red;
-    margin-top: 1rem;
-    width: 25vw;
-    overflow: auto;
 }
 
 #tablesS .subTable {
     margin-top: 0;
+}
+
+.gray-background {
+    background-color: rgb(216, 210, 210);
 }
 
 /* ############################## */
@@ -449,5 +458,25 @@ h1 {
 
     .tableClass {
         min-width: 450px;
+    }
+
+    #cryptosMenu {
+        width: 90vw;
+    }
+
+    #currentSituationSec {
+        overflow: auto;
+    }
+
+    #operationsSec {
+        flex-direction: column;
+    }
+
+    #purchasesDiv {
+        width: 100%;
+    }
+
+    #sellsDiv {
+        width: 100%;
     }
 }
