@@ -37,10 +37,10 @@ class CryptoRepositoryPG implements ICryptoRepository {
                 where
                     sheet_id in (select sheet_id from sheets where upload_id = (select upload_id from uploads order by created_at desc limit 1))
                 and 
-                    sheet_id in (select sheet_id from sheets where sheetname = 'novadax')
+                    sheet_id in (select sheet_id from sheets where sheetname = $1)
                 group by asset;
                 `,
-                []
+                [sheetName]
             );
 
             return {
@@ -55,7 +55,6 @@ class CryptoRepositoryPG implements ICryptoRepository {
                 errorMessage: err.message
             }
         }
-        return 
     }
 
     async postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse> {

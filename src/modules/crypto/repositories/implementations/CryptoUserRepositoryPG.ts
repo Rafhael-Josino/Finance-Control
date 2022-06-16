@@ -6,7 +6,8 @@ import {
     ICryptoUserRepository,
     ICryptoListSheetsResponse,
     ICryptoListUsersResponse,
-    ICryptoUserResponse
+    ICryptoUserResponse,
+    ICryptoResponse
 } from '../ICryptoUserRepository';
 
 /*
@@ -53,21 +54,15 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
 
     }
 
-    async createUser( userName: string ): Promise<ICryptoUserResponse> {
-        const cryptoUser = new CryptoUser();
-        Object.assign(cryptoUser, {
-            name: userName,
-            created_at: new Date(),
-        });
-
+    async createUser( userName: string ): Promise<ICryptoResponse> {
         try {
             const resPG = await PG.query(
-                'INSERT INTO users (user_id, username, created_on) VALUES ($1, $2, $3)',
-                [cryptoUser.id, cryptoUser.name, JSON.stringify(cryptoUser.created_at)]
+                'INSERT INTO users (user_name) VALUES ($1)',
+                [userName]
             );
             return {
                 status: 201,
-                cryptoUser
+                message: userName
             }
         } catch (err) {
             console.log(`Server here - Error creating user ${userName}:`, err);

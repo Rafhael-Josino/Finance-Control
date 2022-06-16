@@ -11,7 +11,7 @@ class CreateUserController {
         const response = await this.createUserUseCase.execute(userName);
 
         if (response.status === 201) {
-            return res.status(201).json({ newUser: response.cryptoUser });
+            return res.status(201).json({ newUser: response.message });
         }
         else if (response.status === 500) {
             return res.status(500).json({ error: response.errorMessage });

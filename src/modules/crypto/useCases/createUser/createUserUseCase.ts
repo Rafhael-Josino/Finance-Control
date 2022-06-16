@@ -1,9 +1,9 @@
-import { ICryptoUserRepository, ICryptoUserResponse } from '../../repositories/ICryptoUserRepository';
+import { ICryptoUserRepository, ICryptoResponse } from '../../repositories/ICryptoUserRepository';
 
 class CreateUserUseCase {
     constructor(private cryptoUserRepository: ICryptoUserRepository) {}
 
-    async execute( userName: string ): Promise<ICryptoUserResponse> {
+    async execute( userName: string ): Promise<ICryptoResponse> {
         return await this.cryptoUserRepository.createUser(userName);
     }
 }

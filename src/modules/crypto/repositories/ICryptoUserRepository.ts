@@ -6,7 +6,8 @@ import { CryptoUser } from '../models/CryptoUser';
 
 interface ICryptoResponse {
     status: number;
-    message: string;
+    message?: string;
+    errorMessage?: string;
 }
 
 interface ICryptoListSheetsResponse {
@@ -33,7 +34,7 @@ interface ICryptoUserRepository {
     listUsers(): Promise<ICryptoListUsersResponse>;
     // getUser should return user info. but instead of all the CryptoSheets, only their names
     getUser( username: string ): Promise<ICryptoUserResponse>;
-    createUser( userName: string ): Promise<ICryptoUserResponse>;
+    createUser( userName: string ): Promise<ICryptoResponse>;
     listSheets( userName: string ): ICryptoListSheetsResponse;
     deleteUser( userName: string ): Promise<ICryptoUserResponse>;
 }

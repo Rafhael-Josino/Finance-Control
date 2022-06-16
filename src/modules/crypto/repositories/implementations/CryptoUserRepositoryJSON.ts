@@ -1,11 +1,13 @@
 import fs from 'fs';
 import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import { CryptoUser } from '../../models/CryptoUser';
 import {
     ICryptoUserRepository,
     ICryptoListSheetsResponse,
     ICryptoListUsersResponse,
-    ICryptoUserResponse
+    ICryptoUserResponse,
+    ICryptoResponse
 } from '../ICryptoUserRepository';
 
 
@@ -49,9 +51,10 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
         }
     }
 
-    async createUser( userName: string ): Promise<ICryptoUserResponse> {
+    async createUser( userName: string ): Promise<ICryptoResponse> {
         const cryptoUser = new CryptoUser();
         Object.assign(cryptoUser, {
+            id: uuidv4(),
             name: userName,
             created_at: new Date(),
         });
@@ -63,7 +66,7 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
             console.log(`${userName}.json written successfully`);
             return {
                 status: 201,
-                cryptoUser
+                message: userName
             }
         } catch (err) {
             console.log(`Server here - Error writting ${userName}.json file:`, err);
