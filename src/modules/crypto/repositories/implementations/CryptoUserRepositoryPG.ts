@@ -17,8 +17,8 @@ try / catch blocks aren't handling when the API can't connect with DB
 class CryptoUserRepositoryPG implements ICryptoUserRepository {
     async listUsers(): Promise<ICryptoListUsersResponse> {
         try {
-            const resPG = await PG.query('SELECT username FROM users', []);
-            const usersList = resPG.rows.map((row) => row.username);
+            const resPG = await PG.query('SELECT user_name FROM users', []);
+            const usersList = resPG.rows.map((row) => row.user_name);
 
             return {
                 status: 200,
@@ -34,11 +34,11 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
 
     async getUser( userName: string): Promise<ICryptoUserResponse> {
         try {
-            const resPG = await PG.query('SELECT * FROM users WHERE username = $1', [userName]);
+            const resPG = await PG.query('SELECT * FROM users WHERE user_name = $1', [userName]);
             const cryptoUser = new CryptoUser();
             Object.assign(cryptoUser, {
                 id: resPG.rows[0].user_id,
-                name: resPG.rows[0].username,
+                name: resPG.rows[0].user_name,
                 created_at: resPG.rows[0].created_on,
             });
             return {

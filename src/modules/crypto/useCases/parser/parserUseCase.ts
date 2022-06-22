@@ -23,7 +23,11 @@ import {
     CryptoSheet,
     CryptoPurchaseSellList 
 } from "../../models/Cryptos"; // BAD?
-import { ICryptoRepository, IPostSheetOperationsResponse } from '../../repositories/ICryptoRepository';
+import { 
+    ICryptoRepository,
+    IPostSheetOperationsResponse
+} from '../../repositories/ICryptoRepository';
+
 
 class ParserCryptoUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
@@ -54,7 +58,6 @@ class ParserCryptoUseCase {
         let cryptoRelationList: CryptoPurchaseSellList;
         
 
- 
         // ############################### Log Functions #############################
         // Each log function is called when the parser is already in its line from the sheet
     
@@ -161,6 +164,8 @@ class ParserCryptoUseCase {
             if (cell === null || cell === "STOP") {
                 console.log("Parsing finished");
                 const cryptoSheet = new CryptoSheet();
+
+                // Save last line parsed - parser.line
                 Object.assign(cryptoSheet, {
                     cryptoPurchasesList,
                     cryptoSellsList,
@@ -200,9 +205,11 @@ class ParserCryptoUseCase {
             }
         }
 
-        // Recursive function to update purchases object whose assets were sold
-        // Each recursion iteration corresponds to a CryptoPurchase object that is been sold (totally or partially);
-        function updatePurchases (asset: string, purchaseIndex: number, sellIndex: number, debit: number): number {
+        /**
+         // Recursive function to update purchases object whose assets were sold
+         // Each recursion iteration corresponds to a CryptoPurchase object that is been sold (totally or partially);
+         */
+        function updatePurchases (asset: string, purchaseIndex: number, sell_id: string, debit: number): number {
             if (cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant) {
                 const leftOver = cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant - debit;
 
@@ -211,8 +218,8 @@ class ParserCryptoUseCase {
                     // Fill an entry of the purchase/sell relation table
                     cryptoRelationList.addRelation({
                         asset,
-                        purchaseIndex,
-                        sellIndex,
+                        purchase_id: cryptoPurchasesList.assets[asset][purchaseIndex].purchase_id,
+                        sell_id,
                         quantSold: debit
                     });
                     
@@ -229,8 +236,8 @@ class ParserCryptoUseCase {
                     // Fill an entry of the purchase/sell relation table
                     cryptoRelationList.addRelation({
                         asset,
-                        purchaseIndex,
-                        sellIndex,
+                        purchase_id: cryptoPurchasesList.assets[asset][purchaseIndex].purchase_id,
+                        sell_id,
                         quantSold: cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant
                     });
                     
@@ -240,16 +247,20 @@ class ParserCryptoUseCase {
                     // Calls a new recursion to retrieve the remanescent cryptocoins from the next(s) purchase(s)
                     // The purchaseIndex passed is incremented in one (1) to verify the consecutive purchase and
                     // The value of the debit passed is the rest to be quited (in cryptocoins, not its value in FIAT money)
-                    return updatePurchases(asset, ++purchaseIndex, sellIndex, -leftOver);
+                    return updatePurchases(asset, ++purchaseIndex, sell_id, -leftOver);
                 }
             }
             // The verified purchase has not cryptocoins registerd to be sold, so the next one will be checked
             else {
-                return updatePurchases(asset, ++purchaseIndex, sellIndex, debit);
+                return updatePurchases(asset, ++purchaseIndex, sell_id, debit);
             }
         }
 
-        // Parsing xlsx file:
+
+        /**
+         * Parsing xlsx file:
+         */
+
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.xlsx`);
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(pathName);
@@ -271,8 +282,8 @@ class ParserCryptoUseCase {
                 cryptoSellsList.presentAssets().forEach(asset => {
                     // Each reduce iteration corresponds to a CryptoSell object 
                     cryptoSellsList.assets[asset].reduce(
-                        (purchaseIndex: number, cryptoSell: CryptoSell, index: number): number => { 
-                            return updatePurchases(asset, purchaseIndex, index, cryptoSell.quantSold);
+                        (purchaseIndex: number, cryptoSell: CryptoSell): number => { 
+                            return updatePurchases(asset, purchaseIndex, cryptoSell.sell_id, cryptoSell.quantSold);
                         },
                         0
                     );

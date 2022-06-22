@@ -1,8 +1,9 @@
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 //const cryptoNames = ['BTC', 'ETH', 'LTC', 'EOS', 'USDT', 'TUSD', 'USDC', 'PAX', 'BUSD', 'LINK', 'MANA', 'SAND'];
 
 class CryptoPurchase {
+    purchase_id: string;
     asset: string;
     date: Date;
     local: string;
@@ -11,9 +12,15 @@ class CryptoPurchase {
     tax: number;
     remainQuant: number;
     newMediumPrice: number;
+
+    constructor() {
+        this.purchase_id = nanoid();
+    }
 }
 
 class CryptoSell {
+    sell_id: string;
+
     // Attributes that are present in the sheet:
     asset: string;
     sellingDate: Date;
@@ -26,20 +33,26 @@ class CryptoSell {
     aquisitionValue: number; // will be ereased
     buyIndexes: CryptoSoldLog[]; // will be ereased 
     leftOverQuant: string; // will be ereased
+
+    constructor() {
+        this.sell_id = nanoid();
+    }
 }
 
 // Substituted for CryptoPruchaseSellRelation - delete after validation of the new one
+/****************************************************************************************** */
 class CryptoSoldLog {
     index: number;
     date: Date;
     quant: number;
     price: number;
 }
+//**************************************************************************************** */
 
 class CryptoPurchaseSellRelation {
     asset: string;
-    purchaseIndex: number;
-    sellIndex: number;
+    purchase_id: string;
+    sell_id: string;
     quantSold: number;
 }
 
@@ -182,10 +195,13 @@ class CryptoSheet {
     cryptoRelation: CryptoPurchaseSellList;
     sheetName: string;
     created_at: Date;
-    id?: string;
+    lastLine: number;
+    id: string;
 
     constructor() {
-        if (!this.id) this.id = uuidv4();
+        //if (!this.id) this.id = uuidv4();
+        this.lastLine = 0;
+        this.id = nanoid();
     }
 }
 
