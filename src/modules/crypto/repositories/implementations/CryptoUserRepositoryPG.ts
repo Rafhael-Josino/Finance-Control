@@ -15,6 +15,8 @@ try / catch blocks aren't handling when the API can't connect with DB
 */
 
 class CryptoUserRepositoryPG implements ICryptoUserRepository {
+
+    /** Returns list of users's names */
     async listUsers(): Promise<ICryptoListUsersResponse> {
         try {
             const resPG = await PG.query('SELECT user_name FROM users', []);
@@ -32,6 +34,7 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
         }
     }
 
+    /** Returns a user's data */
     async getUser( userName: string): Promise<ICryptoUserResponse> {
         try {
             const resPG = await PG.query('SELECT * FROM users WHERE user_name = $1', [userName]);
@@ -54,6 +57,7 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
 
     }
 
+    /** Creates a new user */
     async createUser( userName: string ): Promise<ICryptoResponse> {
         try {
             const resPG = await PG.query(
@@ -72,6 +76,7 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
             }
         }
     }
+
 
     listSheets( userName: string ): ICryptoListSheetsResponse {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
@@ -93,9 +98,10 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
         }
     }
 
+    /** Deletes a user */
     async deleteUser( userName: string ): Promise<ICryptoUserResponse> {
         try {
-            const resPG = await PG.query('DELETE FROM users WHERE userName = $1', [userName]);
+            const resPG = await PG.query('DELETE FROM users WHERE user_name = $1', [userName]);
             return {
                 status: 204
             }
