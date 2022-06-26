@@ -80,8 +80,9 @@ class CryptoRepositoryPG implements ICryptoRepository {
 
                     // Must insert also user_id
                     await PG.query(
-                        'INSERT INTO sheets (sheet_id, sheet_name) VALUES ($1, $2)',
-                        [cryptoSheet.id, cryptoSheet.sheetName]
+                        `INSERT INTO sheets (sheet_name, sheet_id, user_id) 
+                        VALUES ($1, $2, (SELECT user_id FROM users WHERE user_name = $3))`,
+                        [cryptoSheet.sheetName, cryptoSheet.id, userName]
                     );
 
                     cryptoSheet.cryptoPurchasesList.presentAssets().forEach(async cryptoAsset => {
