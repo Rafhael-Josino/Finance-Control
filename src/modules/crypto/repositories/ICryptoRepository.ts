@@ -46,6 +46,11 @@ interface IPostSheetOperationsResponse {
     errorMessage?: string;
 }
 
+interface IDeleteResponse {
+    status: number;
+    message: string;
+}
+
 // Repository interface
 
 interface ICryptoRepository {
@@ -53,6 +58,7 @@ interface ICryptoRepository {
     getAsset({ userName, sheetName, assetName}: IGetAssetDTO): Promise<ICryptoAsset>;
     getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary>;
     postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse>;
+    deleteSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<IDeleteResponse>;
 }
 
 export { 
@@ -62,6 +68,7 @@ export {
     IGetAssetDTO,
     ICryptoResponse,
     IPostSheetOperationsResponse,
+    IDeleteResponse,
     ICryptoSummary,
     ICryptoAsset
  };

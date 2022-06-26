@@ -12,6 +12,8 @@ import {
 
 
 class CryptoUserRepositoryJSON implements ICryptoUserRepository {
+    
+    /** Returns list of users */
     async listUsers(): Promise<ICryptoListUsersResponse> {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos');
 
@@ -31,6 +33,7 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
         }
     }
 
+    /** Returns user's data */
     async getUser( userName: string): Promise<ICryptoUserResponse> {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
 
@@ -51,6 +54,7 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
         }
     }
 
+    /** Creates a new user */
     async createUser( userName: string ): Promise<ICryptoResponse> {
         const cryptoUser = new CryptoUser();
         Object.assign(cryptoUser, {
@@ -96,6 +100,7 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
             }
         }
     }
+    
     
     async deleteUser( userName: string ): Promise<ICryptoUserResponse> {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);

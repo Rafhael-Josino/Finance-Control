@@ -183,6 +183,47 @@
                 }
             }
         },
+        "/deleteSheet/{sheetName}": {
+            "delete": {
+                "tags": ["Crypto"],
+                "summary": "Deletes a sheet's information",
+                "description": "Deletes the parsed data of a determined sheet from user",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    },
+                    {
+                        "name": "sheetName",
+                        "in": "path",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Selected sheet's name"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Informs that the sheet's information was successufuly deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "description": "Confirmation that the sheet was deleted",
+                                    "example": "Sheet 2021_data was successfuly deleted"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "post": {
                 "tags": ["User"],

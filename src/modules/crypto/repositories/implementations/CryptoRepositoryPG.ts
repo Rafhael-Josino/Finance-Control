@@ -15,6 +15,7 @@ import {
     IGetAssetDTO,
     ICryptoResponse,
     IPostSheetOperationsResponse,
+    IDeleteResponse,
     ICryptoSummary,
     ICryptoAsset
 } from '../ICryptoRepository';
@@ -31,15 +32,14 @@ class CryptoRepositoryPG implements ICryptoRepository {
     async getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary> {
         try {
             const summary = await PG.query(
+                // FIX query bellow
                 `SELECT asset,
-                    sum (remain_quant) as total_quant,
-                    sum (remain_quant * purchase_medium_price) as total_value
-                from purchases
-                where
-                    sheet_id in (select sheet_id from sheets where upload_id = (select upload_id from uploads order by created_at desc limit 1))
-                and 
-                    sheet_id in (select sheet_id from sheets where sheetname = $1)
-                group by asset;
+                    SUM (remain_quant) AS total_quant,
+                    SUM (remain_quant * purchase_medium_price) AS total_value
+                FROM purchases
+                WHERE
+                    sheet_id IN (SELECT sheet_id FROM sheets WHERE sheet_name = $1)
+                GROUP BY asset;
                 `,
                 [sheetName]
             );
@@ -72,8 +72,6 @@ class CryptoRepositoryPG implements ICryptoRepository {
             await PG.query('INSERT INTO uploads (upload_id, user_id) VALUES ($1, $2)', [uploadID, userID]);
             */
            
-            // First testing only with purchases table
-
             await cryptoSheetList.reduce(
                 async (promise, cryptoSheet): Promise<void> => {
                     await promise;
@@ -177,6 +175,33 @@ class CryptoRepositoryPG implements ICryptoRepository {
             }
         }
 
+    }
+
+    async deleteSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<IDeleteResponse> {
+        try {
+            await PG.query(
+                `DELETE FROM sheets
+                WHERE
+                    sheet_name = $1
+                AND
+                    sheet_id IN (SELECT sheet_id FROM sheets WHERE 
+                        user_id = (SELECT user_id FROM users WHERE user_name = $2));
+                `,
+                [sheetName, userName]
+            );
+
+            return {
+                status: 204,
+                message: `Sheet ${sheetName} from user ${userName} deleted`
+            }
+        } catch(err) {
+            console.log("Error in Delete Sheet from CryptoRepositoryPG:");
+            console.log(err);
+            return {
+                status: 500,
+                message: err.message
+            }
+        }
     }
 }
 

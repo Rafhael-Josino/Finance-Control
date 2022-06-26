@@ -15,6 +15,7 @@ import {
     ICryptoResponse,
     IPostSheetOperationsResponse,
     ICryptoSummary,
+    IDeleteResponse,
     ICryptoAsset
 } from '../ICryptoRepository';
 
@@ -155,6 +156,10 @@ class CryptoRepositoryJSON implements ICryptoRepository {
                 errorMessage: err.message
             }
         }
+    }
+
+    async deleteSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<IDeleteResponse> {
+        return 
     }
 }
 
