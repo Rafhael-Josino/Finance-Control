@@ -19,6 +19,7 @@ import { deleteUserController } from '../useCases/deleteUser';
 import { getUserController } from '../useCases/getUser';
 import { getSheetController} from '../useCases/getSheet';
 import { getSheetSummaryController} from '../useCases/getSheetSummary';
+import { deleteSheetController } from '../useCases/deleteSheet';
 
 
 const cryptoRoutes = Router();
@@ -80,6 +81,10 @@ cryptoRoutes.post('/saveSheet', cryptoUserVerifications.verifyUserExists, crypto
 	parserCryptoController.handle(req, res);
 });
 
+// Delete given sheet's information of a user
+cryptoRoutes.delete('/deleteSheet/:sheetName', cryptoUserVerifications.verifyUserExists, (req, res) => {
+	deleteSheetController.handle(req, res);
+});
 
 // --------------------------- Crypto Users ------------------------------
 
