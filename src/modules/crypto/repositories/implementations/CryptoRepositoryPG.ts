@@ -32,7 +32,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
     async getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary> {
         try {
             const summary = await PG.query(
-                // FIX query bellow
+                // FIX query bellow / add filter per User
                 `SELECT asset,
                     SUM (remain_quant) AS total_quant,
                     SUM (remain_quant * purchase_medium_price) AS total_value
@@ -85,79 +85,111 @@ class CryptoRepositoryPG implements ICryptoRepository {
                         [cryptoSheet.sheetName, cryptoSheet.id, userName]
                     );
 
-                    cryptoSheet.cryptoPurchasesList.presentAssets().forEach(async cryptoAsset => {
-                        await cryptoSheet.cryptoPurchasesList.assets[cryptoAsset].map(async (cryptoPurchase: CryptoPurchase, index: number) => {
+                    await cryptoSheet.cryptoPurchasesList.presentAssets().reduce(
+                        async (promise, cryptoAsset): Promise<void> => {
+                            await promise;
+                            await cryptoSheet.cryptoPurchasesList.assets[cryptoAsset].reduce(
+                                async (promise2, cryptoPurchase): Promise<void> => {
+                                    await promise2;
                             
-                            console.log("inserting purchase of sheet", cryptoSheet.sheetName);
+                                    console.log("inserting purchase of sheet", cryptoSheet.sheetName);
 
-                            await PG.query(
-                                `INSERT INTO purchases (
-                                    purchase_id,
-                                    asset,
-                                    purchase_date,
-                                    purchase_local,
-                                    total_bought,
-                                    purchase_medium_price,
-                                    tax,
-                                    remain_quant,
-                                    new_medium_price,
-                                    sheet_id) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7, $8, $9, $10)`,
-                                [
-                                    cryptoPurchase.purchase_id,
-                                    cryptoPurchase.asset,
-                                    formatDate(cryptoPurchase.date),
-                                    cryptoPurchase.local,
-                                    String(cryptoPurchase.totalBought),
-                                    String(cryptoPurchase.purchaseMediumPrice),
-                                    String(cryptoPurchase.tax),
-                                    String(cryptoPurchase.remainQuant),
-                                    String(cryptoPurchase.newMediumPrice),
-                                    cryptoSheet.id
-                                ]
+                                    await PG.query(
+                                        `INSERT INTO purchases (
+                                            purchase_id,
+                                            asset,
+                                            purchase_date,
+                                            purchase_local,
+                                            total_bought,
+                                            purchase_medium_price,
+                                            tax,
+                                            remain_quant,
+                                            new_medium_price,
+                                            sheet_id
+                                        ) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7, $8, $9, $10)`,
+                                        [
+                                            cryptoPurchase.purchase_id,
+                                            cryptoPurchase.asset,
+                                            formatDate(cryptoPurchase.date),
+                                            cryptoPurchase.local,
+                                            String(cryptoPurchase.totalBought),
+                                            String(cryptoPurchase.purchaseMediumPrice),
+                                            String(cryptoPurchase.tax),
+                                            String(cryptoPurchase.remainQuant),
+                                            String(cryptoPurchase.newMediumPrice),
+                                            cryptoSheet.id
+                                        ]
+                                    );
+                                },
+                                Promise.resolve()
                             );
-                        });
-                    });
+                        },
+                        Promise.resolve()
+                    );
                     
-                    cryptoSheet.cryptoSellsList.presentAssets().forEach(async cryptoAsset => {
-                        await cryptoSheet.cryptoSellsList.assets[cryptoAsset].map(async (cryptoSell: CryptoSell, index: number) => {
+                    await cryptoSheet.cryptoSellsList.presentAssets().reduce(
+                        async (promise, cryptoAsset): Promise<void> => {
+                            await promise;
+                            await cryptoSheet.cryptoSellsList.assets[cryptoAsset].reduce(
+                                async (promise2, cryptoSell): Promise<void> => {
+                                    await promise2;
                             
-                            console.log("inserting sell of sheet", cryptoSheet.sheetName);
+                                    console.log("inserting sell of sheet", cryptoSheet.sheetName);
 
-                            await PG.query(
-                                `INSERT INTO sells (
-                                    sell_id,
-                                    asset,
-                                    sell_date,
-                                    sell_local,
-                                    received,
-                                    quant_sold,
-                                    sheet_id) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7)`,
-                                [
-                                    cryptoSell.sell_id,
-                                    cryptoSell.asset,
-                                    formatDate(cryptoSell.sellingDate),
-                                    cryptoSell.local,
-                                    String(cryptoSell.received),
-                                    String(cryptoSell.quantSold),
-                                    cryptoSheet.id
-                                ]
+                                    await PG.query(
+                                    `INSERT INTO sells (
+                                        sell_id,
+                                        asset,
+                                        sell_date,
+                                        sell_local,
+                                        received,
+                                        quant_sold,
+                                        sheet_id
+                                    ) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7)`,
+                                    [
+                                        cryptoSell.sell_id,
+                                        cryptoSell.asset,
+                                        formatDate(cryptoSell.sellingDate),
+                                        cryptoSell.local,
+                                        String(cryptoSell.received),
+                                        String(cryptoSell.quantSold),
+                                        cryptoSheet.id
+                                    ]
+                                    );
+                                },
+                                Promise.resolve()
                             );
-                        });
-                    });
-                    /*
-                    cryptoSheet.cryptoRelation.presentAssets().forEach(async cryptoAsset => {
-                        await cryptoSheet.cryptoSellsList.assets[cryptoAsset].map(async (cryptoRelation: CryptoPurchaseSellRelation) => {
-                            
-                            console.log("inserting relation between purchase and sell of sheet", cryptoSheet.sheetName);
+                        },
+                        Promise.resolve(),
+                    );
+                    
+                    await cryptoSheet.cryptoRelationList.presentAssets().reduce(
+                        async (promise, cryptoAsset): Promise<void> => {
+                            await promise;
+                            await cryptoSheet.cryptoRelationList.assets[cryptoAsset].reduce(
+                                async (promise2, cryptoRelation) => {
+                                    await promise2;
+                                    console.log("inserting relation between purchase and sell of sheet", cryptoSheet.sheetName);
 
-                            await PG.query(
-                                "INSERT INTO sells (sell_id, asset, sell_date, sell_local, received, quant_sold, sheet_id) VALUES ($1, $2, TO_DATE($3, 'DD/MM/YYYY'), $4, $5, $6, $7)",
-                                [            
-                                ]
+                                    await PG.query(
+                                        `INSERT INTO purchase_sell (
+                                            purchase_id,
+                                            sell_id,
+                                            quant_sold
+                                        ) VALUES ($1, $2, $3)`,
+                                        [
+                                            cryptoRelation.purchase_id,
+                                            cryptoRelation.sell_id,
+                                            String(cryptoRelation.quantSold)
+                                        ]
+                                    );
+                                },
+                                Promise.resolve()
                             );
-                        });
-                    });
-                    */
+                        },
+                        Promise.resolve()    
+                    );
+                    
                     console.log('after insert data in DB');
                     //cryptoSheet.cryptoSellList.presentAssets().forEach(as)
                 },

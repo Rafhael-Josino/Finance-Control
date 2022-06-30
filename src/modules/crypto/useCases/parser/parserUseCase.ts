@@ -169,7 +169,7 @@ class ParserCryptoUseCase {
                 Object.assign(cryptoSheet, {
                     cryptoPurchasesList,
                     cryptoSellsList,
-                    cryptoRelationList,
+                    //cryptoRelationList,
                     sheetName: worksheet.name,
                     created_at: new Date(),
                 });
@@ -231,7 +231,7 @@ class ParserCryptoUseCase {
                     return purchaseIndex;
                 }
 
-                // If the buying cannot cover the sell and the next(s) one(s) must be checked
+                // If the buying cannot cover the sell and the next one must be checked
                 else {
                     // Fill an entry of the purchase/sell relation table
                     cryptoRelationList.addRelation({
@@ -267,7 +267,7 @@ class ParserCryptoUseCase {
         const cryptoSheetList = [];    
         
         try {   
-            // The assynchronims here will be a problem due the forEach
+            // The assynchronims here will make each iteration run in parallel - this may be a problem
             workbook.worksheets.forEach(async worksheet => {
                 // "Resets" the variables below to start a new sheet parsing process
                 // Better make a new instance or create a reset method likewise parser object?
@@ -277,7 +277,8 @@ class ParserCryptoUseCase {
                 parser.reset();
                 
                 console.log(`Parsing of ${worksheet.name} started`);
-                cryptoSheetList.push(parsing(worksheet));
+                //cryptoSheetList.push(parsing(worksheet));
+                const cryptoSheet = parsing(worksheet);
                 
                 cryptoSellsList.presentAssets().forEach(asset => {
                     // Each reduce iteration corresponds to a CryptoSell object 
@@ -286,8 +287,14 @@ class ParserCryptoUseCase {
                             return updatePurchases(asset, purchaseIndex, cryptoSell.sell_id, cryptoSell.quantSold);
                         },
                         0
-                    );
-                });
+                        );
+                    });
+                    
+                    Object.assign(cryptoSheet, {
+                        cryptoRelationList
+                    });
+
+                    cryptoSheetList.push(cryptoSheet);
             });
             
             return await this.cryptoRepository.postSheet({ userName, cryptoSheetList });

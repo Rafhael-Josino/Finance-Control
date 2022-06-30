@@ -29,9 +29,9 @@ class CryptoSell {
     quantSold: number;
     
     // Attributes that are obtained from previous purchases:
-    aquisitionDate: string; // will be ereased
-    aquisitionValue: number; // will be ereased
-    buyIndexes: CryptoSoldLog[]; // will be ereased 
+    //aquisitionDate: string; // will be ereased
+    //aquisitionValue: number; // will be ereased
+    //buyIndexes: CryptoSoldLog[]; // will be ereased 
     leftOverQuant: string; // will be ereased
 
     constructor() {
@@ -39,17 +39,7 @@ class CryptoSell {
     }
 }
 
-// Substituted for CryptoPruchaseSellRelation - delete after validation of the new one
-/****************************************************************************************** */
-class CryptoSoldLog {
-    index: number;
-    date: Date;
-    quant: number;
-    price: number;
-}
-//**************************************************************************************** */
-
-class CryptoPurchaseSellRelation {
+interface CryptoPurchaseSellRelation {
     asset: string;
     purchase_id: string;
     sell_id: string;
@@ -78,39 +68,6 @@ class CryptoPurchasesList {
     }
 }
 
-// Validate new object before delete this one
-class CryptoPurchasesList_old {
-    BTC: CryptoPurchase[];
-    ETH: CryptoPurchase[];
-    LTC: CryptoPurchase[];
-    EOS: CryptoPurchase[];
-    USDT: CryptoPurchase[];
-    TUSD: CryptoPurchase[];
-    USDC: CryptoPurchase[];
-    PAX: CryptoPurchase[];
-    BUSD: CryptoPurchase[];
-    LINK: CryptoPurchase[];
-    MANA: CryptoPurchase[];
-    SAND: CryptoPurchase[];
-    
-    constructor() {
-        this.BTC = [];
-        this.ETH = [];
-        this.LTC = [];
-        this.EOS = [];
-        this.USDT = [];
-        this.TUSD = [];
-        this.USDC = [];
-        this.PAX = [];
-        this.BUSD = [];
-        this.LINK = [];
-        this.MANA = [];
-        this.SAND = [];
-    }
-    
-    
-}
-
 class CryptoSellsList {
     assets: Object;
     
@@ -133,38 +90,8 @@ class CryptoSellsList {
     }
 }
 
-class CryptoSellsList_old {
-    BTC : CryptoSell[];
-    ETH : CryptoSell[];
-    LTC : CryptoSell[];
-    EOS : CryptoSell[];
-    USDT: CryptoSell[];
-    TUSD: CryptoSell[];
-    USDC: CryptoSell[];
-    PAX:  CryptoSell[];
-    BUSD: CryptoSell[];
-    LINK: CryptoSell[];
-    MANA: CryptoSell[];
-    SAND: CryptoSell[];
-    
-    constructor() {
-        this.BTC = [];
-        this.ETH = [];
-        this.LTC = [];
-        this.EOS = [];
-        this.USDT = [];
-        this.TUSD = [];
-        this.USDC = [];
-        this.PAX = [];
-        this.BUSD = [];
-        this.LINK = [];
-        this.MANA = [];
-        this.SAND = [];
-    }
-}
-
 class CryptoPurchaseSellList {
-    private assets: Object; // verify this
+    assets: Object;
     
     constructor() {
         this.assets = {}
@@ -192,7 +119,7 @@ class CryptoPurchaseSellList {
 class CryptoSheet {
     cryptoPurchasesList: CryptoPurchasesList;
     cryptoSellsList: CryptoSellsList;
-    cryptoRelation: CryptoPurchaseSellList;
+    cryptoRelationList: CryptoPurchaseSellList;
     sheetName: string;
     created_at: Date;
     lastLine: number;
@@ -214,7 +141,6 @@ class CryptoSummary {
 export { 
     CryptoPurchase,
     CryptoSell,
-    CryptoSoldLog,
     CryptoPurchasesList,
     CryptoSellsList,
     CryptoPurchaseSellRelation,
