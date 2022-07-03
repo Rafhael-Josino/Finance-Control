@@ -7,8 +7,14 @@ class ParserCryptoController {
     async handle(req: Request, res: Response): Promise<Response> /* BAD - it should return a Response */ {
         const { username } = req.headers;
         const userName = username as string; // username has type string │ string[]
+        const { overwrite } = req.params;
+
+        if (overwrite !== "yes" && overwrite !== "no") 
+            return res.status(400).json({ 
+                error: "overwrite parameter must be 'yes' or 'no'"
+            });
         
-        const response = await this.parserCryptoUseCase.execute(userName);
+        const response = await this.parserCryptoUseCase.execute({ userName, overwrite });
         
         if (response.status === 201) {
             console.log("Controller received 201 - sending throught response");

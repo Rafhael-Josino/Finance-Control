@@ -77,7 +77,7 @@ cryptoRoutes.get('/sheetSummary/:sheetName', cryptoUserVerifications.verifyUserE
 });
 
 // Parse sheets in the xlsx file uploaded and stores the data obtained
-cryptoRoutes.post('/saveSheet', cryptoUserVerifications.verifyUserExists, cryptoUserVerifications.verifyXLSXexists, (req, res) => {
+cryptoRoutes.post('/saveSheet/:overwrite', cryptoUserVerifications.verifyUserExists, cryptoUserVerifications.verifyXLSXexists, (req, res) => {
 	parserCryptoController.handle(req, res);
 });
 

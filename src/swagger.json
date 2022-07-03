@@ -6,7 +6,7 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/saveSheet": {
+        "/saveSheet/{overwrite}": {
             "post": {
                 "tags": ["Crypto"],
                 "summary": "Saves the info present in the user's .xlsx file",
@@ -20,6 +20,15 @@
                             "type": "string"
                         },
                         "description": "User's name"
+                    },
+                    {
+                        "name": "overwrite",
+                        "in": "path",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "(yes/no) decide if a sheet already parsed will be overwritten"
                     }
                 ],
                 "responses": {
@@ -42,6 +51,23 @@
                         }
                     },
                     "400": {
+                        "description": "overwrite parameter must be 'yes' or 'no'",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "description": "error message",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Save Sheet's Controller here - overwrite param. must be 'yes' or 'no'"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
                         "description": "Either the user or his .xlsx file does not exists",
                         "content": {
                             "application/json": {
