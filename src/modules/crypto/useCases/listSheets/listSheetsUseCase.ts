@@ -1,10 +1,10 @@
-import { ICryptoUserRepository, ICryptoListSheetsResponse } from '../../repositories/ICryptoUserRepository';
+import { ICryptoRepository, ICryptoListSheetsResponse } from '../../repositories/ICryptoRepository';
 
 class ListSheetsUseCase {
-    constructor(private cryptoUserRepository: ICryptoUserRepository) {}
+    constructor(private cryptoRepository: ICryptoRepository) {}
 
-    execute( userName: string ): ICryptoListSheetsResponse {
-        return this.cryptoUserRepository.listSheets(userName);
+    async execute( userName: string ): Promise<ICryptoListSheetsResponse> {
+        return await this.cryptoRepository.listSheets(userName);
     }
 }
 

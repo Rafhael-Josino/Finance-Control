@@ -4,15 +4,15 @@ import { ListSheetsUseCase } from './listSheetsUseCase';
 class ListSheetsController {
     constructor(private listSheetsUseCase: ListSheetsUseCase) {}
 
-    handle(req: Request, res: Response): Response {
+    async handle(req: Request, res: Response): Promise<Response> {
         //cont { user } = req; // with middleware. Only this is not working. User not part of req's type
         const { username } = req.headers;
         const userName = username as string; // username has type string │ string[]
         
-        const response = this.listSheetsUseCase.execute(userName);
+        const response = await this.listSheetsUseCase.execute(userName);
 
         if (response.status === 200) {
-            const sheetNames = JSON.stringify(response.sheetsList);
+            const sheetNames = JSON.stringify(response.sheetList);
             return res.send(sheetNames);
         }
         else if (response.status === 500) {

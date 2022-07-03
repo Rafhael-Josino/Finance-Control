@@ -1,9 +1,9 @@
-import { CryptoUserRepositoryJSON } from '../../repositories/implementations/CryptoUserRepositoryJSON';
+import { CryptoRepositoryPG as CryptoRepository } from '../../repositories/implementations/CryptoRepositoryPG';
 import { ListSheetsUseCase } from './listSheetsUseCase';
 import { ListSheetsController } from './listSheetsController';
 
-const cryptoUserRepository = new CryptoUserRepositoryJSON()
-const listSheetsUseCase = new ListSheetsUseCase(cryptoUserRepository);
+const cryptoRepository = new CryptoRepository()
+const listSheetsUseCase = new ListSheetsUseCase(cryptoRepository);
 const listSheetsController = new ListSheetsController(listSheetsUseCase);
 
 export { listSheetsController };
