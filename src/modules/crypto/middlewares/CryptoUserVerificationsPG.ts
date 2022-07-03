@@ -4,7 +4,6 @@ import path from 'path';
 import fs from 'fs';
 
 class CryptoUserVerifications {
-    //async verifyUserExists(req: Request, res: Response, next: any): Promise<any> {
     async verifyUserExists(req: Request, res: Response, next: any): Promise<any> {
         try {
             const { username } = req.headers;
