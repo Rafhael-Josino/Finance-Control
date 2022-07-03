@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { CryptoUser } from '../../models/CryptoUser';
 import {
     ICryptoUserRepository,
-    ICryptoListSheetsResponse,
     ICryptoListUsersResponse,
     ICryptoUserResponse,
     ICryptoResponse
@@ -79,28 +78,7 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
                 errorMessage: `Error writting ${userName}.json file: ` + err.message
             }
         }
-    }
-
-    listSheets( userName: string ): ICryptoListSheetsResponse {
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
-        
-        try {
-            const userData = JSON.parse(fs.readFileSync(pathName, 'utf8'));
-            const sheetNames = userData.sheets.map((sheet: any) => sheet.sheetName);
-            console.log(`Server here - Sending ${userName}.json's sheet names`);
-            return {
-                status: 200,
-                sheetsList: sheetNames
-            }
-        } catch (err) {
-            console.log("Server here - unable to read file:", `${userName}.json` , err);
-            return {
-                status: 500,
-                errorMessage: `Unable to read file ${userName}.json: ` + err.message
-            }
-        }
-    }
-    
+    } 
     
     async deleteUser( userName: string ): Promise<ICryptoUserResponse> {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);

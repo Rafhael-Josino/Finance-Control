@@ -13,6 +13,7 @@ import {
     IPostSheetOperationsDTO,
     IGetAssetDTO,
     ICryptoResponse,
+    ICryptoListSheetsResponse,
     IPostSheetOperationsResponse,
     ICryptoSummary,
     IDeleteResponse,
@@ -43,6 +44,26 @@ class CryptoRepositoryJSON implements ICryptoRepository {
             return {
                 status: 500,
                 errorMessage: err.message
+            }
+        }
+    }
+
+    async listSheets( userName: string ): Promise<ICryptoListSheetsResponse> {
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.json`);
+
+        try {
+            const userData = JSON.parse(fs.readFileSync(pathName, 'utf8'));
+            const sheetNames = userData.sheets.map((sheet: any) => sheet.sheetName);
+            console.log(`Server here - Sending ${userName}.json's sheet names`);
+            return {
+                status: 200,
+                sheetList: sheetNames
+            }
+        } catch (err) {
+            console.log("Server here - unable to read file:", `${userName}.json` , err);
+            return {
+                status: 500,
+                errorMessage: `Unable to read file ${userName}.json: ` + err.message
             }
         }
     }

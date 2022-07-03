@@ -34,6 +34,12 @@ interface ICryptoAsset {
     errorMessage?: string;
 }
 
+interface ICryptoListSheetsResponse {
+    status: number;
+    sheetList?: string[];
+    errorMessage?: string;
+}
+
 interface ICryptoSummary {
     status: number;
     sheetSummary?: CryptoSummary[];
@@ -55,6 +61,7 @@ interface IDeleteResponse {
 
 interface ICryptoRepository {
     getSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoResponse>;
+    listSheets( userName: string ): Promise<ICryptoListSheetsResponse>;
     getAsset({ userName, sheetName, assetName}: IGetAssetDTO): Promise<ICryptoAsset>;
     getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary>;
     postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse>;
@@ -66,6 +73,7 @@ export {
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
     IGetAssetDTO,
+    ICryptoListSheetsResponse,
     ICryptoResponse,
     IPostSheetOperationsResponse,
     IDeleteResponse,

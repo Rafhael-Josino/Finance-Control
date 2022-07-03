@@ -14,6 +14,7 @@ import {
     IPostSheetOperationsDTO,
     IGetAssetDTO,
     ICryptoResponse,
+    ICryptoListSheetsResponse,
     IPostSheetOperationsResponse,
     IDeleteResponse,
     ICryptoSummary,
@@ -25,8 +26,50 @@ class CryptoRepositoryPG implements ICryptoRepository {
         return
     }
 
+    async listSheets( userName: string ): Promise<ICryptoListSheetsResponse> {
+        try {
+            const PGresponse = await PG.query(
+                `SELECT sheet_name FROM sheets
+                WHERE sheet_id IN (SELECT sheet_id FROM sheets
+                    WHERE user_id = (SELECT user_id FROM users
+                        WHERE user_name = $1))
+                `,
+                [userName]
+            );
+
+            const sheetList = PGresponse.rows.map(PGelement => PGelement.sheet_name);
+
+            return {
+                status: 200,
+                sheetList
+            }
+        } catch(err) {
+            console.log("Error in get_sheetList from CryptoRepositoryPG:");
+            console.log(err);
+            return {
+                status: 500,
+                errorMessage: err.message
+            }
+        }
+    }
+
     async getAsset({ userName, sheetName, assetName}: IGetAssetDTO): Promise<ICryptoAsset> {
-        return 
+        try {
+            const PGresponse = PG.query(
+                `SELECT 
+                `,
+                []
+            )
+
+            return
+        } catch(err) {
+            console.log("Error in get_Asset from CryptoRepositoryPG:");
+            console.log(err);
+            return {
+                status: 500,
+                errorMessage: err.message
+            }
+        }
     }
 
     async getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary> {
@@ -49,7 +92,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
                 sheetSummary: summary.rows
             }
         } catch (err) {
-            console.log("Error in getsummary from CryptoRepositoryPG:");
+            console.log("Error in get_summary from CryptoRepositoryPG:");
             console.log(err);
             return {
                 status: 500,

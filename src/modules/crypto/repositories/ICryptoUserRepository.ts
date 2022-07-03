@@ -10,12 +10,6 @@ interface ICryptoResponse {
     errorMessage?: string;
 }
 
-interface ICryptoListSheetsResponse {
-    status: number;
-    sheetsList?: string[];
-    errorMessage?: string;
-}
-
 interface ICryptoListUsersResponse {
     status: number;
     usersList?: string[];
@@ -35,7 +29,6 @@ interface ICryptoUserRepository {
     // getUser should return user info. but instead of all the CryptoSheets, only their names
     getUser( username: string ): Promise<ICryptoUserResponse>;
     createUser( userName: string ): Promise<ICryptoResponse>;
-    listSheets( userName: string ): ICryptoListSheetsResponse;
     deleteUser( userName: string ): Promise<ICryptoUserResponse>;
 }
 
@@ -43,6 +36,5 @@ export {
     ICryptoUserRepository,
     ICryptoResponse,
     ICryptoListUsersResponse,
-    ICryptoListSheetsResponse,
     ICryptoUserResponse
 };
