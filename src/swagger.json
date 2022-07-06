@@ -142,11 +142,11 @@
                 }
             }
         },
-        "/sheet/{sheetName}": {
+        "/sheetSummary/{sheetName}": {
             "get": {
                 "tags": ["Crypto"],
-                "summary": "Returns the information of a sheet parsed",
-                "description": "Returns the information of a specified sheet, where is contained all transactions of crypto coins",
+                "summary": "Status of the assets of a sheet",
+                "description": "Returns the summarized status of all assets present in a given sheet",
                 "parameters": [
                     {
                         "name": "userName",
@@ -169,18 +169,89 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns information of all transactions obtained from a selected sheet of the user's .xlsx file",
+                        "description": "Returns the summarized status of all assets present in a given sheet",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "CryptoSheet",
+                                    "type": "object",
+                                    "description": "Custom object with essential information",
+                                    "elements": {
+                                        "asset": "Asset name",
+                                        "totalQuant": "Total amount of cryptocoins",
+                                        "totalValue": "Correspondent value spent in USD"
+                                    },
+                                    "example": [
+                                       
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data from selected sheet was not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "Object",
+                                    "description": "error message: data from selected sheet not found",
+                                    "elements": {
+                                        "error": "string"
+                                    },
+                                    "example": {
+                                        "error":  "Example_sheet not found"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/sheet/{sheetName}/{assetName}": {
+            "get": {
+                "tags": ["Crypto"],
+                "summary": "Returns the information of a sheet parsed",
+                "description": "Returns the information of a specified sheet, where is contained all transactions of crypto coins",
+                "parameters": [
+                    {
+                        "name": "userName",
+                        "in": "header",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "User's name"
+                    },
+                    {
+                        "name": "sheetName",
+                        "in": "path",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Selected sheet's name"
+                    },
+                    {
+                        "name": "assetName",
+                        "in": "path",
+                        "required": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Asset whose operations will be returned"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns information of all transactions of given asset obtained from a selected sheet of the user's .xlsx file",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "Object",
                                     "description": "Custom object with list of purchases, sells and its own information",
                                     "elements": {
-                                        "List of purchases": "CryptoPurchasesList",
-                                        "List of sells": "CryptoSellList",
-                                        "Sheet's name": "string",
-                                        "created_at": "Date",
-                                        "id": "uuid"
+                                        "purchases": "List of objects, each with data of a purchase of given asset",
+                                        "sells": "List of objects, each with data of a sell of given asset, plus reference to each purchase from the cryptocoins where obtained"
                                     },
                                     "example": [
                                        

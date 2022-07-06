@@ -1,8 +1,8 @@
-import { CryptoRepositoryJSON } from '../../repositories/implementations/CryptoRepositoryJSON';
+import { CryptoRepositoryPG as CryptoRepository } from '../../repositories/implementations/CryptoRepositoryPG';
 import { GetSheetUseCase } from './getSheetUseCase';
 import { GetSheetController} from './getSheetController';
 
-const cryptoRepository = new CryptoRepositoryJSON();
+const cryptoRepository = new CryptoRepository();
 const getSheetUseCase = new GetSheetUseCase(cryptoRepository);
 const getSheetController = new GetSheetController(getSheetUseCase);
 

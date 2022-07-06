@@ -5,11 +5,6 @@ import { CryptoSheet, CryptoSummary, CryptoPurchase, CryptoSell, CryptoPurchaseS
 interface IGetSheetOperationsDTO {
     userName: string;
     sheetName: string;
-}
-
-interface IGetAssetDTO {
-    userName: string;
-    sheetName: string;
     assetName: string;
 }
 
@@ -28,9 +23,7 @@ interface ICryptoResponse {
 
 interface ICryptoAsset {
     status: number;
-    purchases?: CryptoPurchase[];
-    sells?: CryptoSell[]
-    relations?: CryptoPurchaseSellRelation[];
+    assetOperations?: Object;
     errorMessage?: string;
 }
 
@@ -60,9 +53,8 @@ interface IDeleteResponse {
 // Repository interface
 
 interface ICryptoRepository {
-    getSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoResponse>;
+    getSheet({ userName, sheetName, assetName }: IGetSheetOperationsDTO): Promise<ICryptoAsset>;
     listSheets( userName: string ): Promise<ICryptoListSheetsResponse>;
-    getAsset({ userName, sheetName, assetName}: IGetAssetDTO): Promise<ICryptoAsset>;
     getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary>;
     postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse>;
     deleteSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<IDeleteResponse>;
@@ -72,7 +64,6 @@ export {
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
-    IGetAssetDTO,
     ICryptoListSheetsResponse,
     ICryptoResponse,
     IPostSheetOperationsResponse,

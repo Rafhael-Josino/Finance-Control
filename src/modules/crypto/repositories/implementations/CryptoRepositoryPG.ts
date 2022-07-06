@@ -2,9 +2,6 @@ import { PG } from '../../../../database';
 //import { v4 as uuidv4 } from 'uuid';
 //import { nanoid } from 'nanoid';
 import { 
-    CryptoPurchase,
-    CryptoSell,
-    CryptoPurchaseSellRelation,
     CryptoSheet,
     CryptoSummary 
 } from '../../models/Cryptos';
@@ -12,8 +9,6 @@ import {
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
-    IGetAssetDTO,
-    ICryptoResponse,
     ICryptoListSheetsResponse,
     IPostSheetOperationsResponse,
     IDeleteResponse,
@@ -22,10 +17,6 @@ import {
 } from '../ICryptoRepository';
 
 class CryptoRepositoryPG implements ICryptoRepository {
-    async getSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoResponse> {
-        return
-    }
-
     async listSheets( userName: string ): Promise<ICryptoListSheetsResponse> {
         try {
             const PGresponse = await PG.query(
@@ -53,15 +44,82 @@ class CryptoRepositoryPG implements ICryptoRepository {
         }
     }
 
-    async getAsset({ userName, sheetName, assetName}: IGetAssetDTO): Promise<ICryptoAsset> {
+    async getSheet({ userName, sheetName, assetName}: IGetSheetOperationsDTO): Promise<ICryptoAsset> {
         try {
-            const PGresponse = PG.query(
-                `SELECT 
+            const purchases = await PG.query(
+                `SELECT
+                    purchase_id,
+                    purchase_date,
+                    purchase_local,
+                    total_bought,
+                    purchase_medium_price,
+                    tax,
+                    remain_quant
+                FROM
+                    purchases
+                WHERE
+                    sheet_id IN (SELECT sheet_id FROM sheets
+                        WHERE
+                            sheet_name = $1
+                        AND 
+                            user_id = (SELECT user_id FROM users
+                                WHERE user_name = $2))
+                AND
+                    asset = $3
                 `,
-                []
-            )
+                [sheetName, userName, assetName]
+            );
 
-            return
+            // Test get purchases
+            console.log('purchases:\n', purchases.rows);
+
+            const sells = await PG.query(
+                `SELECT
+                    sell_id,
+                    sell_date,
+                    sell_local,
+                    quant_sold,
+                    received
+                FROM
+                    sells
+                WHERE 
+                    sheet_id IN (SELECT sheet_id FROM sheets
+                        WHERE
+                            sheet_name = $1
+                        AND 
+                            user_id = (SELECT user_id FROM users
+                                WHERE user_name = $2))
+                AND
+                    asset = $3
+                `,
+                [sheetName, userName, assetName]
+            );
+            
+            await sells.rows.reduce(
+                async (promise, sell_row) => {
+                    await promise;
+                    const purchase_sell = await PG.query(
+                        `SELECT purchase_id, quant_sold FROM purchase_sell WHERE sell_id = $1`,
+                        [sell_row.sell_id]
+                        );
+
+                        // Test
+                        console.log('purchase_sell:\n', purchase_sell.rows);
+
+                        Object.assign(sell_row, { purchases_sold: purchase_sell.rows });
+                    },
+                    Promise.resolve()
+                    );
+
+            // Test get sells
+            console.log('sells:\n', sells.rows);
+
+            return {
+                status: 200,
+                assetOperations: { 
+                    purchases: purchases.rows,
+                    sells: sells.rows }
+            }
         } catch(err) {
             console.log("Error in get_Asset from CryptoRepositoryPG:");
             console.log(err);
@@ -76,15 +134,21 @@ class CryptoRepositoryPG implements ICryptoRepository {
         try {
             const summary = await PG.query(
                 // FIX query bellow / add filter per User
-                `SELECT asset,
+                `SELECT 
+                    asset,
                     SUM (remain_quant) AS total_quant,
                     SUM (remain_quant * purchase_medium_price) AS total_value
                 FROM purchases
                 WHERE
-                    sheet_id IN (SELECT sheet_id FROM sheets WHERE sheet_name = $1)
+                    sheet_id IN (SELECT sheet_id FROM sheets 
+                        WHERE 
+                            sheet_name = $1
+                        AND
+                            user_id = (SELECT user_id FROM users
+                                WHERE user_name = $2))
                 GROUP BY asset;
                 `,
-                [sheetName]
+                [sheetName, userName]
             );
 
             return {

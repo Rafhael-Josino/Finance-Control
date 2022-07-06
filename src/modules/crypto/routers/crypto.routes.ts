@@ -68,7 +68,7 @@ cryptoRoutes.get('/sheets', cryptoUserVerifications.verifyUserExists, (req, res)
 });
 
 // Retrieves a specified sheet data from a user
-cryptoRoutes.get('/sheet/:sheetName', cryptoUserVerifications.verifyUserExists, (req, res) => {
+cryptoRoutes.get('/sheet/:sheetName/:assetName', cryptoUserVerifications.verifyUserExists, (req, res) => {
 	getSheetController.handle(req, res);
 });
 

@@ -14,8 +14,7 @@ class GetSheetSummaryController {
         const response = await this.getSheetSummaryUseCase.execute({ sheetName, userName });
 
         if (response.status === 200) {
-            const sheetSummary = JSON.stringify(response.sheetSummary);
-            return res.send(sheetSummary);
+            return res.send(response.sheetSummary);
         }
         else if (response.status === 404) {
             return res.status(404).json({ error: response.errorMessage});

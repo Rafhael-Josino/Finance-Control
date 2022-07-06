@@ -1,7 +1,5 @@
 import { nanoid } from 'nanoid';
 
-//const cryptoNames = ['BTC', 'ETH', 'LTC', 'EOS', 'USDT', 'TUSD', 'USDC', 'PAX', 'BUSD', 'LINK', 'MANA', 'SAND'];
-
 class CryptoPurchase {
     purchase_id: string;
     asset: string;
@@ -20,20 +18,12 @@ class CryptoPurchase {
 
 class CryptoSell {
     sell_id: string;
-
-    // Attributes that are present in the sheet:
     asset: string;
     sellingDate: Date;
     local: string;
     received: string;
     quantSold: number;
     
-    // Attributes that are obtained from previous purchases:
-    //aquisitionDate: string; // will be ereased
-    //aquisitionValue: number; // will be ereased
-    //buyIndexes: CryptoSoldLog[]; // will be ereased 
-    leftOverQuant: string; // will be ereased
-
     constructor() {
         this.sell_id = nanoid();
     }
@@ -126,7 +116,6 @@ class CryptoSheet {
     id: string;
 
     constructor() {
-        //if (!this.id) this.id = uuidv4();
         this.lastLine = 0;
         this.id = nanoid();
     }

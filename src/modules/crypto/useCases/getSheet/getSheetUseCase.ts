@@ -1,15 +1,16 @@
-import { ICryptoRepository, ICryptoResponse } from '../../repositories/ICryptoRepository';
+import { ICryptoRepository, ICryptoAsset } from '../../repositories/ICryptoRepository';
 
 interface IRequest {
     userName: string;
     sheetName: string;
+    assetName: string;
 }
 
 class GetSheetUseCase {
     constructor(private cryptoRepository: ICryptoRepository) {}
 
-    async execute({ userName, sheetName }: IRequest): Promise<ICryptoResponse> {
-        return await this.cryptoRepository.getSheet({ userName, sheetName });
+    async execute({ userName, sheetName, assetName }: IRequest): Promise<ICryptoAsset> {
+        return await this.cryptoRepository.getSheet({ userName, sheetName, assetName });
     }
 }
 
