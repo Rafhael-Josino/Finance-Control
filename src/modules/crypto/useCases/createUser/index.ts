@@ -1,3 +1,4 @@
+/*
 import { CryptoUserRepositoryPG } from '../../repositories/implementations/CryptoUserRepositoryPG';
 import { CreateUserUseCase } from './createUserUseCase';
 import { CreateUserController } from './createUserController';
@@ -7,3 +8,4 @@ const createUserUseCase = new CreateUserUseCase(cryptoUserRepository);
 const createUserController = new CreateUserController(createUserUseCase);
 
 export { createUserController };
+*/

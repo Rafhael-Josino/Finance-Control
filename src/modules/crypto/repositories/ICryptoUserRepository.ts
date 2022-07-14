@@ -22,6 +22,7 @@ interface ICryptoUserResponse {
     errorMessage?: string;
 }
 
+
 // Repository interface
 
 interface ICryptoUserRepository {

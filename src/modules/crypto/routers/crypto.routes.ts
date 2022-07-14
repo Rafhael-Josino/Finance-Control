@@ -11,12 +11,21 @@ const cryptoUserVerifications = new CryptoUserVerifications();
 
 
 // ###################### Use Cases #########################
-import { parserCryptoController } from '../useCases/parser';
-import { listSheetsController } from '../useCases/listSheets';
-import { listUsersController } from '../useCases/listUsers';
-import { createUserController } from '../useCases/createUser';
+
+// Users
+
+//import { createUserController } from '../useCases/createUser';
+import { CreateUserController } from '../useCases/createUser/createUserController'
 import { deleteUserController } from '../useCases/deleteUser';
 import { getUserController } from '../useCases/getUser';
+import { listUsersController } from '../useCases/listUsers';
+
+const createUserController = new CreateUserController();
+
+// Sheets
+
+import { parserCryptoController } from '../useCases/parser';
+import { listSheetsController } from '../useCases/listSheets';
 import { getSheetController} from '../useCases/getSheet';
 import { getSheetSummaryController} from '../useCases/getSheetSummary';
 import { deleteSheetController } from '../useCases/deleteSheet';
@@ -94,9 +103,17 @@ cryptoRoutes.get('/users', (req, res) => {
 })
 
 // Create a new crypto user with empty data stored
+/*
 cryptoRoutes.post('/user', cryptoUserVerifications.verifyUserAlreadyExists, (req, res) => {
 	createUserController.handle(req, res);
 });
+*/
+
+cryptoRoutes.post(
+	'/user',
+	cryptoUserVerifications.verifyUserAlreadyExists,
+	createUserController.handle
+);
 
 // Retrieves the crypto user data
 cryptoRoutes.get('/user', cryptoUserVerifications.verifyUserExists, (req, res) => {

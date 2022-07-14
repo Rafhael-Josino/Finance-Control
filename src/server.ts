@@ -1,3 +1,4 @@
+import 'reflect-metadata';	
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
@@ -6,6 +7,8 @@ import swaggerUi from 'swagger-ui-express';
 
 import { cryptoRoutes } from './modules/crypto/routers/crypto.routes';
 import { indexRoutes } from './routers/index.routes';
+
+import './shared/container';
 
 //import { pool, client } from "./database";
 //import { dataSource } from './database'; // to typeorm@0.3.4
