@@ -8,6 +8,11 @@ interface IGetSheetOperationsDTO {
     assetName: string;
 }
 
+interface IReferenceSheet {
+    userName: string;
+    sheetName: string;
+}
+
 interface IPostSheetOperationsDTO {
     userName: string;
     cryptoSheetList: CryptoSheet[];
@@ -55,15 +60,16 @@ interface IDeleteResponse {
 interface ICryptoRepository {
     getSheet({ userName, sheetName, assetName }: IGetSheetOperationsDTO): Promise<ICryptoAsset>;
     listSheets( userName: string ): Promise<ICryptoListSheetsResponse>;
-    getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary>;
+    getSheetSummary({ userName, sheetName }: IReferenceSheet): Promise<ICryptoSummary>;
     postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse>;
-    deleteSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<IDeleteResponse>;
+    deleteSheet({ userName, sheetName }: IReferenceSheet): Promise<IDeleteResponse>;
 }
 
 export { 
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
+    IReferenceSheet,
     ICryptoListSheetsResponse,
     ICryptoResponse,
     IPostSheetOperationsResponse,

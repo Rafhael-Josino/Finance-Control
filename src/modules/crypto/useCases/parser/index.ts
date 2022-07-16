@@ -1,3 +1,4 @@
+/*
 import { CryptoRepositoryPG as CryptoRepository} from '../../repositories/implementations/CryptoRepositoryPG';
 import { ParserCryptoUseCase } from './parserUseCase';
 import { ParserCryptoController } from './parserController';
@@ -7,3 +8,4 @@ const parserCryptoUseCase = new ParserCryptoUseCase(cryptoRepository);
 const parserCryptoController = new ParserCryptoController(parserCryptoUseCase);
 
 export { parserCryptoController };
+*/

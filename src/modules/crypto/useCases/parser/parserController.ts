@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import { ParserCryptoUseCase } from './parserUseCase';
+import { container } from 'tsyringe';
 
 class ParserCryptoController {
-    constructor(private parserCryptoUseCase: ParserCryptoUseCase) {}
-
     async handle(req: Request, res: Response): Promise<Response> /* BAD - it should return a Response */ {
         const { username } = req.headers;
         const userName = username as string; // username has type string │ string[]
@@ -13,8 +12,10 @@ class ParserCryptoController {
             return res.status(400).json({ 
                 error: "overwrite parameter must be 'yes' or 'no'"
             });
-        
-        const response = await this.parserCryptoUseCase.execute({ userName, overwrite });
+
+        const parserCryptoUseCase = container.resolve(ParserCryptoUseCase);
+
+        const response = await parserCryptoUseCase.execute({ userName, overwrite });
         
         if (response.status === 201) {
             console.log("Controller received 201 - sending throught response");

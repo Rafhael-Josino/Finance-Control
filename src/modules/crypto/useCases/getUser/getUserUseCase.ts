@@ -1,13 +1,12 @@
 import { ICryptoUserRepository, ICryptoUserResponse } from '../../repositories/ICryptoUserRepository';
-import { Response } from 'express' // BAD
+import { inject, injectable } from 'tsyringe';
 
-interface IRequest {
-    userName: string;
-    res: Response; // BAD
-}
-
+@injectable()
 class GetUserUseCase {
-    constructor(private cryptoUserRepository: ICryptoUserRepository) {}
+    constructor(
+        @inject("CryptoUserRepository")
+        private cryptoUserRepository: ICryptoUserRepository
+    ) {}
 
     async execute( userName: string ): Promise<ICryptoUserResponse> {
         return await this.cryptoUserRepository.getUser(userName);

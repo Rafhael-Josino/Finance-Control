@@ -1,3 +1,4 @@
+/*
 import { CryptoUserRepositoryPG } from '../../repositories/implementations/CryptoUserRepositoryPG';
 import { DeleteUserUseCase } from './deleteUserUseCase';
 import { DeleteUserController } from './deleteUserController';
@@ -7,3 +8,4 @@ const deleteUserUseCase = new DeleteUserUseCase(cryptoUserRepository);
 const deleteUserController = new DeleteUserController(deleteUserUseCase);
 
 export { deleteUserController };
+*/

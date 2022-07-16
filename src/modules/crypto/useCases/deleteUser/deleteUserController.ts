@@ -1,14 +1,15 @@
 import { Request, Response } from 'express';
 import { DeleteUserUseCase } from './deleteUserUseCase';
+import { container } from "tsyringe";
 
 class DeleteUserController {
-    constructor(private deleteUserUseCase: DeleteUserUseCase) {}
-
     async handle(req: Request, res: Response): Promise<Response> {
         const { username } = req.headers;
         const userName = username as string; // username has type string │ string[]
-        
-        const response = await this.deleteUserUseCase.execute(userName);
+
+        const deleteUserUseCase = container.resolve(DeleteUserUseCase);
+
+        const response = await deleteUserUseCase.execute(userName);
 
         if (response.status === 204) {
             return res.status(204).send("User deleted successfully");

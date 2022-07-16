@@ -9,6 +9,7 @@ import {
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
+    IReferenceSheet,
     ICryptoListSheetsResponse,
     IPostSheetOperationsResponse,
     IDeleteResponse,
@@ -130,7 +131,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
         }
     }
 
-    async getSheetSummary({ userName, sheetName }: IGetSheetOperationsDTO): Promise<ICryptoSummary> {
+    async getSheetSummary({ userName, sheetName }: IReferenceSheet): Promise<ICryptoSummary> {
         try {
             const summary = await PG.query(
                 // FIX query bellow / add filter per User
@@ -317,7 +318,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
 
     }
 
-    async deleteSheet({ userName, sheetName }: IGetSheetOperationsDTO): Promise<IDeleteResponse> {
+    async deleteSheet({ userName, sheetName }: IReferenceSheet): Promise<IDeleteResponse> {
         try {
             await PG.query(
                 `DELETE FROM sheets

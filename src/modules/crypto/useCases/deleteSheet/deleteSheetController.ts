@@ -1,15 +1,16 @@
 import { Request, Response } from 'express';
 import { DeleteSheetUseCase } from './deleteSheetUseCase';
+import { container } from 'tsyringe';
 
 class DeleteSheetController {
-    constructor(private deleteSheetUseCase: DeleteSheetUseCase) {}
-
     async handle(req: Request, res: Response): Promise<Response> {
         const { sheetName } = req.params;
         const { username } = req.headers;
         const userName = username as string; // username has type string │ string[]
         
-        const response = await this.deleteSheetUseCase.execute({ userName, sheetName });
+        const deleteSheetUseCase = container.resolve(DeleteSheetUseCase);
+
+        const response = await deleteSheetUseCase.execute({ userName, sheetName });
 
         if (response.status === 204) {
             return res.status(204).send(`Sheet ${sheetName} deleted successfully`);

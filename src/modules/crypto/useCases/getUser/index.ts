@@ -1,3 +1,4 @@
+/*
 import { CryptoUserRepositoryPG } from '../../repositories/implementations/CryptoUserRepositoryPG';
 import { GetUserUseCase } from './getUserUseCase';
 import { GetUserController } from './getUserController';
@@ -7,3 +8,4 @@ const getUserUseCase = new GetUserUseCase(cryptoUserRepository);
 const getUserController = new GetUserController(getUserUseCase);
 
 export { getUserController };
+*/

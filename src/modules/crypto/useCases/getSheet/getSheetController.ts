@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import { GetSheetUseCase } from './getSheetUseCase';
+import { container } from "tsyringe";
 
 class GetSheetController {
-    constructor(private getSheetUseCase: GetSheetUseCase) {}
-
     async handle(req: Request, res: Response): Promise<Response> {
         //const { user } = req.headers; // headers parameters are considerated as possibles arrays????
         //cont { user } = req; // with middleware. Only this is not working. User not part of req's type
@@ -11,7 +10,9 @@ class GetSheetController {
         const { username } = req.headers;
         const userName = username as string; // username has type string │ string[]
         
-        const response = await this.getSheetUseCase.execute({ sheetName, userName, assetName });
+        const getSheetUseCase = container.resolve(GetSheetUseCase);
+
+        const response = await getSheetUseCase.execute({ sheetName, userName, assetName });
 
         if (response.status === 200) {
             //const assetOperations = JSON.stringify(response.assetOperations);

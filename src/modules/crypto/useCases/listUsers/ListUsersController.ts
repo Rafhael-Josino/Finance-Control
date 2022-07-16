@@ -1,14 +1,15 @@
 import { Request, Response } from 'express';
 import { ListUsersUseCase } from './listUsersUseCase';
+import { container } from 'tsyringe';
 
 class ListUsersController {
-    constructor(private listUsersUseCase: ListUsersUseCase) {}
-
     async handle(req: Request, res: Response): Promise<Response> /* BAD - it should return a Response */ {
         //const { username } = req.headers;
         //const userName = username as string; // username has type string │ string[]    
-        
-        const response = await this.listUsersUseCase.execute();
+
+        const listUsersUseCase = container.resolve(ListUsersUseCase);
+
+        const response = await listUsersUseCase.execute();
 
         if (response.status === 200) {
             console.log("List Users Controller received 200 - sending throught response");

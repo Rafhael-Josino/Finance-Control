@@ -28,14 +28,19 @@ import {
     IPostSheetOperationsResponse,
     ICryptoListSheetsResponse
 } from '../../repositories/ICryptoRepository';
+import { inject, injectable } from 'tsyringe';
 
 interface IRequest {
     userName: string;
     overwrite: string;
 }
 
+@injectable()
 class ParserCryptoUseCase {
-    constructor(private cryptoRepository: ICryptoRepository) {}
+    constructor(
+        @inject("CryptoRepository")
+        private cryptoRepository: ICryptoRepository
+    ) {}
 
     // If this code will be used as a repository class, the return shall be an object with status e possible ok/error messages
     async execute( { userName, overwrite }: IRequest ): Promise<IPostSheetOperationsResponse> {
