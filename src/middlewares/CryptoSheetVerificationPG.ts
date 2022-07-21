@@ -1,8 +1,8 @@
 import { PG } from '../database';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 class CryptoVerifications {
-    async verifySheetExists(req: Request, res: Response, next: any): Promise<any> {
+    async verifySheetExists(req: Request, res: Response, next: NextFunction): Promise<any> {
         try {
             const { username } = req.headers;
             const userName = username as string;

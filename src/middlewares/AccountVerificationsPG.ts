@@ -1,28 +1,36 @@
-import { Request, Response } from 'express';
+import { PG } from '../database';
+import { NextFunction, Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
 
 class CryptoUserVerifications {
-    verifyUserExists(req: Request, res: Response, next: any): any {
+    async verifyUserExists(req: Request, res: Response, next: NextFunction): Promise<any> {
         try {
             const { username } = req.headers;
-            const pathName = path.join(__dirname, '..', '..', '..', '..', 'logs', 'cryptos');    
-            const dirFiles = fs.readdirSync(pathName, 'utf8');
+            const userName = username as string;
+            
+            const resPG = await PG.query('SELECT user_name FROM users where user_name = $1', [userName]);
 
-            if (dirFiles.includes(`${username}.json`)) {
+            //console.log(resPG.rows);
+
+            if (resPG.rows.length) {
                 return next();
             }
             else {
                 console.log(`Server's middleware here - ${username} does not exist`);
                 return res.status(404).json({ error: `Server's middleware here - ${username} does not exist` });
             }
+
         } catch (err) {
-            console.log("Server here - unable to read directory:", err);
-            res.status(500).json({error: "Server's middleware here - unable to read directory: " + err.message});
+            console.log("Server's middleware (verifyUserExists) here:", err);
+            // change error message
+            res.status(500).json({error: "Server's middleware here - internal error: " + err.message});
         }
     }
-    
-    verifyXLSXexists(req: Request, res: Response, next: any): any { 
+
+    // For now the XLSX file stays in the logs/crypto directory
+    // but it will be changed to be imported, parsed, and then deleted
+    verifyXLSXexists(req: Request, res: Response, next: NextFunction): any { 
         try {
             const { username } = req.headers;
             const pathName = path.join(__dirname, '..', '..', '..', '..', 'logs', 'cryptos');
@@ -41,17 +49,24 @@ class CryptoUserVerifications {
         }        
     }
     
-    verifyUserAlreadyExists(req: Request, res: Response, next: any): any {
+    async verifyUserAlreadyExists(req: Request, res: Response, next: NextFunction): Promise<any> {
         try {
             const { username } = req.headers;
-            const pathName = path.join(__dirname, '..', '..', '..', '..', 'logs', 'cryptos');
-            const dirFiles = fs.readdirSync(pathName, 'utf8');
-            if (dirFiles.includes(`${username}.json`)) {
+            const userName = username as string;
+            
+            const resPG = await PG.query('SELECT user_name FROM users where user_name = $1', [userName]);
+
+            console.log(resPG.rows);
+
+            if (resPG.rows.length) {
+                console.log(`Server's middleware here - ${username} already exists`);
                 return res.status(403).json({ error: `Server's middleware here - ${username} already exists` });
             }
-            return next();
+            else {
+                return next();
+            }
         } catch (err) {
-            console.log("Server here - unable to read directory:", err);
+            console.log("Server's middleware here - unable to read directory:", err);
             res.status(500).json({error: "Server's middleware here - unable to read directory: " + err.message});    
         }
     }
