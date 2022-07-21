@@ -1,4 +1,4 @@
-import { PG } from '../../../database';
+import { PG } from '../database';
 import { Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
