@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { CryptoUserVerifications } from '../middlewares/CryptoUserVerificationsPG';
+import { CryptoUserVerifications } from '../middlewares/AccountVerificationsPG';
 
 const cryptoUserVerifications = new CryptoUserVerifications();
 

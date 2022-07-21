@@ -4,7 +4,7 @@ import fs from 'fs';
 
 
 // ###################### Middleware #########################
-import { CryptoUserVerifications } from '../middlewares/CryptoUserVerificationsPG';
+import { CryptoUserVerifications } from '../middlewares/AccountVerificationsPG';
 //import { CryptoUserVerifications } from '../middlewares/CryptoUserVerifications';
 
 const cryptoUserVerifications = new CryptoUserVerifications();
