@@ -5,8 +5,7 @@ import cors from 'cors';
 import fs from 'fs';
 import swaggerUi from 'swagger-ui-express';
 
-import { cryptoRoutes } from './modules/crypto/routers/crypto.routes';
-import { indexRoutes } from './routers/index.routes';
+import { router } from './routers/';
 
 import './shared/container';
 
@@ -26,13 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
-/* --------------------- Index -------------------- */
-
-app.use(indexRoutes);
-
-/* --------------------- Crypto Operations ---------------------- */
-
-app.use(cryptoRoutes);
+app.use(router);
 
 /* --------------------- Finances ---------------------- */
 

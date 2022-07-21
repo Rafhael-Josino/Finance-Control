@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import path from 'path';
 import fs from 'fs';
 
@@ -10,28 +10,11 @@ import { CryptoUserVerifications } from '../middlewares/CryptoUserVerificationsP
 const cryptoUserVerifications = new CryptoUserVerifications();
 
 
-// ###################### Use Cases #########################
-
-// Users
-
-//import { createUserController } from '../useCases/createUser';
-import { CreateUserController } from '../useCases/createUser/createUserController';
-import { DeleteUserController } from '../useCases/deleteUser/deleteUserController';
-import { GetUserController } from '../useCases/getUser/getUserController';
-import { ListUsersController } from '../useCases/listUsers/ListUsersController';
-
-const getUserController = new GetUserController();
-const listUsersController = new ListUsersController();
-const createUserController = new CreateUserController();
-const deleteUserController = new DeleteUserController();
-
-// Sheets
-
-import { ParserCryptoController } from '../useCases/parser/parserController';
-import { ListSheetsController } from '../useCases/listSheets/listSheetsController';
-import { GetSheetController} from '../useCases/getSheet/getSheetController';
-import { GetSheetSummaryController} from '../useCases/getSheetSummary/getSheetSummaryController';
-import { DeleteSheetController } from '../useCases/deleteSheet/deleteSheetController';
+import { ParserCryptoController } from '../modules/crypto/useCases/parser/parserController';
+import { ListSheetsController } from '../modules/crypto/useCases/listSheets/listSheetsController';
+import { GetSheetController} from '../modules/crypto/useCases/getSheet/getSheetController';
+import { GetSheetSummaryController} from '../modules/crypto/useCases/getSheetSummary/getSheetSummaryController';
+import { DeleteSheetController } from '../modules/crypto/useCases/deleteSheet/deleteSheetController';
 
 const getSheetController = new GetSheetController();
 const listSheetsController = new ListSheetsController();
@@ -41,12 +24,12 @@ const deleteSheetController = new DeleteSheetController();
 
 
 // Instance for Router();
-const cryptoRoutes = Router();
+const cryptoSheetsRouter = Router();
 
 
 // ----------------------- Routes -----------------------------------------
 
-cryptoRoutes.get("/cryptos", (req, res) => {
+cryptoSheetsRouter.get("/cryptos", (req, res) => {
 	const namePath = path.join(__dirname, '..', 'pages', 'cryptos.html');
 	fs.readFile(namePath, 'utf8', (err, data) => {
 		if (err) {
@@ -60,7 +43,7 @@ cryptoRoutes.get("/cryptos", (req, res) => {
 	});
 });
 
-cryptoRoutes.get('/cryptos.js', (req, res) => {
+cryptoSheetsRouter.get('/cryptos.js', (req, res) => {
 	const namePath = path.join(__dirname, '..', 'pages', 'cryptos.js');
 	fs.readFile(namePath, 'utf8', (err, data) => {
 		if (err) {
@@ -82,27 +65,27 @@ cryptoRoutes.get('/cryptos.js', (req, res) => {
 // --------------------------- Crypto Sheets ------------------------------
 
 // Retrieves a list of all sheets parsed and stored
-cryptoRoutes.get(
+cryptoSheetsRouter.get(
 	'/sheets',
 	cryptoUserVerifications.verifyUserExists,
 	listSheetsController.handle
 );
 
 // Retrieves a specified sheet data from a user
-cryptoRoutes.get(
+cryptoSheetsRouter.get(
 	'/sheet/:sheetName/:assetName',
 	cryptoUserVerifications.verifyUserExists,
 	getSheetController.handle
 );
 
-cryptoRoutes.get(
+cryptoSheetsRouter.get(
 	'/sheetSummary/:sheetName',
 	cryptoUserVerifications.verifyUserExists,
 	getSheetSummaryController.handle
 );
 
 // Parse sheets in the xlsx file uploaded and stores the data obtained
-cryptoRoutes.post(
+cryptoSheetsRouter.post(
 	'/saveSheet/:overwrite',
 	cryptoUserVerifications.verifyUserExists,
 	cryptoUserVerifications.verifyXLSXexists,
@@ -110,7 +93,7 @@ cryptoRoutes.post(
 );
 
 // Delete given sheet's information of a user
-cryptoRoutes.delete(
+cryptoSheetsRouter.delete(
 	'/deleteSheet/:sheetName',
 	cryptoUserVerifications.verifyUserExists,
 	deleteSheetController.handle
@@ -118,30 +101,6 @@ cryptoRoutes.delete(
 
 // --------------------------- Crypto Users ------------------------------
 
-// List users
-cryptoRoutes.get(
-	'/users',
-	listUsersController.handle
-);
 
-cryptoRoutes.post(
-	'/user',
-	cryptoUserVerifications.verifyUserAlreadyExists,
-	createUserController.handle
-);
 
-// Retrieves the crypto user data
-cryptoRoutes.get(
-	'/user',
-	cryptoUserVerifications.verifyUserExists,
-	getUserController.handle	
-);
-
-// Deletes user
-cryptoRoutes.delete(
-	'/user',
-	cryptoUserVerifications.verifyUserExists,
-	deleteUserController.handle
-);
-
-export { cryptoRoutes };
+export { cryptoSheetsRouter };
