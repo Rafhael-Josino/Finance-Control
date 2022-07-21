@@ -8,6 +8,6 @@ const router = Router();
 
 router.use(cryptoSheetsRouter);
 router.use(indexRoutes);
-router.use(accountRouter);
+router.use('/account',accountRouter);
 
 export { router };

@@ -321,7 +321,7 @@
                 }
             }
         },
-        "/user": {
+        "/account": {
             "post": {
                 "tags": ["User"],
                 "summary": "Creates a new user account",
@@ -477,7 +477,7 @@
                 }
             }
         },
-        "/users": {
+        "/account/list": {
             "get": {
                 "tags": ["User"],
                 "summary": "Returns list of users",

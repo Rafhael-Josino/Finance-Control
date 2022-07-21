@@ -18,26 +18,26 @@ const accountRouter = Router();
 
 // List users
 accountRouter.get(
-	'/users',
+	'/list',
 	listUsersController.handle
 );
 
 accountRouter.post(
-	'/user',
+	'/',
 	cryptoUserVerifications.verifyUserAlreadyExists,
 	createUserController.handle
 );
 
 // Retrieves the crypto user data
 accountRouter.get(
-	'/user',
+	'/',
 	cryptoUserVerifications.verifyUserExists,
 	getUserController.handle	
 );
 
 // Deletes user
 accountRouter.delete(
-	'/user',
+	'/',
 	cryptoUserVerifications.verifyUserExists,
 	deleteUserController.handle
 );
