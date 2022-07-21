@@ -1,4 +1,4 @@
-import { ICryptoUserRepository, ICryptoResponse } from '../../repositories/ICryptoUserRepository';
+import { ICryptoUserRepository, ICryptoResponse } from '../../repositories/AccountRepository';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()

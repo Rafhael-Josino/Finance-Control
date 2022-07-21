@@ -1,13 +1,13 @@
 import { PG } from '../../../../database';
 import fs from 'fs';
 import path from 'path';
-import { CryptoUser } from '../../models/CryptoUser';
+import { Account } from '../../models/Account';
 import {
     ICryptoUserRepository,
     ICryptoListUsersResponse,
     ICryptoUserResponse,
     ICryptoResponse
-} from '../ICryptoUserRepository';
+} from '../AccountRepository';
 
 /*
 try / catch blocks aren't handling when the API can't connect with DB
@@ -37,7 +37,7 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
     async getUser( userName: string ): Promise<ICryptoUserResponse> {
         try {
             const resPG = await PG.query('SELECT * FROM users WHERE user_name = $1', [userName]);
-            const cryptoUser = new CryptoUser();
+            const cryptoUser = new Account();
             Object.assign(cryptoUser, {
                 id: resPG.rows[0].user_id,
                 name: resPG.rows[0].user_name,

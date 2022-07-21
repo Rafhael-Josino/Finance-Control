@@ -1,13 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { CryptoUser } from '../../models/CryptoUser';
+import { Account } from '../../models/Account';
 import {
     ICryptoUserRepository,
     ICryptoListUsersResponse,
     ICryptoUserResponse,
     ICryptoResponse
-} from '../ICryptoUserRepository';
+} from '../AccountRepository';
 
 
 class CryptoUserRepositoryJSON implements ICryptoUserRepository {
@@ -55,7 +55,7 @@ class CryptoUserRepositoryJSON implements ICryptoUserRepository {
 
     /** Creates a new user */
     async createUser( userName: string ): Promise<ICryptoResponse> {
-        const cryptoUser = new CryptoUser();
+        const cryptoUser = new Account();
         Object.assign(cryptoUser, {
             id: uuidv4(),
             name: userName,

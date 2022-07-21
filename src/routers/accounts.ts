@@ -4,10 +4,10 @@ import { CryptoUserVerifications } from '../middlewares/CryptoUserVerificationsP
 
 const cryptoUserVerifications = new CryptoUserVerifications();
 
-import { CreateUserController } from '../modules/crypto/useCases/createUser/createUserController';
-import { DeleteUserController } from '../modules/crypto/useCases/deleteUser/deleteUserController';
-import { GetUserController } from '../modules/crypto/useCases/getUser/getUserController';
-import { ListUsersController } from '../modules/crypto/useCases/listUsers/ListUsersController';
+import { CreateUserController } from '../modules/accounts/useCases/createAccount/createUserController';
+import { DeleteUserController } from '../modules/accounts/useCases/deleteAccount.ts/deleteUserController';
+import { GetUserController } from '../modules/accounts/useCases/getAccount/getUserController';
+import { ListUsersController } from '../modules/accounts/useCases/listAccounts/ListUsersController';
 
 const getUserController = new GetUserController();
 const listUsersController = new ListUsersController();

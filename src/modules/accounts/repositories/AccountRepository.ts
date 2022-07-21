@@ -1,4 +1,4 @@
-import { CryptoUser } from '../models/CryptoUser';
+import { Account } from '../models/Account';
 
 // Function arguments types
 
@@ -18,7 +18,7 @@ interface ICryptoListUsersResponse {
 
 interface ICryptoUserResponse {
     status: number;
-    cryptoUser?: CryptoUser;
+    cryptoUser?: Account;
     errorMessage?: string;
 }
 
