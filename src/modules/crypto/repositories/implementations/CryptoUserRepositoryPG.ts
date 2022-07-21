@@ -34,13 +34,14 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
     }
 
     /** Returns a user's data */
-    async getUser( userName: string): Promise<ICryptoUserResponse> {
+    async getUser( userName: string ): Promise<ICryptoUserResponse> {
         try {
             const resPG = await PG.query('SELECT * FROM users WHERE user_name = $1', [userName]);
             const cryptoUser = new CryptoUser();
             Object.assign(cryptoUser, {
                 id: resPG.rows[0].user_id,
                 name: resPG.rows[0].user_name,
+                isAdmin: resPG.rows[0].isadmin,
                 created_at: resPG.rows[0].created_on,
             });
             return {
