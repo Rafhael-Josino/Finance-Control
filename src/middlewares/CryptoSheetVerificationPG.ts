@@ -1,28 +1,30 @@
-import { PG } from '../database';
 import { NextFunction, Request, Response } from 'express';
+
+import { PG } from '../database';
+import { AppError } from '../errors/AppErrors';
 
 class CryptoVerifications {
     async verifySheetExists(req: Request, res: Response, next: NextFunction): Promise<any> {
-        try {
-            const { username } = req.headers;
-            const userName = username as string;
-            const { sheetName } = req.params;
+        const { username } = req.headers;
+        const userName = username as string;
+        const { sheetName } = req.params;
 
-            const resPG = await PG.query(
-                `
-                SELECT sheet_name FROM sheets WHERE           
-                user_id = (SELECT user_id WHERE user_name = $1)
-                `,
-                [userName]
-            );
+        const resPG = await PG.query(
+            `
+            SELECT sheet_name FROM sheets WHERE           
+            user_id = (SELECT user_id WHERE user_name = $1)
+            `,
+            [userName]
+        );
 
-            if (resPG.rows.includes(sheetName)) return next();
-            return res.status(404).json({ error: `Server's middleware here - ${sheetName} of user ${userName} not found`});
-
-        } catch (err) {
-            console.log("Problem in middleware Verifiy if Sheet Exists");
-            return res.status(500).json({ error: "Verify_Sheet_Exists middleware error: " + err.message });
+        if (resPG.rows.includes(sheetName)) {
+            return next();
         }
+
+        throw new AppError(
+            `Server's middleware here - ${sheetName} of user ${userName} not found`,
+            404
+        );
     }
 }
 

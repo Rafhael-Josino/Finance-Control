@@ -1,11 +1,13 @@
 import 'reflect-metadata';	
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
+import "express-async-errors";
 import path from 'path';
 import cors from 'cors';
 import fs from 'fs';
 import swaggerUi from 'swagger-ui-express';
 
 import { router } from './routers/';
+import { AppError } from './errors/AppErrors';
 
 import './shared/container';
 
@@ -153,5 +155,17 @@ app.delete('/editTransaction', (req, res) => {
 		}
 	})
 })
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+	if (err instanceof AppError) {
+		return res.status(err.statusCode).json({ message: err.message });
+	}
+	console.log(err);
+	return res.status(500).json({
+		status: "error",
+		message: `Internal server error - ${err.message}`,
+		stack: err.stack
+	});
+});
 
 app.listen(8000, () => console.log("listening"));
