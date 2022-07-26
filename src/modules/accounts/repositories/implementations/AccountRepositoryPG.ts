@@ -1,27 +1,19 @@
 import { PG } from '../../../../database';
 import { Account } from '../../models/Account';
-import {
-    ICryptoUserRepository,
-    ICryptoListUsersResponse,
-    ICryptoUserResponse,
-    ICryptoResponse
-} from '../AccountRepository';
+import { ICryptoUserRepository } from '../AccountRepository';
 
 class CryptoUserRepositoryPG implements ICryptoUserRepository {
 
     /** Returns list of users's names */
-    async listUsers(): Promise<ICryptoListUsersResponse> {
+    async listUsers(): Promise<string[]> {
         const resPG = await PG.query('SELECT user_name FROM users', []);
         const usersList = resPG.rows.map((row) => row.user_name);
 
-        return {
-            status: 200,
-            usersList
-        }
+        return usersList;
     }
 
     /** Returns a user's data */
-    async getUser( userName: string ): Promise<ICryptoUserResponse> {
+    async getUser( userName: string ): Promise<Account> {
         const resPG = await PG.query('SELECT * FROM users WHERE user_name = $1', [userName]);
         const cryptoUser = new Account();
         Object.assign(cryptoUser, {
@@ -30,30 +22,20 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
             isAdmin: resPG.rows[0].isadmin,
             created_at: resPG.rows[0].created_on,
         });
-        return {
-            status: 200,
-            cryptoUser
-        }
+        return cryptoUser;
     }
 
     /** Creates a new user */
-    async createUser( userName: string ): Promise<ICryptoResponse> {
+    async createUser( userName: string ): Promise<void> {
         await PG.query(
             'INSERT INTO users (user_name) VALUES ($1)',
             [userName]
         );
-        return {
-            status: 201,
-            message: userName
-        }
     }
 
     /** Deletes a user */
-    async deleteUser( userName: string ): Promise<ICryptoUserResponse> {
+    async deleteUser( userName: string ): Promise<void> {
         await PG.query('DELETE FROM users WHERE user_name = $1', [userName]);
-        return {
-            status: 204
-        }
     }
 }
 

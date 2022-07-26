@@ -9,18 +9,9 @@ class CreateUserController {
 
         const createUserUseCase = container.resolve(CreateUserUseCase);
 
-        const response = await createUserUseCase.execute(userName);
+        await createUserUseCase.execute(userName);
 
-        if (response.status === 201) {
-            return res.status(201).json({ newUser: response.message });
-        }
-        else if (response.status === 500) {
-            return res.status(500).json({ error: response.errorMessage });
-        }
-        else {
-            console.log("No valid response received from parsing use case");
-            return res.status(500).json({ error: "Unknown error" });
-        }
+        return res.status(201).send();
     }
 }
 

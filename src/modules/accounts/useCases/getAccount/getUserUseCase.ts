@@ -1,5 +1,6 @@
-import { ICryptoUserRepository, ICryptoUserResponse } from '../../repositories/AccountRepository';
+import { ICryptoUserRepository } from '../../repositories/AccountRepository';
 import { inject, injectable } from 'tsyringe';
+import { Account } from '../../models/Account';
 
 @injectable()
 class GetUserUseCase {
@@ -8,7 +9,7 @@ class GetUserUseCase {
         private cryptoUserRepository: ICryptoUserRepository
     ) {}
 
-    async execute( userName: string ): Promise<ICryptoUserResponse> {
+    async execute( userName: string ): Promise<Account> {
         return await this.cryptoUserRepository.getUser(userName);
     }
 }

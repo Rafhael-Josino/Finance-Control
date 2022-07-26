@@ -11,19 +11,9 @@ class GetUserController {
 
         const getUserUseCase = container.resolve(GetUserUseCase);
 
-        const response = await getUserUseCase.execute(userName);
+        const user = await getUserUseCase.execute(userName);
 
-        if (response.status === 200) {
-            return res.status(200).json(response.cryptoUser);
-        }
-        else if (response.status === 500) {
-            return res.status(500).json({ error: response.errorMessage });
-        }
-        else {
-            console.log("No valid response received from Get User use case");
-            return res.status(500).json({ error: "Unknown error" });
-        }
-        
+        return res.json({ user });
     }
 }
 
