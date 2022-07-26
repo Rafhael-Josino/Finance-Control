@@ -20,49 +20,19 @@ interface IPostSheetOperationsDTO {
 
 // Function return types
 
-interface ICryptoResponse {
-    status: number;
-    sheet?: CryptoSheet;
-    errorMessage?: string;
-}
-
-interface ICryptoAsset {
-    status: number;
-    assetOperations?: Object;
-    errorMessage?: string;
-}
-
-interface ICryptoListSheetsResponse {
-    status: number;
-    sheetList?: string[];
-    errorMessage?: string;
-}
-
-interface ICryptoSummary {
-    status: number;
-    sheetSummary?: CryptoSummary[];
-    errorMessage?: string;
-}
-
-interface IPostSheetOperationsResponse {
-    status: number;
-    sheetsList?: string[];
-    errorMessage?: string;
-}
-
-interface IDeleteResponse {
-    status: number;
-    message: string;
+interface IGetSheetResponse {
+    purchases: any[];
+    sells: any[];
 }
 
 // Repository interface
 
 interface ICryptoRepository {
-    getSheet({ userName, sheetName, assetName }: IGetSheetOperationsDTO): Promise<ICryptoAsset>;
-    listSheets( userName: string ): Promise<ICryptoListSheetsResponse>;
-    getSheetSummary({ userName, sheetName }: IReferenceSheet): Promise<ICryptoSummary>;
-    postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<IPostSheetOperationsResponse>;
-    deleteSheet({ userName, sheetName }: IReferenceSheet): Promise<IDeleteResponse>;
+    getSheet({ userName, sheetName, assetName }: IGetSheetOperationsDTO): Promise<IGetSheetResponse>;
+    listSheets( userName: string ): Promise<string[]>;
+    getSheetSummary({ userName, sheetName }: IReferenceSheet): Promise<CryptoSummary[]>;
+    postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<string[]>;
+    deleteSheet({ userName, sheetName }: IReferenceSheet): Promise<void>;
 }
 
 export { 
@@ -70,10 +40,5 @@ export {
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
     IReferenceSheet,
-    ICryptoListSheetsResponse,
-    ICryptoResponse,
-    IPostSheetOperationsResponse,
-    IDeleteResponse,
-    ICryptoSummary,
-    ICryptoAsset
+    IGetSheetResponse
  };

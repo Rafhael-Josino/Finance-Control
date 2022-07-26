@@ -14,20 +14,10 @@ class GetSheetController {
 
         const response = await getSheetUseCase.execute({ sheetName, userName, assetName });
 
-        if (response.status === 200) {
-            //const assetOperations = JSON.stringify(response.assetOperations);
-            return res.send(response.assetOperations);
-        }
-        else if (response.status === 404) {
-            return res.status(404).json({ error: response.errorMessage});
-        }
-        else if (response.status === 500) {
-            return res.status(500).json({ error: response.errorMessage});
-        }
-        else {
-            console.log("No valid response received from parsing use case");
-            return res.status(500).json({ error: "Unknown error" });
-        }
+        return res.json({
+            purchases: response.purchases,
+            sells: response.sells
+        });
     }
 }
 

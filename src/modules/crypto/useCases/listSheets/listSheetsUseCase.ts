@@ -1,4 +1,4 @@
-import { ICryptoRepository, ICryptoListSheetsResponse } from '../../repositories/ICryptoRepository';
+import { ICryptoRepository } from '../../repositories/ICryptoRepository';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
@@ -8,7 +8,7 @@ class ListSheetsUseCase {
         private cryptoRepository: ICryptoRepository
     ) {}
 
-    async execute( userName: string ): Promise<ICryptoListSheetsResponse> {
+    async execute( userName: string ): Promise<string[]> {
         return await this.cryptoRepository.listSheets(userName);
     }
 }

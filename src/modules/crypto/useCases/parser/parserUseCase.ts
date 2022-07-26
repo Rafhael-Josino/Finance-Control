@@ -25,8 +25,6 @@ import {
 } from "../../models/Cryptos"; // BAD?
 import { 
     ICryptoRepository,
-    IPostSheetOperationsResponse,
-    ICryptoListSheetsResponse
 } from '../../repositories/ICryptoRepository';
 import { inject, injectable } from 'tsyringe';
 
@@ -43,7 +41,7 @@ class ParserCryptoUseCase {
     ) {}
 
     // If this code will be used as a repository class, the return shall be an object with status e possible ok/error messages
-    async execute( { userName, overwrite }: IRequest ): Promise<IPostSheetOperationsResponse> {
+    async execute( { userName, overwrite }: IRequest ): Promise<string[]> {
 
         // Object that represents a cell of the datasheet
         function Navigator(column: string, line: number): void {
@@ -272,66 +270,53 @@ class ParserCryptoUseCase {
          * Parsing xlsx file:
          */
 
-        try {
-            const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.xlsx`);
-            const workbook = new ExcelJS.Workbook();
-            await workbook.xlsx.readFile(pathName);
-            const cryptoSheetList = [];    
-        
-            const listSheetsResponse = await this.cryptoRepository.listSheets(userName);
-            if (listSheetsResponse.status === 500) return {
-                status: 500,
-                errorMessage: listSheetsResponse.errorMessage
-            }
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.xlsx`);
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(pathName);
+        const cryptoSheetList = [];    
+    
+        const listSheetsResponse = await this.cryptoRepository.listSheets(userName);
 
-            await workbook.worksheets.reduce(
-                async (promise, worksheet) => {
-                    await promise;
+        await workbook.worksheets.reduce(
+            async (promise, worksheet) => {
+                await promise;
 
-                    const alreadyParsed = listSheetsResponse.sheetList.includes(worksheet.name);
+                const alreadyParsed = listSheetsResponse.includes(worksheet.name);
 
-                    if (!alreadyParsed || (alreadyParsed && overwrite === 'yes')) {
-                        if (alreadyParsed) {
-                            await this.cryptoRepository.deleteSheet({ userName, sheetName: worksheet.name});
-                        }
-                        // "Resets" the variables below to start a new sheet parsing process
-                        // Better make a new instance or create a reset method likewise parser object?
-                        cryptoPurchasesList = new CryptoPurchasesList();
-                        cryptoSellsList = new CryptoSellsList();
-                        cryptoRelationList = new CryptoPurchaseSellList();
-                        parser.reset();
-                        
-                        console.log(`Parsing of ${worksheet.name} started`);
-                        //cryptoSheetList.push(parsing(worksheet));
-                        const cryptoSheet = parsing(worksheet);
-                        
-                        cryptoSellsList.presentAssets().forEach(asset => {
-                            // Each reduce iteration corresponds to a CryptoSell object 
-                            cryptoSellsList.assets[asset].reduce(
-                                (purchaseIndex: number, cryptoSell: CryptoSell): number => { 
-                                    return updatePurchases(asset, purchaseIndex, cryptoSell.sell_id, cryptoSell.quantSold);
-                                },
-                                0
-                            );
-                        });
-                            
-                        Object.assign(cryptoSheet, { cryptoRelationList });
-
-                        cryptoSheetList.push(cryptoSheet);
+                if (!alreadyParsed || (alreadyParsed && overwrite === 'yes')) {
+                    if (alreadyParsed) {
+                        await this.cryptoRepository.deleteSheet({ userName, sheetName: worksheet.name});
                     }
-                },
-                Promise.resolve()
-            );
-            
-            return await this.cryptoRepository.postSheet({ userName, cryptoSheetList });
-        } catch (err) {
-            console.log("Error in save_sheet from CryptoRepositoryPG:");
-            console.log(err);
-            return {
-                status: 500,
-                errorMessage: err.message
-            }
-        }
+                    // "Resets" the variables below to start a new sheet parsing process
+                    // Better make a new instance or create a reset method likewise parser object?
+                    cryptoPurchasesList = new CryptoPurchasesList();
+                    cryptoSellsList = new CryptoSellsList();
+                    cryptoRelationList = new CryptoPurchaseSellList();
+                    parser.reset();
+                    
+                    console.log(`Parsing of ${worksheet.name} started`);
+                    //cryptoSheetList.push(parsing(worksheet));
+                    const cryptoSheet = parsing(worksheet);
+                    
+                    cryptoSellsList.presentAssets().forEach(asset => {
+                        // Each reduce iteration corresponds to a CryptoSell object 
+                        cryptoSellsList.assets[asset].reduce(
+                            (purchaseIndex: number, cryptoSell: CryptoSell): number => { 
+                                return updatePurchases(asset, purchaseIndex, cryptoSell.sell_id, cryptoSell.quantSold);
+                            },
+                            0
+                        );
+                    });
+                        
+                    Object.assign(cryptoSheet, { cryptoRelationList });
+
+                    cryptoSheetList.push(cryptoSheet);
+                }
+            },
+            Promise.resolve()
+        );
+        
+        return await this.cryptoRepository.postSheet({ userName, cryptoSheetList });
     }
 }
 

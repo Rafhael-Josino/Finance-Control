@@ -14,19 +14,9 @@ class GetSheetSummaryController {
 
         const response = await getSheetSummaryUseCase.execute({ sheetName, userName });
 
-        if (response.status === 200) {
-            return res.send(response.sheetSummary);
-        }
-        else if (response.status === 404) {
-            return res.status(404).json({ error: response.errorMessage});
-        }
-        else if (response.status === 500) {
-            return res.status(500).json({ error: response.errorMessage});
-        }
-        else {
-            console.log("No valid response received from parsing use case");
-            return res.status(500).json({ error: "Unknown error" });
-        }
+        return res.json({
+            sheetSummary: response
+        });
     }
 }
 

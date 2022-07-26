@@ -12,17 +12,9 @@ class ListSheetsController {
 
         const response = await listSheetsUseCase.execute(userName);
 
-        if (response.status === 200) {
-            const sheetNames = JSON.stringify(response.sheetList);
-            return res.send(sheetNames);
-        }
-        else if (response.status === 500) {
-            return res.status(500).json({ error: response.errorMessage});
-        }
-        else {
-            console.log("No valid response received from parsing use case");
-            return res.status(500).json({ error: "Unknown error" });
-        }
+        return res.json({
+            sheetList: response
+        });
     }
 }
 

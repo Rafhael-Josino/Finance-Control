@@ -1,4 +1,4 @@
-import { ICryptoRepository, ICryptoAsset } from '../../repositories/ICryptoRepository';
+import { ICryptoRepository, IGetSheetResponse } from '../../repositories/ICryptoRepository';
 import { inject, injectable } from "tsyringe";
 
 interface IRequest {
@@ -14,7 +14,7 @@ class GetSheetUseCase {
         private cryptoRepository: ICryptoRepository
     ) {}
 
-    async execute({ userName, sheetName, assetName }: IRequest): Promise<ICryptoAsset> {
+    async execute({ userName, sheetName, assetName }: IRequest): Promise<IGetSheetResponse> {
         return await this.cryptoRepository.getSheet({ userName, sheetName, assetName });
     }
 }

@@ -10,18 +10,9 @@ class DeleteSheetController {
         
         const deleteSheetUseCase = container.resolve(DeleteSheetUseCase);
 
-        const response = await deleteSheetUseCase.execute({ userName, sheetName });
+        await deleteSheetUseCase.execute({ userName, sheetName });
 
-        if (response.status === 204) {
-            return res.status(204).send(`Sheet ${sheetName} deleted successfully`);
-        }
-        else if (response.status === 500) {
-            return res.status(500).json({ error: response.message });
-        }
-        else {
-            console.log("No valid response received from parsing use case");
-            return res.status(500).json({ error: "No valid response received from parsing use case" });
-        }
+        return res.status(204).send();
     }
 }
 
