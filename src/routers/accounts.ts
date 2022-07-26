@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-import { CryptoUserVerifications } from '../middlewares/AccountVerificationsPG';
+import { AccountVerifications } from '../middlewares/AccountVerificationsPG';
 
-const cryptoUserVerifications = new CryptoUserVerifications();
+const accountVerifications = new AccountVerifications();
 
 import { CreateUserController } from '../modules/accounts/useCases/createAccount/createUserController';
 import { DeleteUserController } from '../modules/accounts/useCases/deleteAccount.ts/deleteUserController';
@@ -24,21 +24,21 @@ accountRouter.get(
 
 accountRouter.post(
 	'/',
-	cryptoUserVerifications.verifyUserAlreadyExists,
+	accountVerifications.verifyUserAlreadyExists,
 	createUserController.handle
 );
 
 // Retrieves the crypto user data
 accountRouter.get(
 	'/',
-	cryptoUserVerifications.verifyUserExists,
+	accountVerifications.verifyUserExists,
 	getUserController.handle	
 );
 
 // Deletes user
 accountRouter.delete(
 	'/',
-	cryptoUserVerifications.verifyUserExists,
+	accountVerifications.verifyUserExists,
 	deleteUserController.handle
 );
 

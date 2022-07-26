@@ -4,10 +4,11 @@ import fs from 'fs';
 
 
 // ###################### Middleware #########################
-import { CryptoUserVerifications } from '../middlewares/AccountVerificationsPG';
-//import { CryptoUserVerifications } from '../middlewares/CryptoUserVerifications';
+import { AccountVerifications } from '../middlewares/AccountVerificationsPG';
+import { CryptoSheetVerifications } from '../middlewares/CryptoSheetVerificationsPG';
 
-const cryptoUserVerifications = new CryptoUserVerifications();
+const accountVerifications = new AccountVerifications();
+const cryptoSheetVerifications = new CryptoSheetVerifications();
 
 
 import { ParserCryptoController } from '../modules/crypto/useCases/parser/parserController';
@@ -67,35 +68,35 @@ cryptoSheetsRouter.get('/cryptos.js', (req, res) => {
 // Retrieves a list of all sheets parsed and stored
 cryptoSheetsRouter.get(
 	'/sheets',
-	cryptoUserVerifications.verifyUserExists,
+	accountVerifications.verifyUserExists,
 	listSheetsController.handle
 );
 
 // Retrieves a specified sheet data from a user
 cryptoSheetsRouter.get(
 	'/sheet/:sheetName/:assetName',
-	cryptoUserVerifications.verifyUserExists,
+	accountVerifications.verifyUserExists,
 	getSheetController.handle
 );
 
 cryptoSheetsRouter.get(
 	'/sheetSummary/:sheetName',
-	cryptoUserVerifications.verifyUserExists,
+	accountVerifications.verifyUserExists,
 	getSheetSummaryController.handle
 );
 
 // Parse sheets in the xlsx file uploaded and stores the data obtained
 cryptoSheetsRouter.post(
 	'/saveSheet/:overwrite',
-	cryptoUserVerifications.verifyUserExists,
-	cryptoUserVerifications.verifyXLSXexists,
+	accountVerifications.verifyUserExists,
+	cryptoSheetVerifications.verifyXLSXexists,
 	parserSheetController.handle
 );
 
 // Delete given sheet's information of a user
 cryptoSheetsRouter.delete(
 	'/deleteSheet/:sheetName',
-	cryptoUserVerifications.verifyUserExists,
+	accountVerifications.verifyUserExists,
 	deleteSheetController.handle
 );
 
