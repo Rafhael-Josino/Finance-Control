@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ParserCryptoUseCase } from './parserUseCase';
 import { container } from 'tsyringe';
+import { AppError } from '../../../../errors/AppErrors';
 
 class ParserCryptoController {
     async handle(req: Request, res: Response): Promise<Response> /* BAD - it should return a Response */ {
@@ -9,10 +10,7 @@ class ParserCryptoController {
         const { overwrite } = req.params;
 
         if (overwrite !== "yes" && overwrite !== "no")
-            // change here for throw new AppError
-            return res.status(400).json({
-                error: "overwrite parameter must be 'yes' or 'no'"
-            });
+            throw new AppError("overwrite parameter must be 'yes' or 'no'", 400);
 
         const parserCryptoUseCase = container.resolve(ParserCryptoUseCase);
 
