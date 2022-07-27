@@ -8,8 +8,8 @@ class ListSheetsUseCase {
         private cryptoRepository: ICryptoRepository
     ) {}
 
-    async execute( userName: string ): Promise<string[]> {
-        return await this.cryptoRepository.listSheets(userName);
+    async execute( user_id: string ): Promise<string[]> {
+        return await this.cryptoRepository.listSheets(user_id);
     }
 }
 

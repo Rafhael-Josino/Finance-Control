@@ -5,12 +5,11 @@ import { container } from 'tsyringe';
 class DeleteSheetController {
     async handle(req: Request, res: Response): Promise<Response> {
         const { sheetName } = req.params;
-        const { username } = req.headers;
-        const userName = username as string; // username has type string │ string[]
-        
+        const { id: userID } = req.user;
+
         const deleteSheetUseCase = container.resolve(DeleteSheetUseCase);
 
-        await deleteSheetUseCase.execute({ userName, sheetName });
+        await deleteSheetUseCase.execute({ userID, sheetName });
 
         return res.status(204).send();
     }

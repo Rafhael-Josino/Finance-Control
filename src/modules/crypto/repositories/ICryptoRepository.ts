@@ -3,18 +3,18 @@ import { CryptoSheet, CryptoSummary, CryptoPurchase, CryptoSell, CryptoPurchaseS
 // Function arguments types
 
 interface IGetSheetOperationsDTO {
-    userName: string;
+    userID: string;
     sheetName: string;
     assetName: string;
 }
 
 interface IReferenceSheet {
-    userName: string;
+    userID: string;
     sheetName: string;
 }
 
 interface IPostSheetOperationsDTO {
-    userName: string;
+    userID: string;
     cryptoSheetList: CryptoSheet[];
 }
 
@@ -28,11 +28,11 @@ interface IGetSheetResponse {
 // Repository interface
 
 interface ICryptoRepository {
-    getSheet({ userName, sheetName, assetName }: IGetSheetOperationsDTO): Promise<IGetSheetResponse>;
-    listSheets( userName: string ): Promise<string[]>;
-    getSheetSummary({ userName, sheetName }: IReferenceSheet): Promise<CryptoSummary[]>;
-    postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<string[]>;
-    deleteSheet({ userName, sheetName }: IReferenceSheet): Promise<void>;
+    listSheets( userID: string ): Promise<string[]>;
+    getSheet({ userID, sheetName, assetName }: IGetSheetOperationsDTO): Promise<IGetSheetResponse>;
+    getSheetSummary({ userID, sheetName }: IReferenceSheet): Promise<CryptoSummary[]>;
+    postSheet({ userID, cryptoSheetList }: IPostSheetOperationsDTO): Promise<string[]>;
+    deleteSheet({ userID, sheetName }: IReferenceSheet): Promise<void>;
 }
 
 export { 

@@ -2,7 +2,7 @@ import { ICryptoRepository, IGetSheetResponse } from '../../repositories/ICrypto
 import { inject, injectable } from "tsyringe";
 
 interface IRequest {
-    userName: string;
+    userID: string;
     sheetName: string;
     assetName: string;
 }
@@ -14,8 +14,8 @@ class GetSheetUseCase {
         private cryptoRepository: ICryptoRepository
     ) {}
 
-    async execute({ userName, sheetName, assetName }: IRequest): Promise<IGetSheetResponse> {
-        return await this.cryptoRepository.getSheet({ userName, sheetName, assetName });
+    async execute({ userID, sheetName, assetName }: IRequest): Promise<IGetSheetResponse> {
+        return await this.cryptoRepository.getSheet({ userID, sheetName, assetName });
     }
 }
 

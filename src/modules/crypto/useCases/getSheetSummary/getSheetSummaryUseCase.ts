@@ -3,7 +3,7 @@ import { CryptoSummary } from '../../models/Cryptos';
 import { inject, injectable } from 'tsyringe';
 
 interface IRequest {
-    userName: string;
+    userID: string;
     sheetName: string;
 }
 
@@ -14,8 +14,8 @@ class GetSheetSummaryUseCase {
         private cryptoRepository: ICryptoRepository
     ) {}
 
-    async execute({ userName, sheetName }: IRequest): Promise<CryptoSummary[]> {
-        return await this.cryptoRepository.getSheetSummary({ userName, sheetName });
+    async execute({ userID, sheetName }: IRequest): Promise<CryptoSummary[]> {
+        return await this.cryptoRepository.getSheetSummary({ userID, sheetName });
     }
 }
 

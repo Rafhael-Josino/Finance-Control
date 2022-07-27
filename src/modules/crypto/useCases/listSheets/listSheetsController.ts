@@ -4,13 +4,11 @@ import { container } from 'tsyringe';
 
 class ListSheetsController {
     async handle(req: Request, res: Response): Promise<Response> {
-        //cont { user } = req; // with middleware. Only this is not working. User not part of req's type
-        const { username } = req.headers;
-        const userName = username as string; // username has type string │ string[]
+        const { id } = req.user;
 
         const listSheetsUseCase = container.resolve(ListSheetsUseCase);
 
-        const response = await listSheetsUseCase.execute(userName);
+        const response = await listSheetsUseCase.execute(id);
 
         return res.json({
             sheetList: response

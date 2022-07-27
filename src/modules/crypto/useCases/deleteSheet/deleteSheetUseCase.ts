@@ -2,7 +2,7 @@ import { ICryptoRepository } from '../../repositories/ICryptoRepository';
 import { inject, injectable } from 'tsyringe';
 
 interface IRequest {
-    userName: string;
+    userID: string;
     sheetName: string;
 }
 
@@ -13,8 +13,8 @@ class DeleteSheetUseCase {
         private cryptoRepository: ICryptoRepository
     ) {}
 
-    async execute({ userName, sheetName }: IRequest): Promise<void> {
-        await this.cryptoRepository.deleteSheet({ userName, sheetName });
+    async execute({ userID, sheetName }: IRequest): Promise<void> {
+        await this.cryptoRepository.deleteSheet({ userID, sheetName });
     }
 }
 

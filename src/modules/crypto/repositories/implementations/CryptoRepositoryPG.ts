@@ -12,14 +12,12 @@ import {
 } from '../ICryptoRepository';
 
 class CryptoRepositoryPG implements ICryptoRepository {
-    async listSheets( userName: string ): Promise<string[]> {
+    async listSheets( userID: string ): Promise<string[]> {
         const PGresponse = await PG.query(
-            `SELECT sheet_name FROM sheets
-            WHERE sheet_id IN (SELECT sheet_id FROM sheets
-                WHERE user_id = (SELECT user_id FROM users
-                    WHERE user_name = $1))
+            `SELECT sheet_name FROM sheets 
+            WHERE sheet_id IN (SELECT sheet_id FROM sheets WHERE user_id = $1)
             `,
-            [userName]
+            [userID]
         );
 
         const sheetList = PGresponse.rows.map(PGelement => PGelement.sheet_name);
@@ -27,7 +25,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
         return sheetList;
     }
 
-    async getSheet({ userName, sheetName, assetName}: IGetSheetOperationsDTO): Promise<IGetSheetResponse> {
+    async getSheet({ userID, sheetName, assetName}: IGetSheetOperationsDTO): Promise<IGetSheetResponse> {
         const purchases = await PG.query(
             `SELECT
                 purchase_id,
@@ -40,16 +38,11 @@ class CryptoRepositoryPG implements ICryptoRepository {
             FROM
                 purchases
             WHERE
-                sheet_id IN (SELECT sheet_id FROM sheets
-                    WHERE
-                        sheet_name = $1
-                    AND 
-                        user_id = (SELECT user_id FROM users
-                            WHERE user_name = $2))
+                sheet_id IN (SELECT sheet_id FROM sheets WHERE sheet_name = $1 AND user_id = $2)
             AND
                 asset = $3
             `,
-            [sheetName, userName, assetName]
+            [sheetName, userID, assetName]
         );
 
         // Test get purchases
@@ -65,16 +58,11 @@ class CryptoRepositoryPG implements ICryptoRepository {
             FROM
                 sells
             WHERE 
-                sheet_id IN (SELECT sheet_id FROM sheets
-                    WHERE
-                        sheet_name = $1
-                    AND 
-                        user_id = (SELECT user_id FROM users
-                            WHERE user_name = $2))
+                sheet_id IN (SELECT sheet_id FROM sheets WHERE sheet_name = $1 AND user_id = $2)
             AND
                 asset = $3
             `,
-            [sheetName, userName, assetName]
+            [sheetName, userID, assetName]
         );
         
         await sells.rows.reduce(
@@ -102,30 +90,25 @@ class CryptoRepositoryPG implements ICryptoRepository {
         }
     }
 
-    async getSheetSummary({ userName, sheetName }: IReferenceSheet): Promise<CryptoSummary[]> {
+    async getSheetSummary({ userID, sheetName }: IReferenceSheet): Promise<CryptoSummary[]> {
         const summary = await PG.query(
-            // FIX query bellow / add filter per User
             `SELECT 
                 asset,
                 SUM (remain_quant) AS total_quant,
                 SUM (remain_quant * purchase_medium_price) AS total_value
-            FROM purchases
+            FROM 
+                purchases
             WHERE
-                sheet_id IN (SELECT sheet_id FROM sheets 
-                    WHERE 
-                        sheet_name = $1
-                    AND
-                        user_id = (SELECT user_id FROM users
-                            WHERE user_name = $2))
+                sheet_id IN (SELECT sheet_id FROM sheets WHERE sheet_name = $1 AND user_id = $2)
             GROUP BY asset;
             `,
-            [sheetName, userName]
+            [sheetName, userID]
         );
 
         return summary.rows;
     }
 
-    async postSheet({ userName, cryptoSheetList }: IPostSheetOperationsDTO): Promise<string[]> {
+    async postSheet({ userID, cryptoSheetList }: IPostSheetOperationsDTO): Promise<string[]> {
         function formatDate(date: Date): string {
             date = new Date(date);
             date.setDate(date.getDate() + 1);
@@ -146,9 +129,8 @@ class CryptoRepositoryPG implements ICryptoRepository {
 
                 // Must insert also user_id
                 await PG.query(
-                    `INSERT INTO sheets (sheet_name, sheet_id, user_id) 
-                    VALUES ($1, $2, (SELECT user_id FROM users WHERE user_name = $3))`,
-                    [cryptoSheet.sheetName, cryptoSheet.id, userName]
+                    `INSERT INTO sheets (sheet_name, sheet_id, user_id) VALUES ($1, $2, $3)`,
+                    [cryptoSheet.sheetName, cryptoSheet.id, userID]
                 );
 
                 await cryptoSheet.cryptoPurchasesList.presentAssets().reduce(
@@ -265,16 +247,15 @@ class CryptoRepositoryPG implements ICryptoRepository {
         return cryptoSheetList.map((sheet: CryptoSheet) => sheet.sheetName);
     }
 
-    async deleteSheet({ userName, sheetName }: IReferenceSheet): Promise<void> {
+    async deleteSheet({ userID, sheetName }: IReferenceSheet): Promise<void> {
         await PG.query(
             `DELETE FROM sheets
             WHERE
                 sheet_name = $1
             AND
-                sheet_id IN (SELECT sheet_id FROM sheets WHERE 
-                    user_id = (SELECT user_id FROM users WHERE user_name = $2));
+                sheet_id IN (SELECT sheet_id FROM sheets WHERE user_id = $2);
             `,
-            [sheetName, userName]
+            [sheetName, userID]
         );
     }
 }

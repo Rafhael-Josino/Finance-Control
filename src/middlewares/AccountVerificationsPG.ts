@@ -8,14 +8,15 @@ class AccountVerifications {
         const { username } = req.headers;
         const userName = username as string;
         
-        const resPG = await PG.query('SELECT user_name FROM users where user_name = $1', [userName]);
+        const resPG = await PG.query('SELECT user_id FROM users where user_name = $1', [userName]);
 
         if (resPG.rows.length) {
+            req.user = { id: resPG.rows[0].user_id };
+
             return next();
         }
         else {
-            console.log(`Server's middleware here - ${username} does not exist`);
-            throw new AppError(`Server's middleware here - ${username} not found`, 404);
+            throw new AppError(`Server's middleware here - account ${username} not found`, 404);
         }
     }
 

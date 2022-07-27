@@ -29,7 +29,8 @@ import {
 import { inject, injectable } from 'tsyringe';
 
 interface IRequest {
-    userName: string;
+    username: string | string[];
+    userID: string;
     overwrite: string;
 }
 
@@ -41,7 +42,7 @@ class ParserCryptoUseCase {
     ) {}
 
     // If this code will be used as a repository class, the return shall be an object with status e possible ok/error messages
-    async execute( { userName, overwrite }: IRequest ): Promise<string[]> {
+    async execute( { username, userID, overwrite }: IRequest ): Promise<string[]> {
 
         // Object that represents a cell of the datasheet
         function Navigator(column: string, line: number): void {
@@ -270,12 +271,12 @@ class ParserCryptoUseCase {
          * Parsing xlsx file:
          */
 
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${userName}.xlsx`);
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${username}.xlsx`);
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(pathName);
         const cryptoSheetList = [];    
     
-        const listSheetsResponse = await this.cryptoRepository.listSheets(userName);
+        const listSheetsResponse = await this.cryptoRepository.listSheets(userID);
 
         await workbook.worksheets.reduce(
             async (promise, worksheet) => {
@@ -285,7 +286,7 @@ class ParserCryptoUseCase {
 
                 if (!alreadyParsed || (alreadyParsed && overwrite === 'yes')) {
                     if (alreadyParsed) {
-                        await this.cryptoRepository.deleteSheet({ userName, sheetName: worksheet.name});
+                        await this.cryptoRepository.deleteSheet({ userID, sheetName: worksheet.name});
                     }
                     // "Resets" the variables below to start a new sheet parsing process
                     // Better make a new instance or create a reset method likewise parser object?
@@ -316,7 +317,7 @@ class ParserCryptoUseCase {
             Promise.resolve()
         );
         
-        return await this.cryptoRepository.postSheet({ userName, cryptoSheetList });
+        return await this.cryptoRepository.postSheet({ userID, cryptoSheetList });
     }
 }
 
