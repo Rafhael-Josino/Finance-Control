@@ -1,6 +1,6 @@
 import { PG } from '../../../../database';
 import { Account } from '../../models/Account';
-import { ICryptoUserRepository } from '../AccountRepository';
+import { ICryptoUserRepository, ICreateUserDTO } from '../AccountRepository';
 
 class CryptoUserRepositoryPG implements ICryptoUserRepository {
 
@@ -19,6 +19,7 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
         Object.assign(cryptoUser, {
             id: resPG.rows[0].user_id,
             name: resPG.rows[0].user_name,
+            password: resPG.rows[0].password,
             isAdmin: resPG.rows[0].isadmin,
             created_at: resPG.rows[0].created_on,
         });
@@ -26,10 +27,10 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
     }
 
     /** Creates a new user */
-    async createUser( userName: string ): Promise<void> {
+    async createUser( { userName, passwordHash }: ICreateUserDTO ): Promise<void> {
         await PG.query(
-            'INSERT INTO users (user_name) VALUES ($1)',
-            [userName]
+            'INSERT INTO users (user_name, password) VALUES ($1, $2)',
+            [userName, passwordHash]
         );
     }
 

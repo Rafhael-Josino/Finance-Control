@@ -5,7 +5,7 @@ import { AccountVerifications } from '../middlewares/AccountVerificationsPG';
 const accountVerifications = new AccountVerifications();
 
 import { CreateUserController } from '../modules/accounts/useCases/createAccount/createUserController';
-import { DeleteUserController } from '../modules/accounts/useCases/deleteAccount.ts/deleteUserController';
+import { DeleteUserController } from '../modules/accounts/useCases/deleteAccount/deleteUserController';
 import { GetUserController } from '../modules/accounts/useCases/getAccount/getUserController';
 import { ListUsersController } from '../modules/accounts/useCases/listAccounts/ListUsersController';
 
