@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-import { cryptoSheetsRouter } from './cryptoSheets';
+import { cryptoSheetsRouter } from './cryptoSheets.routes';
 import { indexRoutes } from './indexFrontEnd';
-import { accountRouter } from './accounts';
+import { accountRouter } from './accounts.routes';
 
 const router = Router();
 

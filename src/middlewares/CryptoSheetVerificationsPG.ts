@@ -29,8 +29,9 @@ class CryptoSheetVerifications {
         );
     }
 
-    verifyXLSXexists(req: Request, res: Response, next: NextFunction): any { 
+    async verifyXLSXexists(req: Request, res: Response, next: NextFunction): Promise<any> { 
         const { username } = req.headers;
+
         const pathName = path.join(__dirname, '..', '..', 'logs', 'cryptos');
         const dirFiles = fs.readdirSync(pathName, 'utf8');
 

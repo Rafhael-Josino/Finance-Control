@@ -8,11 +8,13 @@ import { CreateUserController } from '../modules/accounts/useCases/createAccount
 import { DeleteUserController } from '../modules/accounts/useCases/deleteAccount/deleteUserController';
 import { GetUserController } from '../modules/accounts/useCases/getAccount/getUserController';
 import { ListUsersController } from '../modules/accounts/useCases/listAccounts/ListUsersController';
+import { SessionController } from '../modules/accounts/useCases/authenticateAccount/sessionController';
 
 const getUserController = new GetUserController();
 const listUsersController = new ListUsersController();
 const createUserController = new CreateUserController();
 const deleteUserController = new DeleteUserController();
+const sessionController = new SessionController();
 
 const accountRouter = Router();
 
@@ -22,24 +24,30 @@ accountRouter.get(
 	listUsersController.handle
 );
 
+// Creates new user account
 accountRouter.post(
 	'/',
 	accountVerifications.verifyUserAlreadyExists,
 	createUserController.handle
 );
 
-// Retrieves the crypto user data
+// Retrieves user account data
 accountRouter.get(
 	'/',
 	accountVerifications.verifyUserExists,
 	getUserController.handle	
 );
 
-// Deletes user
+// Deletes user account
 accountRouter.delete(
 	'/',
 	accountVerifications.verifyUserExists,
 	deleteUserController.handle
+);
+
+accountRouter.post(
+	'/login',
+	sessionController.handle
 );
 
 export { accountRouter }

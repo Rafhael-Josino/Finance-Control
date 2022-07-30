@@ -274,7 +274,7 @@ class ParserCryptoUseCase {
         const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${username}.xlsx`);
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(pathName);
-        const cryptoSheetList = [];    
+        const cryptoSheetList = [];
     
         const listSheetsResponse = await this.cryptoRepository.listSheets(userID);
 

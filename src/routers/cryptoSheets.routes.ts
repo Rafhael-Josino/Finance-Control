@@ -2,7 +2,6 @@ import { Router } from 'express';
 import path from 'path';
 import fs from 'fs';
 
-
 // ###################### Middleware #########################
 import { AccountVerifications } from '../middlewares/AccountVerificationsPG';
 import { CryptoSheetVerifications } from '../middlewares/CryptoSheetVerificationsPG';
@@ -68,27 +67,27 @@ cryptoSheetsRouter.get('/cryptos.js', (req, res) => {
 // Retrieves a list of all sheets parsed and stored
 cryptoSheetsRouter.get(
 	'/sheets',
-	accountVerifications.verifyUserExists,
+	accountVerifications.verifySession,
 	listSheetsController.handle
 );
 
 // Retrieves a specified sheet data from a user
 cryptoSheetsRouter.get(
 	'/sheet/:sheetName/:assetName',
-	accountVerifications.verifyUserExists,
+	accountVerifications.verifySession,
 	getSheetController.handle
 );
 
 cryptoSheetsRouter.get(
 	'/sheetSummary/:sheetName',
-	accountVerifications.verifyUserExists,
+	accountVerifications.verifySession,
 	getSheetSummaryController.handle
 );
 
 // Parse sheets in the xlsx file uploaded and stores the data obtained
 cryptoSheetsRouter.post(
 	'/saveSheet/:overwrite',
-	accountVerifications.verifyUserExists,
+	accountVerifications.verifySession,
 	cryptoSheetVerifications.verifyXLSXexists,
 	parserSheetController.handle
 );
@@ -96,7 +95,7 @@ cryptoSheetsRouter.post(
 // Delete given sheet's information of a user
 cryptoSheetsRouter.delete(
 	'/deleteSheet/:sheetName',
-	accountVerifications.verifyUserExists,
+	accountVerifications.verifySession,
 	deleteSheetController.handle
 );
 
