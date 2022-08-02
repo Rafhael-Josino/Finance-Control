@@ -3,7 +3,7 @@
   "packageManager": "yarn@3.2.1",
   "scripts": {
     "dev": "yarn ts-node-dev --transpile-only --ignore-watch node_modules --respawn ./src/server.ts",
-    "ddl": "yarn ts-node-dev --transpile-only --ignore-watch node_modules --respawn ./src/database/migrations/tmp.ts",
+    "ddl": "yarn ts-node-dev --transpile-only --ignore-watch node_modules --respawn ./src/database/migrations/",
     "test": "jest"
   },
   "dependencies": {
