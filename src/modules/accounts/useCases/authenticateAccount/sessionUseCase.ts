@@ -4,7 +4,7 @@ import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
-import { AppError } from '../../../../errors/AppErrors';
+import { AppError } from '@errors/AppErrors';
 
 interface IRequest {
     userName: string;

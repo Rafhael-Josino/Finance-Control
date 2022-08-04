@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 import { PG } from '../database';
-import { AppError } from '../errors/AppErrors';
+import { AppError } from '@errors/AppErrors';
 
 class CryptoSheetVerifications {
     async verifySheetExists(req: Request, res: Response, next: NextFunction): Promise<any> {

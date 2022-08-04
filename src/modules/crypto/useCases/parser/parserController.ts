@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ParserCryptoUseCase } from './parserUseCase';
 import { container } from 'tsyringe';
-import { AppError } from '../../../../errors/AppErrors';
+import { AppError } from '@errors/AppErrors';
 
 class ParserCryptoController {
     async handle(req: Request, res: Response): Promise<Response> /* BAD - it should return a Response */ {

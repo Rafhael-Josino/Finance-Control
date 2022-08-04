@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
-import { AppError } from '../errors/AppErrors';
+import { AppError } from '@errors/AppErrors';
 
 class CryptoUserVerifications {
     verifyUserExists(req: Request, res: Response, next: NextFunction): any {

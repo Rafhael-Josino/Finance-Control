@@ -1,4 +1,4 @@
-import { CryptoSheet, CryptoSummary, CryptoPurchase, CryptoSell, CryptoPurchaseSellRelation } from "../models/Cryptos";
+import { CryptoSheet, CryptoSummary } from "../models/Cryptos";
 
 // Function arguments types
 

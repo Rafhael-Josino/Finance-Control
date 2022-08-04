@@ -7,9 +7,9 @@ import fs from 'fs';
 import swaggerUi from 'swagger-ui-express';
 
 import { router } from './routers/';
-import { AppError } from './errors/AppErrors';
+import { AppError } from '@errors/AppErrors';
 
-import './shared/container';
+import '@shared/container';
 
 //import { pool, client } from "./database";
 //import { dataSource } from './database'; // to typeorm@0.3.4
