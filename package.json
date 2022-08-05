@@ -2,8 +2,8 @@
   "name": "finance-control",
   "packageManager": "yarn@3.2.1",
   "scripts": {
-    "dev": "yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules --respawn ./src/server.ts",
-    "ddl": "yarn ts-node-dev --transpile-only --ignore-watch node_modules --respawn ./src/database/migrations/",
+    "dev": "yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules --respawn ./src/shared/infra/http/server.ts",
+    "ddl": "yarn ts-node-dev --transpile-only --ignore-watch node_modules --respawn ./src/shared/infra/postgresSQL/migrations/",
     "test": "jest"
   },
   "dependencies": {

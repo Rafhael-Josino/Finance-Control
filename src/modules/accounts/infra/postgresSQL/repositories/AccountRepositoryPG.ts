@@ -1,6 +1,6 @@
-import { PG } from '../../../../database';
-import { Account } from '../../models/Account';
-import { ICryptoUserRepository, ICreateUserDTO } from '../AccountRepository';
+import { PG } from '@shared/infra/postgresSQL';
+import { Account } from '../models/Account';
+import { ICryptoUserRepository, ICreateUserDTO } from '../../../repositories/IAccountRepository';
 
 class CryptoUserRepositoryPG implements ICryptoUserRepository {
 

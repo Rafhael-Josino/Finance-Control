@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { cryptoSheetsRouter } from './cryptoSheets.routes';
-import { indexRoutes } from './indexFrontEnd';
+import { indexRoutes } from './indexFrontEnd.routes';
 import { accountRouter } from './accounts.routes';
 
 const router = Router();

@@ -6,8 +6,8 @@ import cors from 'cors';
 import fs from 'fs';
 import swaggerUi from 'swagger-ui-express';
 
-import { router } from './routers/';
-import { AppError } from '@errors/AppErrors';
+import { router } from './routers';
+import { AppError } from '@shared/errors/AppErrors';
 
 import '@shared/container';
 

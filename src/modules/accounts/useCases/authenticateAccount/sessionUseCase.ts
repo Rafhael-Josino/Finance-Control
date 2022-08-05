@@ -1,10 +1,10 @@
-import { ICryptoUserRepository } from '../../repositories/AccountRepository';
+import { ICryptoUserRepository } from '../../repositories/IAccountRepository';
 import { inject, injectable } from 'tsyringe';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
-import { AppError } from '@errors/AppErrors';
+import { AppError } from '@shared/errors/AppErrors';
 
 interface IRequest {
     userName: string;

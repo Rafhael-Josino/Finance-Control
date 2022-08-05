@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
 
-import { PG } from '../database';
-import { AppError } from '@errors/AppErrors';
+import { PG } from '../../postgresSQL';
+import { AppError } from '@shared/errors/AppErrors';
 
 class CryptoSheetVerifications {
     async verifySheetExists(req: Request, res: Response, next: NextFunction): Promise<any> {
@@ -32,7 +32,7 @@ class CryptoSheetVerifications {
     async verifyXLSXexists(req: Request, res: Response, next: NextFunction): Promise<any> { 
         const { username } = req.headers;
 
-        const pathName = path.join(__dirname, '..', '..', 'logs', 'cryptos');
+        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos');
         const dirFiles = fs.readdirSync(pathName, 'utf8');
 
         if (dirFiles.includes(`${username}.xlsx`)) {

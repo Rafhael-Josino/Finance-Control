@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 
-import { PG } from '../database';
-import { AppError } from '@errors/AppErrors';
+import { PG } from '../../postgresSQL';
+import { AppError } from '@shared/errors/AppErrors';
 
 interface IPayLoad {
     sub: string;

@@ -1,15 +1,15 @@
-import { PG } from '../../../../database';
+import { PG } from '@shared/infra/postgresSQL';
 import { 
     CryptoSheet,
     CryptoSummary 
-} from '../../models/Cryptos';
+} from '../models/Cryptos';
 import { 
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
     IReferenceSheet,
     IGetSheetResponse
-} from '../ICryptoRepository';
+} from '../../../repositories/ICryptoRepository';
 
 class CryptoRepositoryPG implements ICryptoRepository {
     async listSheets( userID: string ): Promise<string[]> {

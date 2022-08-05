@@ -1,4 +1,4 @@
-import { CryptoSheet, CryptoSummary } from "../models/Cryptos";
+import { CryptoSheet, CryptoSummary } from "../infra/postgresSQL/models/Cryptos";
 
 // Function arguments types
 

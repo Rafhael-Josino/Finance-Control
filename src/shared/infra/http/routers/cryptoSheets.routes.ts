@@ -10,11 +10,11 @@ const accountVerifications = new AccountVerifications();
 const cryptoSheetVerifications = new CryptoSheetVerifications();
 
 
-import { ParserCryptoController } from '../modules/crypto/useCases/parser/parserController';
-import { ListSheetsController } from '../modules/crypto/useCases/listSheets/listSheetsController';
-import { GetSheetController} from '../modules/crypto/useCases/getSheet/getSheetController';
-import { GetSheetSummaryController} from '../modules/crypto/useCases/getSheetSummary/getSheetSummaryController';
-import { DeleteSheetController } from '../modules/crypto/useCases/deleteSheet/deleteSheetController';
+import { ParserCryptoController } from '@modules/crypto/useCases/parser/parserController';
+import { ListSheetsController } from '@modules/crypto/useCases/listSheets/listSheetsController';
+import { GetSheetController} from '@modules/crypto/useCases/getSheet/getSheetController';
+import { GetSheetSummaryController} from '@modules/crypto/useCases/getSheetSummary/getSheetSummaryController';
+import { DeleteSheetController } from '@modules/crypto/useCases/deleteSheet/deleteSheetController';
 
 const getSheetController = new GetSheetController();
 const listSheetsController = new ListSheetsController();
