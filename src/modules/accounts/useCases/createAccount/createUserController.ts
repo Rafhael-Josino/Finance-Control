@@ -8,9 +8,9 @@ class CreateUserController {
 
         const createUserUseCase = container.resolve(CreateUserUseCase);
 
-        await createUserUseCase.execute({ userName, password });
+        const newUser = await createUserUseCase.execute({ userName, password });
 
-        return res.status(201).send();
+        return res.status(201).json({ newUser });
     }
 }
 

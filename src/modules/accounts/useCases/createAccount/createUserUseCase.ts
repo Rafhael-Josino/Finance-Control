@@ -1,4 +1,5 @@
 import { IAccountRepository } from '../../repositories/IAccountRepository';
+import { Account } from '@modules/accounts/infra/postgresSQL/models/Account';
 import { inject, injectable } from 'tsyringe';
 import { hash } from 'bcrypt';
 
@@ -14,10 +15,10 @@ class CreateUserUseCase {
         private accountRepository: IAccountRepository
     ) {}
 
-    async execute( { userName, password }: IRequest ): Promise<void> {
+    async execute( { userName, password }: IRequest ): Promise<Account> {
         const passwordHash = await hash(password, 8);
 
-        await this.accountRepository.createUser({ userName, passwordHash });
+        return await this.accountRepository.createUser({ userName, passwordHash });
     }
 }
 

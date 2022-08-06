@@ -8,7 +8,7 @@ interface ICreateUserDTO {
 interface IAccountRepository {
     listUsers(): Promise<string[]>;
     getUser( username: string ): Promise<Account>;
-    createUser( { userName, passwordHash }: ICreateUserDTO ): Promise<void>;
+    createUser( { userName, passwordHash }: ICreateUserDTO ): Promise<Account>;
     deleteUser( userName: string ): Promise<void>;
 }
 
