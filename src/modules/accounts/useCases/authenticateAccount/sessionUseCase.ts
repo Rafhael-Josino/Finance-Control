@@ -1,4 +1,4 @@
-import { ICryptoUserRepository } from '../../repositories/IAccountRepository';
+import { IAccountRepository } from '../../repositories/IAccountRepository';
 import { inject, injectable } from 'tsyringe';
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
@@ -19,16 +19,16 @@ interface IResponse {
 @injectable()
 class SessionUseCase {
     constructor(
-        @inject("CryptoUserRepository")
-        private cryptoUserRepository: ICryptoUserRepository
+        @inject("AccountRepository")
+        private accountRepository: IAccountRepository
     ) {}
 
     async execute( { userName, password }: IRequest ): Promise<IResponse> {
-        const usersList = await this.cryptoUserRepository.listUsers();
+        const usersList = await this.accountRepository.listUsers();
         if (!usersList.includes(userName)) 
             throw new AppError("Username or password incorrect", 403);
         
-        const user = await this.cryptoUserRepository.getUser(userName);
+        const user = await this.accountRepository.getUser(userName);
         const passwordMatch = await compare(password, user.password);
         if (!passwordMatch) 
             throw new AppError("Username or password incorrect", 403);

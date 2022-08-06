@@ -1,15 +1,15 @@
-import { ICryptoUserRepository } from '../../repositories/IAccountRepository';
+import { IAccountRepository } from '../../repositories/IAccountRepository';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class DeleteUserUseCase {
     constructor(
-        @inject("CryptoUserRepository")
-        private cryptoUserRepository: ICryptoUserRepository
+        @inject("AccountRepository")
+        private accountRepository: IAccountRepository
     ) {}
 
     async execute( userName: string ): Promise<void> {
-        await this.cryptoUserRepository.deleteUser(userName);
+        await this.accountRepository.deleteUser(userName);
     }
 }
 

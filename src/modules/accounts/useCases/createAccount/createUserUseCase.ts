@@ -1,4 +1,4 @@
-import { ICryptoUserRepository } from '../../repositories/IAccountRepository';
+import { IAccountRepository } from '../../repositories/IAccountRepository';
 import { inject, injectable } from 'tsyringe';
 import { hash } from 'bcrypt';
 
@@ -10,14 +10,14 @@ interface IRequest {
 @injectable()
 class CreateUserUseCase {
     constructor(
-        @inject("CryptoUserRepository")
-        private cryptoUserRepository: ICryptoUserRepository
+        @inject("AccountRepository")
+        private accountRepository: IAccountRepository
     ) {}
 
     async execute( { userName, password }: IRequest ): Promise<void> {
         const passwordHash = await hash(password, 8);
 
-        await this.cryptoUserRepository.createUser({ userName, passwordHash });
+        await this.accountRepository.createUser({ userName, passwordHash });
     }
 }
 

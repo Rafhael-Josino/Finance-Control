@@ -1,15 +1,15 @@
-import { ICryptoUserRepository } from '../../repositories/IAccountRepository';
+import { IAccountRepository } from '../../repositories/IAccountRepository';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class ListUsersUseCase {
     constructor(
         @inject("CryptoUserRepository")
-        private cryptoUserRepository: ICryptoUserRepository
+        private accountRepository: IAccountRepository
     ) {}
 
     async execute(): Promise<string[]> {
-        return await this.cryptoUserRepository.listUsers();
+        return await this.accountRepository.listUsers();
     }
 }
 
