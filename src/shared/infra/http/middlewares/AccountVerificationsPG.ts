@@ -27,21 +27,6 @@ class AccountVerifications {
 
     // For now the XLSX file stays in the logs/crypto directory
     // but it will be changed to be imported, parsed, and then deleted
-    
-    async verifyUserAlreadyExists(req: Request, res: Response, next: NextFunction): Promise<any> {
-        const { userName } = req.body;
-        
-        const resPG = await PG.query('SELECT user_name FROM users where user_name = $1', [userName]);
-
-        console.log(resPG.rows);
-
-        if (resPG.rows.length) {
-            console.log(`Server's middleware here - ${userName} already exists`);
-            throw new AppError(`Server's middleware here - ${userName} already exists`, 403);
-        }
-    
-        return next();
-    }
 
     async verifySession(req: Request, res: Response, next: NextFunction): Promise<any> {
         // Authentication with Bearer Token

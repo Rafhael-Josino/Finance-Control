@@ -2,6 +2,7 @@ import { IAccountRepository } from '../../repositories/IAccountRepository';
 import { Account } from '@modules/accounts/infra/postgresSQL/models/Account';
 import { inject, injectable } from 'tsyringe';
 import { hash } from 'bcrypt';
+import { AppError } from '@shared/errors/AppErrors';
 
 interface IRequest {
     userName: string;
@@ -16,8 +17,12 @@ class CreateUserUseCase {
     ) {}
 
     async execute( { userName, password }: IRequest ): Promise<Account> {
-        const passwordHash = await hash(password, 8);
+        const listUsers = await this.accountRepository.listUsers();
 
+        if (listUsers.includes(userName))
+            throw new AppError(`Account ${userName} already exists`, 403);
+
+        const passwordHash = await hash(password, 8);
         return await this.accountRepository.createUser({ userName, passwordHash });
     }
 }

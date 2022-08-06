@@ -27,7 +27,6 @@ accountRouter.get(
 // Creates new user account
 accountRouter.post(
 	'/',
-	accountVerifications.verifyUserAlreadyExists,
 	createUserController.handle
 );
 
