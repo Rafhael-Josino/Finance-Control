@@ -1,8 +1,8 @@
 import { PG } from '@shared/infra/postgresSQL';
 import { Account } from '../models/Account';
-import { ICryptoUserRepository, ICreateUserDTO } from '../../../repositories/IAccountRepository';
+import { IAccountRepository, ICreateUserDTO } from '../../../repositories/IAccountRepository';
 
-class CryptoUserRepositoryPG implements ICryptoUserRepository {
+class AccountRepositoryPG implements IAccountRepository {
 
     /** Returns list of users's names */
     async listUsers(): Promise<string[]> {
@@ -40,4 +40,4 @@ class CryptoUserRepositoryPG implements ICryptoUserRepository {
     }
 }
 
-export { CryptoUserRepositoryPG }
+export { AccountRepositoryPG }

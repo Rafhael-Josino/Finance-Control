@@ -5,11 +5,11 @@ interface ICreateUserDTO {
     passwordHash: string;
 }
 
-interface ICryptoUserRepository {
+interface IAccountRepository {
     listUsers(): Promise<string[]>;
     getUser( username: string ): Promise<Account>;
     createUser( { userName, passwordHash }: ICreateUserDTO ): Promise<void>;
     deleteUser( userName: string ): Promise<void>;
 }
 
-export { ICryptoUserRepository, ICreateUserDTO };
+export { IAccountRepository, ICreateUserDTO };
