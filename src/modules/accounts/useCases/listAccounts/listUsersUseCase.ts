@@ -4,7 +4,7 @@ import { inject, injectable } from 'tsyringe';
 @injectable()
 class ListUsersUseCase {
     constructor(
-        @inject("CryptoUserRepository")
+        @inject("AccountRepository")
         private accountRepository: IAccountRepository
     ) {}
 
