@@ -1,5 +1,4 @@
-//const { Pool, Client } = require('pg')
-
+import { AppError } from '@shared/errors/AppErrors';
 import { Pool, Client } from 'pg';
 
 const pool = new Pool({
@@ -10,12 +9,8 @@ const pool = new Pool({
     password: 'finctrl',
     port: 5432,
 });
+
 /*
-pool.query('SELECT NOW()', (err, res) => {
-    console.log(err, res)
-    pool.end()
-});
-*/
 const client = new Client({
     user: 'docker',
     host: 'database',
@@ -24,8 +19,10 @@ const client = new Client({
     port: 5432,
 });
 
-//client.connect();
+// client.connect();
+*/
 
+/*
 try {
     pool.connect();
 } catch (err) {
@@ -33,18 +30,36 @@ try {
     console.log(err.message);
 }
 
-/*
-// Test:
-
-client.query('SELECT $1::text as message', ['Hello world!'], (err, res) => {
-    console.log(err ? err.stack : res.rows[0].message) // Hello World!
-});
-*/
-//export { pool, client };
-
 const PG = {
     query: (text: string, params: string[]) => pool.query(text, params)
 }
+*/
+
+const PG = {
+    query: async (text: string, params: string[]): Promise<any> => {
+        return pool.connect().then(client => {
+            return client.query(text, params)
+                .then(res => {
+                    client.release();
+                    
+                    // for tests:
+                    if (res.rows.length) {
+                        console.log("Query:", text, params);
+                        console.log("Testing posrgres/index", res.rows);
+                    }
+
+                    // this must works
+                    return res;
+                })
+                .catch(err => {
+                    client.release();
+
+                    throw new AppError("Error connecting database", 500);
+                })
+        })
+    }
+}
+
 
 export { PG }
 
