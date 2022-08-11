@@ -27,12 +27,12 @@ describe("Create User Account", () => {
 
     it("should not be able to create an user account whose username already exists", async () => {
         expect(async () => {
-            const newAccount1 = await createUserUseCase.execute({
+            await createUserUseCase.execute({
                 userName: "rafhael",
                 password: "12345"
             });
     
-            const newAccount2 = await createUserUseCase.execute({
+            await createUserUseCase.execute({
                 userName: "rafhael",
                 password: "54321"
             });

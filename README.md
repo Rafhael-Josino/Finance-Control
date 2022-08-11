@@ -28,7 +28,9 @@ This project aims to practice Development, building up an application that store
 ## Get Account
 
 - It should be able to get an user account by the user name received;
-- It should return status 404 when there is no user account with the user name received;
 
+## Delete Account
+
+- It should be able to delete an user account
 
 
