@@ -18,6 +18,14 @@ const sessionController = new SessionController();
 
 const accountRouter = Router();
 
+accountRouter.post(
+	'/login',
+	sessionController.handle
+);
+
+accountRouter.use(accountVerifications.verifySession);
+accountRouter.use(accountVerifications.verifyAdmin);
+
 // List users
 accountRouter.get(
 	'/list',
@@ -42,11 +50,6 @@ accountRouter.delete(
 	'/',
 	accountVerifications.verifyUserExists,
 	deleteUserController.handle
-);
-
-accountRouter.post(
-	'/login',
-	sessionController.handle
 );
 
 export { accountRouter }

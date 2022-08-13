@@ -48,6 +48,16 @@ class AccountVerifications {
             throw new AppError("Invalid token", 403);
         }
     }
+
+    async verifyAdmin(req: Request, res: Response, next: NextFunction): Promise<any> {
+        const { id } = req.user;
+    
+        const resPG = await PG.query(`SELECT isadmin FROM users WHERE user_id = $1`, [id]);
+    
+        if (!resPG.rows[0].isadmin) throw new AppError('Restric to administrator', 403);
+    
+        next();
+    }
 }
 
 export { AccountVerifications }
