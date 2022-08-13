@@ -1,5 +1,8 @@
 import { PG } from '@shared/infra/postgresSQL';
 import { 
+    CryptoPurchase,
+    CryptoPurchaseSellRelation,
+    CryptoSell,
     CryptoSheet,
     CryptoSummary 
 } from '../models/Cryptos';
@@ -45,9 +48,6 @@ class CryptoRepositoryPG implements ICryptoRepository {
             [sheetName, userID, assetName]
         );
 
-        // Test get purchases
-        console.log('purchases:\n', purchases.rows);
-
         const sells = await PG.query(
             `SELECT
                 sell_id,
@@ -73,16 +73,10 @@ class CryptoRepositoryPG implements ICryptoRepository {
                     [sell_row.sell_id]
                     );
 
-                    // Test
-                    console.log('purchase_sell:\n', purchase_sell.rows);
-
                     Object.assign(sell_row, { purchases_sold: purchase_sell.rows });
             },
             Promise.resolve()
         );
-
-        // Test get sells
-        console.log('sells:\n', sells.rows);
 
         return {
             purchases: purchases.rows,
@@ -115,17 +109,9 @@ class CryptoRepositoryPG implements ICryptoRepository {
             return date.toLocaleDateString("pt-BR");
         }        
     
-        /*
-        const resUserID = await PG.query('SELECT user_id FROM users WHERE username = $1', [userName]);
-        const userID = resUserID.rows[0].user_id;            
-        await PG.query('INSERT INTO uploads (upload_id, user_id) VALUES ($1, $2)', [uploadID, userID]);
-        */
-        
         await cryptoSheetList.reduce(
             async (promise, cryptoSheet): Promise<void> => {
                 await promise;
-
-                console.log("Inserting sheet", cryptoSheet.sheetName);
 
                 // Must insert also user_id
                 await PG.query(
@@ -137,11 +123,9 @@ class CryptoRepositoryPG implements ICryptoRepository {
                     async (promise, cryptoAsset): Promise<void> => {
                         await promise;
                         await cryptoSheet.cryptoPurchasesList.assets[cryptoAsset].reduce(
-                            async (promise2, cryptoPurchase): Promise<void> => {
+                            async (promise2: Promise<any>, cryptoPurchase: CryptoPurchase): Promise<void> => {
                                 await promise2;
                         
-                                console.log("inserting purchase of sheet", cryptoSheet.sheetName);
-
                                 await PG.query(
                                     `INSERT INTO purchases (
                                         purchase_id,
@@ -179,11 +163,9 @@ class CryptoRepositoryPG implements ICryptoRepository {
                     async (promise, cryptoAsset): Promise<void> => {
                         await promise;
                         await cryptoSheet.cryptoSellsList.assets[cryptoAsset].reduce(
-                            async (promise2, cryptoSell): Promise<void> => {
+                            async (promise2: Promise<any>, cryptoSell: CryptoSell): Promise<void> => {
                                 await promise2;
                         
-                                console.log("inserting sell of sheet", cryptoSheet.sheetName);
-
                                 await PG.query(
                                 `INSERT INTO sells (
                                     sell_id,
@@ -215,9 +197,8 @@ class CryptoRepositoryPG implements ICryptoRepository {
                     async (promise, cryptoAsset): Promise<void> => {
                         await promise;
                         await cryptoSheet.cryptoRelationList.assets[cryptoAsset].reduce(
-                            async (promise2, cryptoRelation) => {
+                            async (promise2: Promise<any>, cryptoRelation: CryptoPurchaseSellRelation) => {
                                 await promise2;
-                                console.log("inserting relation between purchase and sell of sheet", cryptoSheet.sheetName);
 
                                 await PG.query(
                                     `INSERT INTO purchase_sell (
@@ -237,9 +218,6 @@ class CryptoRepositoryPG implements ICryptoRepository {
                     },
                     Promise.resolve()    
                 );
-                
-                console.log('after insert data in DB');
-                //cryptoSheet.cryptoSellList.presentAssets().forEach(as)
             },
             Promise.resolve()
         );

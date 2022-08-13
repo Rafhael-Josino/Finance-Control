@@ -1,5 +1,5 @@
 import { AppError } from '@shared/errors/AppErrors';
-import { Pool, Client } from 'pg';
+import { Pool } from 'pg';
 
 const pool = new Pool({
     user: 'docker',
@@ -10,52 +10,24 @@ const pool = new Pool({
     port: 5432,
 });
 
-/*
-const client = new Client({
-    user: 'docker',
-    host: 'database',
-    database: 'fin_ctrl',
-    password: 'finctrl',
-    port: 5432,
-});
-
-// client.connect();
-*/
-
-/*
-try {
-    pool.connect();
-} catch (err) {
-    console.log("Error connecting to databank:");
-    console.log(err.message);
-}
-
-const PG = {
-    query: (text: string, params: string[]) => pool.query(text, params)
-}
-*/
-
 const PG = {
     query: async (text: string, params: string[]): Promise<any> => {
-        return pool.connect().then(client => {
-            return client.query(text, params)
-                .then(res => {
-                    client.release();
-                    
-                    // for tests:
-                    if (res.rows.length) {
-                        console.log("Query:", text, params);
-                        console.log("Testing posrgres/index", res.rows);
-                    }
+        return pool.connect().then(async client => {
+            return client.query(text, params).then(res => {
+                client.release();
+                
+                // for tests:
+                if (res.rows.length) {
+                    console.log("Query:", text, params);
+                    console.log("Testing postgres/index", res.rows);
+                }
 
-                    // this must works
-                    return res;
-                })
-                .catch(err => {
-                    client.release();
+                return res;
+            }).catch(err => {
+                client.release();
 
-                    throw new AppError("Error connecting database", 500);
-                })
+                throw new AppError("Error connecting database", 500);
+            })
         })
     }
 }

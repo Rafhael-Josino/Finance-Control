@@ -64,43 +64,38 @@ cryptoSheetsRouter.get('/cryptos.js', (req, res) => {
 
 // --------------------------- Crypto Sheets ------------------------------
 
+cryptoSheetsRouter.use(accountVerifications.verifySession);
+
 // Retrieves a list of all sheets parsed and stored
 cryptoSheetsRouter.get(
 	'/sheets',
-	accountVerifications.verifySession,
 	listSheetsController.handle
 );
 
 // Retrieves a specified sheet data from a user
 cryptoSheetsRouter.get(
 	'/sheet/:sheetName/:assetName',
-	accountVerifications.verifySession,
 	getSheetController.handle
 );
 
 cryptoSheetsRouter.get(
 	'/sheetSummary/:sheetName',
-	accountVerifications.verifySession,
 	getSheetSummaryController.handle
 );
 
 // Parse sheets in the xlsx file uploaded and stores the data obtained
 cryptoSheetsRouter.post(
 	'/saveSheet/:overwrite',
-	accountVerifications.verifySession,
-	cryptoSheetVerifications.verifyXLSXexists,
+	cryptoSheetVerifications.verifyXLSXexists, // insert into use case this verification
 	parserSheetController.handle
 );
 
 // Delete given sheet's information of a user
 cryptoSheetsRouter.delete(
 	'/deleteSheet/:sheetName',
-	accountVerifications.verifySession,
 	deleteSheetController.handle
 );
 
 // --------------------------- Crypto Users ------------------------------
-
-
 
 export { cryptoSheetsRouter };
