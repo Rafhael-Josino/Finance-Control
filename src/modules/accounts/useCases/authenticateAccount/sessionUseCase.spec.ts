@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { CreateUserUseCase } from '../createAccount/createUserUseCase';
-import { AccountRepositoryInMemory } from '../../infra/postgresSQL/repositories/AccountRepositoryInMemory';
+import { AccountRepositoryInMemory } from '../../repositories/inMemory/AccountRepositoryInMemory';
 import { SessionUseCase } from './sessionUseCase';
 import { AppError } from '@shared/errors/AppErrors';
 

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { AccountRepositoryInMemory } from '@modules/accounts/infra/postgresSQL/repositories/AccountRepositoryInMemory';
+import { AccountRepositoryInMemory } from '@modules/accounts/repositories/inMemory/AccountRepositoryInMemory';
 import { GetUserUseCase } from './getUserUseCase';
 import { CreateUserUseCase } from '../createAccount/createUserUseCase';
 import { Account } from '@modules/accounts/infra/postgresSQL/models/Account';

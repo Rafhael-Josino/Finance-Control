@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { DeleteUserUseCase } from './deleteUserUseCase';
 import { CreateUserUseCase } from '../createAccount/createUserUseCase';
 import { ListUsersUseCase } from '../listAccounts/listUsersUseCase';
-import { AccountRepositoryInMemory } from '../../infra/postgresSQL/repositories/AccountRepositoryInMemory';
+import { AccountRepositoryInMemory } from '../../repositories/inMemory/AccountRepositoryInMemory';
 
 let deleteUserUseCase: DeleteUserUseCase;
 let createUserUseCase: CreateUserUseCase;
