@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules --respawn ./src/shared/infra/http/server.ts",
     "ddl": "yarn ts-node-dev --transpile-only --ignore-watch node_modules --respawn ./src/shared/infra/postgresSQL/migrations/",
-    "test": "jest"
+    "test": "jest",
+    "admin:seed": "yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules --respawn ./src/shared/infra/postgresSQL/admin_seed.ts"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
