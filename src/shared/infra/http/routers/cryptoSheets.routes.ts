@@ -4,11 +4,8 @@ import fs from 'fs';
 
 // ###################### Middleware #########################
 import { AccountVerifications } from '../middlewares/AccountVerificationsPG';
-import { CryptoSheetVerifications } from '../middlewares/CryptoSheetVerificationsPG';
 
 const accountVerifications = new AccountVerifications();
-const cryptoSheetVerifications = new CryptoSheetVerifications();
-
 
 import { ParserCryptoController } from '@modules/crypto/useCases/parser/parserController';
 import { ListSheetsController } from '@modules/crypto/useCases/listSheets/listSheetsController';
@@ -86,7 +83,6 @@ cryptoSheetsRouter.get(
 // Parse sheets in the xlsx file uploaded and stores the data obtained
 cryptoSheetsRouter.post(
 	'/saveSheet/:overwrite',
-	cryptoSheetVerifications.verifyXLSXexists, // insert into use case this verification
 	parserSheetController.handle
 );
 

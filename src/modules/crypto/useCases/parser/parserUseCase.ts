@@ -13,6 +13,7 @@ Sheet's columns escription:
     K - Operation's local
 */
 
+import fs from 'fs';
 import path from 'path';
 import ExcelJS from 'exceljs';
 import { inject, injectable } from 'tsyringe';
@@ -275,7 +276,16 @@ class ParserCryptoUseCase {
          * Parsing xlsx file:
          */
 
-        const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${username}.xlsx`);
+        //const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${username}.xlsx`);
+        const logsPath = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos');
+        const dirFiles = fs.readdirSync(logsPath, 'utf8');
+
+        if (!dirFiles.includes(`${username}.xlsx`)) throw new AppError(
+            `Server's middleware here - file ${username}.xlsx not found`,
+            404
+        );
+
+        const pathName = path.join(logsPath, `${username}.xlsx`)
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(pathName);
         const cryptoSheetList = [];
