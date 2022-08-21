@@ -31,7 +31,10 @@ class AccountVerifications {
     async verifySession(req: Request, res: Response, next: NextFunction): Promise<any> {
         // Authentication with Bearer Token
         const authHeader = req.headers.authorization;
-        if (!authHeader) throw new AppError("Token missing", 404);
+        if (!authHeader) {
+            console.log("token missing");
+            throw new AppError("Token missing", 404);
+        }
 
         const [, token] = authHeader.split(" ");
 
@@ -45,6 +48,7 @@ class AccountVerifications {
 
             return next();
         } catch(err) {
+            console.log('Invalid token');
             throw new AppError("Invalid token", 403);
         }
     }

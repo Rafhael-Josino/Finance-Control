@@ -34,7 +34,7 @@ accountRouter.get('/list', listUsersController.handle);
 accountRouter.post('/', createUserController.handle);
 
 
-accountRouter.use(accountVerifications.verifyUserExists)
+accountRouter.use(accountVerifications.verifyUserExists);
 
 // Retrieves user account data
 accountRouter.get('/', getUserController.handle);

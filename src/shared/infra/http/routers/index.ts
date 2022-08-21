@@ -6,8 +6,8 @@ import { accountRouter } from './accounts.routes';
 
 const router = Router();
 
-router.use(cryptoSheetsRouter);
 router.use(indexRoutes);
-router.use('/account',accountRouter);
+router.use('/cryptocoin', cryptoSheetsRouter);
+router.use('/account', accountRouter);
 
 export { router };
