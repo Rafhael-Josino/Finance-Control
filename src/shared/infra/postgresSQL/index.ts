@@ -1,17 +1,19 @@
-import { AppError } from '@shared/errors/AppErrors';
 import { Pool } from 'pg';
+import dotenv from 'dotenv';
+dotenv.config();
+
+import { AppError } from '@shared/errors/AppErrors';
 
 const database = process.env.NODE_ENV === 'test' ? 'fin_ctrl_test' : 'fin_ctrl';
 
 console.log("database:", database);
 
 const pool = new Pool({
-    user: 'docker',
-    // host: 'database', // for tests when the application is in a container
-    host: 'localhost', // for tests when only the databank is in a container
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
     database,
-    password: 'finctrl',
-    port: 5432,
+    password: process.env.DB_PASSWORD,
+    port: Number(process.env.DB_PORT),
 });
 
 const PG = {
