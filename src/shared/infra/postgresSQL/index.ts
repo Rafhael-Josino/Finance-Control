@@ -1,11 +1,15 @@
 import { AppError } from '@shared/errors/AppErrors';
 import { Pool } from 'pg';
 
+const database = process.env.NODE_ENV === 'test' ? 'fin_ctrl_test' : 'fin_ctrl';
+
+console.log("database:", database);
+
 const pool = new Pool({
     user: 'docker',
     // host: 'database', // for tests when the application is in a container
     host: 'localhost', // for tests when only the databank is in a container
-    database: 'fin_ctrl',
+    database,
     password: 'finctrl',
     port: 5432,
 });
@@ -16,17 +20,11 @@ const PG = {
             return client.query(text, params).then(res => {
                 client.release();
                 
-                // for tests:
-                if (res.rows.length) {
-                    console.log("Query:", text, params);
-                    console.log("Testing postgres/index", res.rows);
-                }
-
                 return res;
             }).catch(err => {
-                client.release();
+                //client.release();
 
-                throw new AppError("Error connecting database", 500);
+                throw new AppError(`Error connecting to database\n:${err.message}`, 500);
             })
         })
     }

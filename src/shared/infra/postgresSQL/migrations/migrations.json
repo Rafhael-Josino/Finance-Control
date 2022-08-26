@@ -1,1 +1,3 @@
-["createUsersTable","createSheetsTable","createPurchasesTable","createSellsTable","createPurchaseSellTable","usersTableAddColumn_isAdmin"]
+[
+    "createPGcryptoExtension",
+    "createUsersTable","createSheetsTable","createPurchasesTable","createSellsTable","createPurchaseSellTable","usersTableAddColumn_isAdmin"]

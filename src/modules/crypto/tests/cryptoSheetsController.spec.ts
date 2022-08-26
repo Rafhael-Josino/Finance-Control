@@ -1,5 +1,7 @@
 import 'reflect-metadata';
+import request from 'supertest';
 
+import { app } from '@shared/infra/http/app';
 import { AppError } from '@shared/errors/AppErrors';
 
 import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsReplicator';
