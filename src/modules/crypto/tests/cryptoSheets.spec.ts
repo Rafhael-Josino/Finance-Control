@@ -23,8 +23,6 @@ describe("Parser sheets use case", () => {
     let testUser: Account;
 
     beforeAll(async () => {
-        console.log("testing the prepare test database")
-        
         await runMigrations();
 
         testUser = await createAccountUseCase.execute({
@@ -34,11 +32,7 @@ describe("Parser sheets use case", () => {
     });
 
     
-    afterAll(async () => {
-        await deleteAccountUseCase.execute("test");
-
-        await runMigrations(true);
-    });
+    afterAll(async () => { await runMigrations(true); });
     
 
     it("should be able to parser the .xlsx file and return the names of the sheets saved", async () => {

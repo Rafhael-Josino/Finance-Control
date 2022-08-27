@@ -35,13 +35,7 @@ describe("Crypto Sheets module tests", () => {
         token = responseToken.body.token;
     });
 
-    
-    afterAll(async () => {
-        await deleteAccountUseCase.execute("test");
-        // Check if we need to explicity delete the user test, once we already undo all migrations after
-
-        await runMigrations(true);
-    });
+    afterAll(async () => { await runMigrations(true); });
     
 
     it("should be able to parser the .xlsx file and return the names of the sheets saved", async () => {
@@ -61,6 +55,8 @@ describe("Crypto Sheets module tests", () => {
             Authorization: `Bearer ${token}`,
             username: 'test'
         }).expect(400);
+
+        expect(response.body.message).toBe("overwrite parameter must be 'yes' or 'no'");
     });
 
 
@@ -71,6 +67,6 @@ describe("Crypto Sheets module tests", () => {
             username: 'test'
         });
 
-        expect(response.body.sheetsParsed.length).toEqual(0);
+        expect(response.body.sheetsParsed.length).toBe(0);
     });
 });

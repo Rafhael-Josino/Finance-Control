@@ -38,11 +38,7 @@ describe("Account module tests", () => {
     });
 
     
-    afterAll(async () => {
-        await deleteAccountUseCase.execute("admin");
-
-        await runMigrations(true);
-    });
+    afterAll(async () => { await runMigrations(true); });
     
 
     it ("should be able to create a new user account", async () => {
@@ -65,7 +61,7 @@ describe("Account module tests", () => {
     
 
     it ("should not be able to create an user account whose username already exists" , async () => {
-        await request(app).post('/account/')
+        const response = await request(app).post('/account/')
         .set({
             Authorization: `Bearer ${adminToken}`,
         })
@@ -74,6 +70,8 @@ describe("Account module tests", () => {
             password: '4321'
         })
         .expect(400);
+
+        expect(response.body.message).toBe(`Account test already exists`);
     });
     
 

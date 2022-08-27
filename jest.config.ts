@@ -36,7 +36,14 @@ export default {
   //   "**/?(*.)+(spec|test).[tj]s?(x)"
   // ],
   
-  //testMatch: ["**/*.spec.ts"],
-  //testMatch: ["**/cryptoSheets.spec.ts"],
-  testMatch: ["**/cryptoSheetsController.spec.ts"],
+  testMatch: [
+    /** All: */ 
+    //"**/*.spec.ts",
+
+    /** --------------------------------- */
+
+    /** Only supertests: */   
+    "**/cryptoSheetsController.spec.ts",
+    "**/accounts.spec.ts",
+  ],
 };
