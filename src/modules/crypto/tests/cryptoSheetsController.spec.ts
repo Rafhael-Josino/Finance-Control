@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import request from 'supertest';
 
 import { app } from '@shared/infra/http/app';
-import { AppError } from '@shared/errors/AppErrors';
 
 import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsReplicator';
 
@@ -23,6 +22,7 @@ describe("Parser sheets use case", () => {
     const parserCryptoUseCase = new ParserCryptoUseCase(cryptoRepository);
     
     let testUser: Account;
+    let token: string;
 
     beforeAll(async () => {
         console.log("testing the prepare test database")
@@ -33,6 +33,13 @@ describe("Parser sheets use case", () => {
             userName: "test",
             password: "1234"
         });
+        
+        const responseToken = await request(app).post('/account/login').send({
+            userName: "test",
+            password: "1234"
+        });
+
+        token = responseToken.body.token;
     });
 
     
@@ -44,32 +51,30 @@ describe("Parser sheets use case", () => {
     
 
     it("should be able to parser the .xlsx file and return the names of the sheets saved", async () => {
-        const sheetsParsed = await parserCryptoUseCase.execute({
-            username: testUser.name,
-            userID: testUser.id,
-            overwrite: "no"
+        const response = await request(app).post("/cryptocoin/saveSheet/yes")
+        .set({ 
+            Authorization: `Bearer ${token}`,
+            username: 'test'
         });
-
-        expect(sheetsParsed).toEqual(expect.arrayContaining(["sheet1", "sheet2"]));
+        
+        expect(response.body.sheetsParsed).toEqual(expect.arrayContaining(["sheet1", "sheet2"]));
     });
-
+    
     it("should no be able to execute if 'overwrite' argument is not [yes/no]", async () => {
-        expect(async () => {
-            const sheetsParsed = await parserCryptoUseCase.execute({
-                username: testUser.name,
-                userID: testUser.id,
-                overwrite: "asdsadsadsad"
-            });
-        }).rejects.toBeInstanceOf(AppError);
+        const response = await request(app).post("/cryptocoin/saveSheet/error")
+        .set({ 
+            Authorization: `Bearer ${token}`,
+            username: 'test'
+        }).expect(400);
     });
 
     it("should not be able to parse the same sheets if overwrite is passed as 'no'", async () => {
-        const sheetsParsed = await parserCryptoUseCase.execute({
-            username: testUser.name,
-            userID: testUser.id,
-            overwrite: "no"
+        const response = await request(app).post("/cryptocoin/saveSheet/no")
+        .set({ 
+            Authorization: `Bearer ${token}`,
+            username: 'test'
         });
 
-        expect(sheetsParsed.length).toEqual(0);
-    })
+        expect(response.body.sheetsParsed.length).toEqual(0);
+    });
 });
