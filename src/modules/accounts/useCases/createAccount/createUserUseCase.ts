@@ -20,7 +20,7 @@ class CreateUserUseCase {
         const listUsers = await this.accountRepository.listUsers();
 
         if (listUsers.includes(userName))
-            throw new AppError(`Account ${userName} already exists`, 403);
+            throw new AppError(`Account ${userName} already exists`, 400);
 
         const passwordHash = await hash(password, 8);
         return await this.accountRepository.createUser({ userName, passwordHash });

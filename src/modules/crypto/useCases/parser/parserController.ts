@@ -5,7 +5,7 @@ import { container } from 'tsyringe';
 class ParserCryptoController {
     async handle(req: Request, res: Response): Promise<Response> /* BAD - it should return a Response */ {
         const { username } = req.headers;
-        const { id: userID } = req.user;
+        const { id: userID } = req.user; // received from middleware
         const { overwrite } = req.params;
 
         const parserCryptoUseCase = container.resolve(ParserCryptoUseCase);

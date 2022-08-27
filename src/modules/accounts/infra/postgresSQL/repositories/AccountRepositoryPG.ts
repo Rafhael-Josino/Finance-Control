@@ -7,7 +7,7 @@ class AccountRepositoryPG implements IAccountRepository {
     /** Returns list of users's names */
     async listUsers(): Promise<string[]> {
         const resPG = await PG.query('SELECT user_name FROM users', []);
-        const usersList = resPG.rows.map((row) => row.user_name);
+        const usersList = resPG.rows.map((row: any) => row.user_name);
 
         return usersList;
     }

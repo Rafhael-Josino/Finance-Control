@@ -281,7 +281,7 @@ class ParserCryptoUseCase {
         const dirFiles = fs.readdirSync(logsPath, 'utf8');
 
         if (!dirFiles.includes(`${username}.xlsx`)) throw new AppError(
-            `Server's middleware here - file ${username}.xlsx not found`,
+            `File ${username}.xlsx not found`,
             404
         );
 
