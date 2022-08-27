@@ -24,7 +24,7 @@ import {
     CryptoSellsList,
     CryptoSheet,
     CryptoPurchaseSellList 
-} from "../../infra/postgresSQL/models/Cryptos"; // BAD?
+} from "../../infra/models/Cryptos"; // BAD?
 import { 
     ICryptoRepository,
 } from '../../repositories/ICryptoRepository';

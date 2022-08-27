@@ -1,5 +1,5 @@
 import { IAccountRepository } from '../../repositories/IAccountRepository';
-import { Account } from '@modules/accounts/infra/postgresSQL/models/Account';
+import { Account } from '@modules/accounts/infra/models/Account';
 import { inject, injectable } from 'tsyringe';
 import { hash } from 'bcrypt';
 import { AppError } from '@shared/errors/AppErrors';

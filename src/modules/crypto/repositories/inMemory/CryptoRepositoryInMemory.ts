@@ -1,5 +1,5 @@
 import { ICryptoRepository, IGetSheetOperationsDTO, IGetSheetResponse, IPostSheetOperationsDTO, IReferenceSheet } from "@modules/crypto/repositories/ICryptoRepository";
-import { CryptoSheet, CryptoSummary } from "../../infra/postgresSQL/models/Cryptos";
+import { CryptoSheet, CryptoSummary } from "@modules/crypto/infra/models/Cryptos";
 
 class CryptoRepositoryInMemory implements ICryptoRepository {
     cryptoSheets: CryptoSheet[];

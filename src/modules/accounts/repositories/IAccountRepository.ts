@@ -1,4 +1,4 @@
-import { Account } from '../infra/postgresSQL/models/Account';
+import { Account } from '@modules/accounts/infra/models/Account';;
 
 interface ICreateUserDTO {
     userName: string;

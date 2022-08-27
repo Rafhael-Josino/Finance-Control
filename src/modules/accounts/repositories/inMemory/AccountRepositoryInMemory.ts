@@ -1,5 +1,5 @@
 import { IAccountRepository, ICreateUserDTO } from '../IAccountRepository';
-import { Account } from '../../infra/postgresSQL/models/Account';
+import { Account } from '../../infra/models/Account';
 import { nanoid } from 'nanoid';
 
 class AccountRepositoryInMemory implements IAccountRepository {

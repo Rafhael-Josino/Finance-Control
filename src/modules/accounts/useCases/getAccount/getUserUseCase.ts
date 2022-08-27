@@ -1,6 +1,6 @@
 import { IAccountRepository } from '../../repositories/IAccountRepository';
 import { inject, injectable } from 'tsyringe';
-import { Account } from '../../infra/postgresSQL/models/Account';
+import { Account } from '@modules/accounts/infra/models/Account';
 
 @injectable()
 class GetUserUseCase {

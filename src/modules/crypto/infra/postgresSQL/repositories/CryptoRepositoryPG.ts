@@ -5,14 +5,14 @@ import {
     CryptoSell,
     CryptoSheet,
     CryptoSummary 
-} from '../models/Cryptos';
+} from '@modules/crypto/infra/models/Cryptos';
 import { 
     ICryptoRepository,
     IGetSheetOperationsDTO,
     IPostSheetOperationsDTO,
     IReferenceSheet,
     IGetSheetResponse
-} from '../../../repositories/ICryptoRepository';
+} from '@modules/crypto/repositories/ICryptoRepository';
 
 class CryptoRepositoryPG implements ICryptoRepository {
     async listSheets( userID: string ): Promise<string[]> {

@@ -9,7 +9,7 @@ import { ParserCryptoUseCase } from '../useCases/parser/parserUseCase';
 import { DeleteUserUseCase } from '@modules/accounts/useCases/deleteAccount/deleteUserUseCase';
 import { AccountRepositoryPG } from '@modules/accounts/infra/postgresSQL/repositories/AccountRepositoryPG';
 import { CryptoRepositoryPG } from '@modules/crypto/infra/postgresSQL/repositories/CryptoRepositoryPG';
-import { Account } from '@modules/accounts/infra/postgresSQL/models/Account';
+import { Account } from '@modules/accounts/infra/models/Account';
 
 
 describe("Parser sheets use case", () => {

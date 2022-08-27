@@ -1,5 +1,5 @@
-import { ICryptoRepository } from '../../repositories/ICryptoRepository';
-import { CryptoSummary } from '../../infra/postgresSQL/models/Cryptos';
+import { ICryptoRepository } from '@modules/crypto/repositories/ICryptoRepository';
+import { CryptoSummary } from '@modules/crypto/infra/models/Cryptos';
 import { inject, injectable } from 'tsyringe';
 
 interface IRequest {

@@ -8,7 +8,7 @@ import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsReplic
 import { CreateUserUseCase } from '@modules/accounts/useCases/createAccount/createUserUseCase';
 import { DeleteUserUseCase } from '@modules/accounts/useCases/deleteAccount/deleteUserUseCase';
 import { AccountRepositoryPG } from '@modules/accounts/infra/postgresSQL/repositories/AccountRepositoryPG';
-import { Account } from '@modules/accounts/infra/postgresSQL/models/Account';
+import { Account } from '@modules/accounts/infra/models/Account';
 
 
 describe("Crypto Sheets module tests", () => {

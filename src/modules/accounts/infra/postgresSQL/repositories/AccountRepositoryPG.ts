@@ -1,5 +1,5 @@
 import { PG } from '@shared/infra/postgresSQL';
-import { Account } from '../models/Account';
+import { Account } from '@modules/accounts/infra/models/Account';
 import { IAccountRepository, ICreateUserDTO } from '../../../repositories/IAccountRepository';
 
 class AccountRepositoryPG implements IAccountRepository {

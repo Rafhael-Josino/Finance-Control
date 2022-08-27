@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { CreateUserUseCase } from './createUserUseCase';
 import { AccountRepositoryInMemory } from '../../repositories/inMemory/AccountRepositoryInMemory';
-import { Account } from '@modules/accounts/infra/postgresSQL/models/Account';
+import { Account } from '@modules/accounts/infra/models/Account';
 import { AppError } from '@shared/errors/AppErrors';
 
 let createUserUseCase: CreateUserUseCase;
