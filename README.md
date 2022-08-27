@@ -18,19 +18,19 @@ This project aims to practice Development, building up an application that store
 
 - [exceljs](https://github.com/exceljs/exceljs)
 
-# Use cases
+# Modules
 
-## Create Account
+## Accounts
 
 - It should be able to create a new user account;
 - It should not be able to create an user account whose username already exists;
-
-## Get Account
-
 - It should be able to get an user account by the user name received;
+- It should be able to list present accounts;
+- It should be able to delete an user account;
+- All functionalities from this modules should be allowed only to administrators.
 
-## Delete Account
+## Cryptocoins
 
-- It should be able to delete an user account
-
-
+- It should be able to parser the .xlsx file and return the names of the sheets saved;
+- It should no be able to execute if the 'overwrite' save sheet route's argument is not [yes/no];
+- It should not parse the same sheets if the 'overwrite' argument is passed as 'no'.

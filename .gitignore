@@ -22,3 +22,5 @@ src/modules/stocks/
 node_modules/
 src/modules/crypto/useCases/parser/parserUseCase_copy.ts
 src/utils/tokens
+.env
+.jest.config.txt
