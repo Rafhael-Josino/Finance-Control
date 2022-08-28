@@ -19,25 +19,33 @@ const ddlArg = process.argv[2];
 if (!ddlArg) {
   throw new Error("At least one migration file OR 'rollback' argument must be present as argument");
 }
+
+// Undo the last migration:
 if (ddlArg === "rollback") {
   if (!migrationsList.length) {
     throw new Error("There is no migration done");
   }
-  // call down function of last migration done -> unmade it
 
-  const importPath = path.join(__dirname, migrationsList.pop());
+  const migrationUndone = migrationsList.pop()
+  const importPath = path.join(__dirname, migrationUndone);
 
-  fs.writeFile(migrationsPath, JSON.stringify(migrationsList), async (err) => {
-    if (err) throw new Error("Error at migrations.json update: " + err.message);
+  const { Migration } = require(importPath);
+  const migration = new Migration();
+  migration.down()
+  .then(() => {
+    fs.writeFile(migrationsPath, JSON.stringify(migrationsList), err => {
+      if (err) throw new Error("Error at migrations.json update: " + err.message);
 
-    const { Migration } = require(importPath);
-    const migration = new Migration();
-    await migration.down();
-    console.log("rollback done");
+      console.log(`${migrationUndone} migration undone\nMigrations present:\n`, migrationsList);
+    })
   })
+  .catch((err: Error) => {
+    console.log("\x1b[31m%s\x1b[0m", `Error at migration ${ddlArg}:\n`, err.message);
+  });
 }
+
+// Execute the new migration:
 else {
-  // do new migration
   if (!dirFiles.includes(ddlArg + '.ts')) {
     throw new Error("There is no correspondent migration file");
   }
@@ -49,18 +57,24 @@ else {
   const importPath = path.join(__dirname, ddlArg);
   migrationsList.push(ddlArg);
 
-  fs.writeFile(migrationsPath, JSON.stringify(migrationsList), async (err) => {
-    if (err) throw new Error("Error at migrations.json update: " + err.message);
+  const { Migration } = require(importPath);
+  const migration = new Migration();
+  migration.up()
+  .then(() => {
+    fs.writeFile(migrationsPath, JSON.stringify(migrationsList), err => {
+      if (err) throw new Error("Error at migrations.json update: " + err.message);
 
-    const { Migration } = require(importPath);
-    const migration = new Migration();
-    await migration.up();
-    console.log(`${ddlArg} migration done`);
+      console.log(`${ddlArg} migration done\nMigrations present:\n`, migrationsList);
+    })
+  })
+  .catch((err: Error) => {
+    console.log("\x1b[31m%s\x1b[0m", `Error at migration ${ddlArg}:\n`, err.message);
   });
 }
 
 /*
 // Migration .ts files model:
+
 import { PG } from '..';
 
 class Migration {
