@@ -1,6 +1,6 @@
 import { PG } from '@shared/infra/postgresSQL';
 import { Account } from '@modules/accounts/infra/models/Account';
-import { IAccountRepository, ICreateUserDTO } from '../../../repositories/IAccountRepository';
+import { IAccountRepository, ICreateUserDTO } from '@modules/accounts/repositories/IAccountRepository';
 
 class AccountRepositoryPG implements IAccountRepository {
 
@@ -34,15 +34,16 @@ class AccountRepositoryPG implements IAccountRepository {
         );
 
         const resPG = await PG.query('SELECT * FROM users WHERE user_name = $1', [userName]);
-        const cryptoUser = new Account();
-        Object.assign(cryptoUser, {
+        const newAccount = new Account();
+        Object.assign(newAccount, {
             id: resPG.rows[0].user_id,
             name: resPG.rows[0].user_name,
             password: resPG.rows[0].password,
             isAdmin: resPG.rows[0].isadmin,
             created_at: resPG.rows[0].created_at,
         });
-        return cryptoUser;
+        
+        return newAccount;
     }
 
     /** Deletes a user */
