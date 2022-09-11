@@ -3,6 +3,7 @@ import { verify } from 'jsonwebtoken';
 
 import { PG } from '../../postgresSQL';
 import { AppError } from '@shared/errors/AppErrors';
+import auth from '@config/auth';
 
 interface IPayLoad {
     sub: string;
@@ -41,7 +42,7 @@ class AccountVerifications {
         try {
             const { sub: user_id } = verify(
                 token,
-                "ad9da275a544684b597372149318f020"
+                auth.secret_token
             ) as IPayLoad;
 
             req.user = { id: user_id }
