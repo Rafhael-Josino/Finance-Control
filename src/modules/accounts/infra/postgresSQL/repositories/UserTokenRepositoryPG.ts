@@ -1,6 +1,8 @@
 import { PG } from '@shared/infra/postgresSQL';
 import { UserToken } from '@modules/accounts/infra/models/UserTokens';
 import { IUserTokenRepository, IGetUserTokenDTO , ICreateUserTokenDTO } from '@modules/accounts/repositories/IUserTokenRepository';
+import dateFormat from '@config/dateFormat';
+
 
 class UserTokenRepository implements IUserTokenRepository {
     async getUserToken( { user_id, refresh_token }: IGetUserTokenDTO ): Promise<UserToken> {
@@ -10,10 +12,22 @@ class UserTokenRepository implements IUserTokenRepository {
         );
     }
 
-    async createUserToken( { user_id, refresh_token, expires_date }: ICreateUserTokenDTO ): Promise<UserToken> {
+    async createUserToken( { user_id, refresh_token, created_at, expires_date }: ICreateUserTokenDTO ): Promise<UserToken> {
         await PG.query(
-            'INSERT INTO user_tokens (user_id, refresh_token, expires_date) VALUES ($1, $2)',
-            [user_id, refresh_token, String(expires_date)]
+            `INSERT INTO user_tokens (
+                user_id, 
+                refresh_token,
+                created_at,
+                expires_date
+            ) VALUES (
+                $1, 
+                $2,
+                $3,
+                $4
+                )`, 
+                //pass to timestamp
+                //TO_TIMESTAMP($3, ${dateFormat.format_to_timestamp_pg})
+                [user_id, refresh_token, created_at, expires_date]
         );
 
         const resPG = await PG.query(

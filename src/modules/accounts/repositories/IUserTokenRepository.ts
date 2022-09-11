@@ -8,12 +8,13 @@ interface IGetUserTokenDTO {
 interface ICreateUserTokenDTO {
     user_id: string;
     refresh_token: string;
-    expires_date: Date;
+    created_at: string;
+    expires_date: string;
 }
 
 interface IUserTokenRepository {
     getUserToken( { user_id, refresh_token }: IGetUserTokenDTO ): Promise<UserToken>;
-    createUserToken( { user_id, refresh_token, expires_date }: ICreateUserTokenDTO ): Promise<UserToken>;
+    createUserToken( { user_id, refresh_token, created_at, expires_date }: ICreateUserTokenDTO ): Promise<UserToken>;
     deleteUserToken( id: string ): Promise<void>;
 }
 
