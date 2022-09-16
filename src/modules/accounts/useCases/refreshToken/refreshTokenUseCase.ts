@@ -28,7 +28,7 @@ class RefreshTokenUseCase {
         try {
             const { sub: user_id } = verify(
                 refresh_token,
-                auth.secret_token
+                auth.secret_refresh_token
             ) as IPayLoad;
 
             const userToken = await this.userTokenRepository.getUserToken({
@@ -36,7 +36,7 @@ class RefreshTokenUseCase {
                 refresh_token,
             });
 
-            if(!userToken) throw new AppError("Refresh tokan does not exists", 404);
+            if(!userToken) throw new AppError("Refresh token does not exists", 404);
 
             await this.userTokenRepository.deleteUserToken(userToken.id);
 
@@ -63,6 +63,11 @@ class RefreshTokenUseCase {
             }
 
         } catch(err) {
+            if (err instanceof AppError) {
+                console.log("Refresh token does not exists");
+                throw err;
+            }
+
             console.log('Invalid token');
             throw new AppError("Invalid token", 403);
         }

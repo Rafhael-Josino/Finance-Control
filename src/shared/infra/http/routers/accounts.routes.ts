@@ -11,18 +11,20 @@ import { DeleteUserController } from '@modules/accounts/useCases/deleteAccount/d
 import { GetUserController } from '@modules/accounts/useCases/getAccount/getUserController';
 import { ListUsersController } from '@modules/accounts/useCases/listAccounts/ListUsersController';
 import { SessionController } from '@modules/accounts/useCases/authenticateAccount/sessionController';
+import { RefreshTokenController } from '@modules/accounts/useCases/refreshToken/refreshTokenController';
 
 const getUserController = new GetUserController();
 const listUsersController = new ListUsersController();
 const createUserController = new CreateUserController();
 const deleteUserController = new DeleteUserController();
 const sessionController = new SessionController();
+const refreshTokenController = new RefreshTokenController();
 
 const accountRouter = Router();
 
 
 accountRouter.post('/login', sessionController.handle);
-
+accountRouter.post('/refreshLogin', refreshTokenController.handle);
 
 accountRouter.use(accountVerifications.verifySession);
 accountRouter.use(accountVerifications.verifyAdmin);

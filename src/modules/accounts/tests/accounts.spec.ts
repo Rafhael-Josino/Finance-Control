@@ -1,22 +1,18 @@
 import 'reflect-metadata';
 import request from 'supertest';
 import { hash } from 'bcrypt';
+import { verify } from 'jsonwebtoken';
 
 import { app } from '@shared/infra/http/app';
 import { PG } from '@shared/infra/postgresSQL'
+import auth from '@config/auth';
 
 import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsReplicator';
 
-import { CreateUserUseCase } from '@modules/accounts/useCases/createAccount/createUserUseCase';
-import { DeleteUserUseCase } from '@modules/accounts/useCases/deleteAccount/deleteUserUseCase';
-import { AccountRepositoryPG } from '@modules/accounts/infra/postgresSQL/repositories/AccountRepositoryPG';
+import { AppError } from '@shared/errors/AppErrors';
 
 
-describe("Account module tests", () => {
-    const accountRepository = new AccountRepositoryPG();
-    const createAccountUseCase = new CreateUserUseCase(accountRepository);
-    const deleteAccountUseCase = new DeleteUserUseCase(accountRepository);
-    
+describe ("Account module tests", () => {
     let adminToken: string;
 
 
@@ -125,5 +121,73 @@ describe("Account module tests", () => {
         });
         
         expect(response.body.accountsList).toEqual(expect.not.arrayContaining(['test2']));
+    });
+
+
+    it ("should be able to login with an account", async () => {
+        const response = await request(app).post('/account/login')
+        .send({
+            userName: 'test',
+            password: '1234'
+        })
+        .expect(200);
+
+        expect(response.body).toHaveProperty("userName", "test");
+        expect(response.body).toHaveProperty("token");
+        expect(response.body).toHaveProperty("refresh_token");
+
+        const loginVerification = () => {
+            verify(
+                response.body.token,
+                auth.secret_token
+            );
+        } 
+        expect(loginVerification).not.toThrow(AppError);
+    });
+
+
+    it ("should not be able to login with wrong user/password", async () => {
+        const response = await request(app).post('/account/login')
+        .send({
+            userName: 'test',
+            password: '12345'
+        })
+        .expect(403);
+
+        expect(response.body.message).toBe("Username or password incorrect");
+
+        const response2 = await request(app).post('/account/login')
+        .send({
+            userName: 'teste',
+            password: '1234'
+        })
+        .expect(403);
+
+        expect(response2.body.message).toBe("Username or password incorrect");
+    });
+
+    it ("should be able to receive new valid token and refresh token", async () => {
+        const responseLogin = await request(app).post('/account/login')
+        .send({
+            userName: 'test',
+            password: '1234'
+        });
+
+        const response = await request(app).post('/account/refreshLogin')
+        .send({
+            refresh_token: responseLogin.body.refresh_token
+        })
+        .expect(200);
+
+        expect(response.body).toHaveProperty("token");
+        expect(response.body).toHaveProperty("refresh_token");
+
+        const loginVerification = () => {
+            verify(
+                response.body.token,
+                auth.secret_token
+            );
+        } 
+        expect(loginVerification).not.toThrow(AppError);    
     });
 });

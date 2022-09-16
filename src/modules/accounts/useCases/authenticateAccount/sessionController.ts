@@ -8,9 +8,9 @@ class SessionController {
 
         const sessionUseCase = container.resolve(SessionUseCase);
 
-        const { token } = await sessionUseCase.execute({ userName, password});
+        const { token, refresh_token } = await sessionUseCase.execute({ userName, password});
 
-        return res.json({ userName, token });
+        return res.json({ userName, token, refresh_token });
     }
 }
 

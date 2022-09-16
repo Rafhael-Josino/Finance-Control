@@ -56,16 +56,16 @@ class SessionUseCase {
             expiresIn: auth.expires_in_refresh_token,
         });
 
+        await this.userTokenRepository.deleteUserTokenByUserId(user.id);
+
         await this.userTokenRepository.createUserToken({
             user_id: user.id,
             refresh_token,
             created_at: this.dateProvider.addDays(0),
             expires_date: this.dateProvider.addDays(auth.expires_in_refresh_token_Days),
-        })
+        });
 
-        const session = { userName, token, refresh_token };
-
-        return session;
+        return  { userName, token, refresh_token };
     }
 }
 

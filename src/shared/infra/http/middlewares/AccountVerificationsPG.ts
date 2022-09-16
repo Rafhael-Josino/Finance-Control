@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 
-import { PG } from '../../postgresSQL';
+import { PG } from '@shared/infra/postgresSQL';
 import { AppError } from '@shared/errors/AppErrors';
 import auth from '@config/auth';
 

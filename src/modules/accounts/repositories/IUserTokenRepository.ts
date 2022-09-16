@@ -16,6 +16,7 @@ interface IUserTokenRepository {
     getUserToken( { user_id, refresh_token }: IGetUserTokenDTO ): Promise<UserToken>;
     createUserToken( { user_id, refresh_token, created_at, expires_date }: ICreateUserTokenDTO ): Promise<UserToken>;
     deleteUserToken( id: string ): Promise<void>;
+    deleteUserTokenByUserId( user_id: string ): Promise<void>;
 }
 
 export { IUserTokenRepository, IGetUserTokenDTO, ICreateUserTokenDTO };
