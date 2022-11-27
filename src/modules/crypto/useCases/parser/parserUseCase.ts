@@ -141,13 +141,22 @@ class ParserCryptoUseCase {
     
             parser.moveToColumn('F');
             let quantSold: number;
+
             quantSold = worksheet.getCell(parser.pos()).value.result;
             if (!quantSold) quantSold = worksheet.getCell(parser.pos()).value;
-    
+
             parser.moveToColumn('H');
             let received: number;
-            received = worksheet.getCell(parser.pos()).value.result;
-            if (!received) received = worksheet.getCell(parser.pos()).value;
+
+            const cellReceived = worksheet.getCell(parser.pos()).value;
+
+            if (cellReceived.hasOwnProperty('formula')) {
+                if (cellReceived.hasOwnProperty('result')) received = cellReceived.result;
+                else received = 0;
+            }
+            else received = cellReceived;
+
+            console.log('received', received)
     
             let leftOver: number; // in cryptos
             //let debit = quantSold; // in cryptos
@@ -224,6 +233,11 @@ class ParserCryptoUseCase {
          // Each recursion iteration corresponds to a CryptoPurchase object that is been sold (totally or partially);
          */
         function updatePurchases (asset: string, purchaseIndex: number, sell_id: string, debit: number): number {
+
+            //test
+            //console.log(asset, purchaseIndex);
+            //console.log(cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant);
+
             if (cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant) {
                 const leftOver = cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant - debit;
 
@@ -313,6 +327,10 @@ class ParserCryptoUseCase {
                     //cryptoSheetList.push(parsing(worksheet));
                     const cryptoSheet = parsing(worksheet);
                     
+                    //test
+                    //console.log(cryptoPurchasesList);
+                    //console.log(cryptoSellsList);
+
                     cryptoSellsList.presentAssets().forEach(asset => {
                         // Each reduce iteration corresponds to a CryptoSell object 
                         cryptoSellsList.assets[asset].reduce(
