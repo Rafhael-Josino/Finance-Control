@@ -1,10 +1,7 @@
 import { Router } from 'express';
-
-
 import { AccountVerifications } from '../middlewares/AccountVerificationsPG';
 
 const accountVerifications = new AccountVerifications();
-
 
 import { CreateUserController } from '@modules/accounts/useCases/createAccount/createUserController';
 import { DeleteUserController } from '@modules/accounts/useCases/deleteAccount/deleteUserController';
@@ -26,17 +23,16 @@ const accountRouter = Router();
 accountRouter.post('/login', sessionController.handle);
 accountRouter.post('/refreshLogin', refreshTokenController.handle);
 
-accountRouter.use(accountVerifications.verifySession);
-accountRouter.use(accountVerifications.verifyAdmin);
-
-// List users
-accountRouter.get('/list', listUsersController.handle);
-
 // Creates new user account
 accountRouter.post('/', createUserController.handle);
 
+accountRouter.use(accountVerifications.verifySession);
+//accountRouter.use(accountVerifications.verifyAdmin);
 
-accountRouter.use(accountVerifications.verifyUserExists);
+// List users
+accountRouter.get('/list', accountVerifications.verifyAdmin, listUsersController.handle);
+
+accountRouter.use(accountVerifications.verifyAdminOrOwner);
 
 // Retrieves user account data
 accountRouter.get('/', getUserController.handle);

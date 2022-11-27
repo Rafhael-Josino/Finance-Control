@@ -10,25 +10,6 @@ interface IPayLoad {
 }
 
 class AccountVerifications {
-    async verifyUserExists(req: Request, res: Response, next: NextFunction): Promise<any> {
-        const { username } = req.headers;
-        const userName = username as string;
-        
-        const resPG = await PG.query('SELECT user_id FROM users where user_name = $1', [userName]);
-
-        if (resPG.rows.length) {
-            req.user = { id: resPG.rows[0].user_id };
-
-            return next();
-        }
-        else {
-            throw new AppError(`Server's middleware here - account ${username} not found`, 404);
-        }
-    }
-
-    // For now the XLSX file stays in the logs/crypto directory
-    // but it will be changed to be imported, parsed, and then deleted
-
     async verifySession(req: Request, res: Response, next: NextFunction): Promise<any> {
         // Authentication with Bearer Token
         const authHeader = req.headers.authorization;
@@ -45,6 +26,7 @@ class AccountVerifications {
                 auth.secret_token
             ) as IPayLoad;
 
+            //req.user.id = user_id;
             req.user = { id: user_id }
 
             return next();
@@ -54,6 +36,10 @@ class AccountVerifications {
         }
     }
 
+    // For now the XLSX file stays in the logs/crypto directory
+    // but it will be changed to be imported, parsed, and then deleted
+
+
     async verifyAdmin(req: Request, res: Response, next: NextFunction): Promise<any> {
         const { id } = req.user;
     
@@ -62,6 +48,22 @@ class AccountVerifications {
         if (!resPG.rows[0].isadmin) throw new AppError('Restric to administrator', 403);
     
         next();
+    }
+    
+    async verifyAdminOrOwner(req: Request, res: Response, next: NextFunction): Promise<any> {
+        const { id } = req.user;
+        const { username } = req.headers;
+
+        const resPG = await PG.query(`SELECT user_name, isadmin FROM users WHERE user_id = $1`, [id]);
+    
+        console.log("user:", resPG.rows[0].user_name);
+        console.log('username requester:', username);
+
+        if (!resPG.rows[0].isadmin && resPG.rows[0].user_name !== username) {
+            throw new AppError('Restric to administrator', 403);
+        }
+    
+        next();    
     }
 }
 
