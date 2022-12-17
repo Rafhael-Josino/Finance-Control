@@ -3,9 +3,12 @@
   "packageManager": "yarn@3.2.2",
   "scripts": {
     "dev": "yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules --respawn ./src/shared/infra/http/server.ts",
+    "dev2": "NODE_ENV=nodocker yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules --respawn ./src/shared/infra/http/server.ts",
     "ddl": "yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules ./src/shared/infra/postgresSQL/migrations/",
-    "test": "NODE_ENV=test jest --runInBand",
-    "admin:seed": "yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules --respawn ./src/shared/infra/postgresSQL/admin_seed.ts"
+    "ddl2": "NODE_ENV=nodocker yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules ./src/shared/infra/postgresSQL/migrations/",
+    "admin:seed": "yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules --respawn ./src/shared/infra/postgresSQL/admin_seed.ts",
+    "admin:seed2": "NODE_ENV=nodocker yarn ts-node-dev -r tsconfig-paths/register --transpile-only --ignore-watch node_modules --respawn ./src/shared/infra/postgresSQL/admin_seed.ts",
+    "test": "NODE_ENV=test jest --runInBand"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
