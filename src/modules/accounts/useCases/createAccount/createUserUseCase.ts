@@ -1,7 +1,7 @@
 import { IAccountRepository } from '../../repositories/IAccountRepository';
 import { Account } from '@modules/accounts/infra/models/Account';
 import { inject, injectable } from 'tsyringe';
-import { hash } from 'bcrypt';
+import { hash } from 'bcryptjs';
 import { AppError } from '@shared/errors/AppErrors';
 
 interface IRequest {
