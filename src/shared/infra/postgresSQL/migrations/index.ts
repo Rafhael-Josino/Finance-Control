@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { join } from 'path';
+import recovery from './migrationsReplicator';
 
 const migrationsPath = join(__dirname, 'migrations.json');
 let migrationsList: string[];
@@ -17,7 +18,7 @@ else {
 const ddlArg = process.argv[2];
 
 if (!ddlArg) {
-  throw new Error("At least one migration file OR 'rollback' argument must be present as argument");
+  throw new Error("At least one migration file OR 'rollback' OR 'recovery' argument must be present as argument");
 }
 
 /**
@@ -46,6 +47,9 @@ if (ddlArg === "rollback") {
   .catch((err: Error) => {
     console.log("\x1b[31m%s\x1b[0m", `Error at migration ${ddlArg}:\n`, err.message);
   });
+}
+else if (ddlArg === "recovery") {
+  recovery();
 }
 
 /**
