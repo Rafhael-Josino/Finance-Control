@@ -1,13 +1,14 @@
-import { PG } from '..';
+import { PG } from '../..';
 
 class Migration {
   async up() {
     await PG.query(
-      `CREATE TABLE users (
+      `CREATE TABLE IF NOT EXISTS users (
         user_id char(21) default nanoid(),
         user_name varchar(50) unique not null,
         created_at timestamp default current_timestamp,
-        password varchar,
+        password varchar not null,
+        is_admin boolean default false,
         constraint pk_users
           primary key (user_id)
       );`,

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { join } from 'path';
-import recovery from './migrationsReplicator';
+import recovery from './migrationsBackup';
 
 const migrationsPath = join(__dirname, 'migrations.json');
 let migrationsList: string[];
@@ -30,7 +30,7 @@ if (ddlArg === "rollback") {
 
   const migrationUndone = migrationsList.pop();
 
-  const importPath = join(__dirname, migrationUndone);
+  const importPath = join(__dirname, 'migrationFiles', migrationUndone);
 
   const { Migration } = require(importPath);
 
@@ -48,8 +48,26 @@ if (ddlArg === "rollback") {
     console.log("\x1b[31m%s\x1b[0m", `Error at migration ${ddlArg}:\n`, err.message);
   });
 }
+
+/**
+ * Execute all migrations according to the migrations.json file
+ * This is useful when a new database is used and all the configuration must be done again
+ * However, this assumes that the json file is already made, therefore if the user does not have
+ * it previously, one suggestion is to make it manually with the migrations in the desired order
+ */
 else if (ddlArg === "recovery") {
   recovery();
+}
+
+/**
+ * As with the previous option, it is assumed that the migrations.json file is already present,
+ * and with the migrations in the order of installation, but here the _undo_ argment is passed 
+ * as true (it's default value is false).
+ * In this case, the migrations present will be undone from the last to the first migration,
+ * so there is no need of the user modificate the migrations.json file
+ */
+else if(ddlArg === "clean") {
+  recovery(true);
 }
 
 /**
@@ -62,7 +80,7 @@ else {
   if (migrationsList.includes(ddlArg)) 
     throw new Error("Migration already done");
   
-  const importPath = join(__dirname, ddlArg);
+  const importPath = join(__dirname, 'migrationFiles', ddlArg);
 
   migrationsList.push(ddlArg);
 

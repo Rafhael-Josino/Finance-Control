@@ -43,9 +43,9 @@ class AccountVerifications {
     async verifyAdmin(req: Request, res: Response, next: NextFunction): Promise<any> {
         const { id } = req.user;
     
-        const resPG = await PG.query(`SELECT isadmin FROM users WHERE user_id = $1`, [id]);
+        const resPG = await PG.query(`SELECT is_admin FROM users WHERE user_id = $1`, [id]);
     
-        if (!resPG.rows[0].isadmin) throw new AppError('Restric to administrator', 403);
+        if (!resPG.rows[0].is_admin) throw new AppError('Restric to administrator', 403);
     
         next();
     }
@@ -54,12 +54,12 @@ class AccountVerifications {
         const { id } = req.user;
         const { username } = req.headers;
 
-        const resPG = await PG.query(`SELECT user_name, isadmin FROM users WHERE user_id = $1`, [id]);
+        const resPG = await PG.query(`SELECT user_name, is_admin FROM users WHERE user_id = $1`, [id]);
     
         console.log("user:", resPG.rows[0].user_name);
         console.log('username requester:', username);
 
-        if (!resPG.rows[0].isadmin && resPG.rows[0].user_name !== username) {
+        if (!resPG.rows[0].is_admin && resPG.rows[0].user_name !== username) {
             throw new AppError('Restric to administrator', 403);
         }
     

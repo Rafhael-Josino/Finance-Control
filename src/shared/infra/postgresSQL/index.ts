@@ -7,11 +7,6 @@ import { AppError } from '@shared/errors/AppErrors';
 const database = process.env.NODE_ENV === 'test' ? 'fin_ctrl_test' : 'fin_ctrl';
 const host = process.env.NODE_ENV === 'nodocker' ? 'localhost' : process.env.DB_HOST;
 
-//test
-console.log("database", database, 'node env', process.env.NODE_ENV);
-
-console.log("database:", database);
-
 const pool = new Pool({
     user: process.env.DB_USER,
     host,

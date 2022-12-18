@@ -13,14 +13,19 @@ export default async function (undo: boolean = false): Promise<void> {
     await migrationsList.reduce(
         async (promise: Promise<void>, migrationName: string): Promise<void> => {
             await promise;
-            importPath = join(__dirname, migrationName);
+            importPath = join(__dirname, 'migrationFiles', migrationName);
             const { Migration } = require(importPath);
             const migration = new Migration();
-
-            console.log("Starting migration", migrationName);
-
-            if (undo) await migration.down();
-            else await migration.up();
+            
+            if (undo) {
+                console.log("Undoing migration", migrationName);
+                await migration.down();
+            }
+            
+            else {
+                console.log("Starting migration", migrationName);
+                await migration.up();
+            }
         },
         Promise.resolve()
     );

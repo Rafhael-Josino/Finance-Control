@@ -1,4 +1,4 @@
-import { PG } from '..';
+import { PG } from '../..';
 
 class Migration {
   async up() {
