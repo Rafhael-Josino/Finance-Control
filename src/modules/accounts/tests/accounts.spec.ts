@@ -7,7 +7,7 @@ import { app } from '@shared/infra/http/app';
 import { PG } from '@shared/infra/postgresSQL'
 import auth from '@config/auth';
 
-import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsReplicator';
+import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsBackup';
 
 import { AppError } from '@shared/errors/AppErrors';
 

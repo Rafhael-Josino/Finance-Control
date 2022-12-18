@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { AppError } from '@shared/errors/AppErrors';
 
-import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsReplicator';
+import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsBackup';
 
 import { CreateUserUseCase } from '@modules/accounts/useCases/createAccount/createUserUseCase';
 import { ParserCryptoUseCase } from '../useCases/parser/parserUseCase';

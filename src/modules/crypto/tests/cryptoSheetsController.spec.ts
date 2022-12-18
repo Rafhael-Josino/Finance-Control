@@ -3,7 +3,7 @@ import request from 'supertest';
 
 import { app } from '@shared/infra/http/app';
 
-import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsReplicator';
+import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsBackup';
 
 import { CreateUserUseCase } from '@modules/accounts/useCases/createAccount/createUserUseCase';
 import { DeleteUserUseCase } from '@modules/accounts/useCases/deleteAccount/deleteUserUseCase';
