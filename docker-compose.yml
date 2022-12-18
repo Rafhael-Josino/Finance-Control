@@ -1,12 +1,20 @@
 version: "3.7"
 
+networks:
+  app-tier:
+    driver: bridge
+
 services:
   database:
     image: postgres
-    container_name: database_fin
+    container_name: database_fin_comp
+    restart: always
+    expose:
+      - 5432
     ports:
       - 5432:5432
-    restart: always
+    networks:
+      - app-tier
     environment:
       - POSTGRES_USER=docker
       - POSTGRES_PASSWORD=finctrl
@@ -16,7 +24,7 @@ services:
 
   app:
     build: .
-    container_name: fin_ctrl
+    container_name: fin_ctrl_comp
     ports:
       - 8000:8000
     volumes:
@@ -25,6 +33,8 @@ services:
       - database
     depends_on:
       - database
+    networks:
+      - app-tier
 
 volumes:
   pgdata:
