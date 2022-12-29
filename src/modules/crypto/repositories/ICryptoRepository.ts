@@ -21,6 +21,7 @@ interface IPostSheetOperationsDTO {
 // Function return types
 
 interface IGetSheetResponse {
+    asset: string;
     purchases: any[];
     sells: any[];
 }

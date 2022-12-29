@@ -79,6 +79,7 @@ class CryptoRepositoryPG implements ICryptoRepository {
         );
 
         return {
+            asset: assetName,
             purchases: purchases.rows,
             sells: sells.rows 
         }

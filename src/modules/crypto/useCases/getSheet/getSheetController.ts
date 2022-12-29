@@ -12,6 +12,7 @@ class GetSheetController {
         const response = await getSheetUseCase.execute({ sheetName, userID, assetName });
 
         return res.json({
+            asset: response.asset,
             purchases: response.purchases,
             sells: response.sells
         });
