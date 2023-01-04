@@ -65,15 +65,30 @@ class CryptoRepositoryPG implements ICryptoRepository {
             [sheetName, userID, assetName]
         );
         
+        // To each sell entry, the correspondent purchases will be anexed
+        // to the object returned, searching them in the purchase_sell table
         await sells.rows.reduce(
             async (promise, sell_row) => {
                 await promise;
                 const purchase_sell = await PG.query(
-                    `SELECT purchase_id, quant_sold FROM purchase_sell WHERE sell_id = $1`,
+                    `SELECT 
+                        purchase_sell.purchase_id, 
+                        quant_sold,
+                        purchase_medium_price
+                    FROM 
+                        purchase_sell
+                    INNER JOIN 
+                        purchases ON purchase_sell.purchase_id = purchases.purchase_id
+                    WHERE sell_id = $1`,
                     [sell_row.sell_id]
-                    );
+                );
 
-                    Object.assign(sell_row, { purchases_sold: purchase_sell.rows });
+                // reduce the purhcses_sold -> find the aquisition value
+                const aquisitionValue = purchase_sell.rows.reduce((amount, row) => {
+                    return amount + (row.quant_sold * row.purchase_medium_price);
+                }, 0);
+
+                Object.assign(sell_row, { aquisitionValue, purchases_sold: purchase_sell.rows });
             },
             Promise.resolve()
         );
