@@ -71,7 +71,7 @@ cryptoSheetsRouter.get(
 
 // Retrieves a specified sheet data from a user
 cryptoSheetsRouter.get(
-	'/sheet/:sheetName/:assetName',
+	'/sheet/:sheetName/:assetName/:sellsMonthlyResumed',
 	getSheetController.handle
 );
 
