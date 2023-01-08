@@ -36,6 +36,7 @@ type PurchaseSold = {
     purchase_id: string,
     quant_sold: number,
     purchase_medium_price: number,
+    purchase_date: string,
 }
 
 type SellType = {

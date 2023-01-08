@@ -74,7 +74,8 @@ class CryptoRepositoryPG implements ICryptoRepository {
                     `SELECT 
                         purchase_sell.purchase_id, 
                         quant_sold,
-                        purchase_medium_price
+                        purchase_medium_price,
+                        purchase_date
                     FROM 
                         purchase_sell
                     INNER JOIN 

@@ -9,11 +9,11 @@ const accountVerifications = new AccountVerifications();
 
 import { ParserCryptoController } from '@modules/crypto/useCases/parser/parserController';
 import { ListSheetsController } from '@modules/crypto/useCases/listSheets/listSheetsController';
-import { GetSheetController} from '@modules/crypto/useCases/getSheet/getSheetController';
+import { GetAssetOperationsController} from '@modules/crypto/useCases/getAssetOperations/getAssetOperationsController';
 import { GetSheetSummaryController} from '@modules/crypto/useCases/getSheetSummary/getSheetSummaryController';
 import { DeleteSheetController } from '@modules/crypto/useCases/deleteSheet/deleteSheetController';
 
-const getSheetController = new GetSheetController();
+const getSheetController = new GetAssetOperationsController();
 const listSheetsController = new ListSheetsController();
 const getSheetSummaryController = new GetSheetSummaryController();
 const parserSheetController = new ParserCryptoController();
@@ -71,7 +71,7 @@ cryptoSheetsRouter.get(
 
 // Retrieves a specified sheet data from a user
 cryptoSheetsRouter.get(
-	'/sheet/:sheetName/:assetName/:sellsMonthlyResumed',
+	'/sheet/:sheetName/:assetName/:sellShowMode',
 	getSheetController.handle
 );
 

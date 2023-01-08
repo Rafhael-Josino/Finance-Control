@@ -45,10 +45,6 @@ class ParserCryptoUseCase {
 
     // If this code will be used as a repository class, the return shall be an object with status e possible ok/error messages
     async execute( { username, userID, overwrite }: IRequest ): Promise<string[]> {
-
-        if (overwrite !== "yes" && overwrite !== "no")
-            throw new AppError("overwrite parameter must be 'yes' or 'no'", 400);
-
         // Object that represents a cell of the datasheet
         function Navigator(column: string, line: number): void {
             this.column = column;
