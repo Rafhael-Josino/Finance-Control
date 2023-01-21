@@ -1,6 +1,9 @@
 import { Router } from 'express';
-import path from 'path';
-import fs from 'fs';
+import multer from 'multer';
+
+const upload = multer({dest: 'uploads/'});
+
+
 
 // ###################### Middleware #########################
 import { AccountVerifications } from '../middlewares/AccountVerificationsPG';
@@ -12,54 +15,17 @@ import { ListSheetsController } from '@modules/crypto/useCases/listSheets/listSh
 import { GetAssetOperationsController} from '@modules/crypto/useCases/getAssetOperations/getAssetOperationsController';
 import { GetSheetSummaryController} from '@modules/crypto/useCases/getSheetSummary/getSheetSummaryController';
 import { DeleteSheetController } from '@modules/crypto/useCases/deleteSheet/deleteSheetController';
+import SaveSheetController from '@modules/crypto/useCases/saveSheet/SaveSheetController';
 
 const getSheetController = new GetAssetOperationsController();
 const listSheetsController = new ListSheetsController();
 const getSheetSummaryController = new GetSheetSummaryController();
 const parserSheetController = new ParserCryptoController();
 const deleteSheetController = new DeleteSheetController();
-
+const saveSheetController = new SaveSheetController();
 
 // Instance for Router();
 const cryptoSheetsRouter = Router();
-
-
-// ----------------------- Routes -----------------------------------------
-
-cryptoSheetsRouter.get("/cryptos", (req, res) => {
-	const namePath = path.join(__dirname, '..', 'pages', 'cryptos.html');
-	fs.readFile(namePath, 'utf8', (err, data) => {
-		if (err) {
-            console.log("Error reading cryptos index:", err);
-            res.status(500).json({ error: "Server here - error reading cryptos.html" + err.message });
-        }
-        else {
-			console.log("Sending cryptos.html");
-			res.send(data);
-		}
-	});
-});
-
-cryptoSheetsRouter.get('/cryptos.js', (req, res) => {
-	const namePath = path.join(__dirname, '..', 'pages', 'cryptos.js');
-	fs.readFile(namePath, 'utf8', (err, data) => {
-		if (err) {
-            console.log("Error reading cryptos.js:", err);
-            res.status(500).json({ error: "Server here - error reading cryptos.js " + err.message });
-        }
-        else {
-			console.log("Sending cryptos.js");
-			res.send(data);
-		}
-	});
-});
-
-// ---------------------------
-// Obs: Typed functions below:
-// ---------------------------
-
-
-// --------------------------- Crypto Sheets ------------------------------
 
 cryptoSheetsRouter.use(accountVerifications.verifySession);
 
@@ -84,6 +50,14 @@ cryptoSheetsRouter.get(
 cryptoSheetsRouter.post(
 	'/saveSheet/:overwrite',
 	parserSheetController.handle
+);
+
+
+
+cryptoSheetsRouter.post(
+	'/saveSheet2/:overwrite',
+	upload.single('sheet'),
+	saveSheetController.handle
 );
 
 // Delete given sheet's information of a user

@@ -19,6 +19,8 @@ class CreateUserUseCase {
     async execute( { userName, password }: IRequest ): Promise<Account> {
         const listUsers = await this.accountRepository.listUsers();
 
+        // this should not be necessary
+        // we must see how to handle the errors from the databank
         if (listUsers.includes(userName))
             throw new AppError(`Account ${userName} already exists`, 400);
 

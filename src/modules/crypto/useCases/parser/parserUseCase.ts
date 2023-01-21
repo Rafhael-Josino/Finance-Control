@@ -175,6 +175,9 @@ class ParserCryptoUseCase {
             return newSell;
         }
 
+        //test
+        const linesWithBRL = []
+
         function parsing(worksheet: ExcelJS.Worksheet): CryptoSheet {
             const cell = worksheet.getCell(parser.pos()).value;
             // console.log(parser.pos()); // Used to find lines in the table with problemn
@@ -182,6 +185,7 @@ class ParserCryptoUseCase {
             // If this line contains an operation with values equivalent in BRL
             if (cell === null || cell === "STOP") {
                 console.log("Parsing finished");
+                //console.log(linesWithBRL)
                 const cryptoSheet = new CryptoSheet();
 
                 // Save last line parsed - parser.line
@@ -202,13 +206,19 @@ class ParserCryptoUseCase {
 
             else if (cell.match(cryptoInBRL)) {
                 parser.moveToColumn('C');
-                const operationType = worksheet.getCell(parser.pos()).value;
-                if (operationType === "Compra") { // Purchase
+                const operationType = worksheet.getCell(parser.pos()).value as string;
+                //if (operationType === "Compra") { // Purchase
+                if (operationType.match("Compra")) { // Purchase
+                    linesWithBRL.push(parser.pos());
+
+
                     const newOp = logBuy(worksheet);
                     //cryptoPurchasesList[newOp.asset].push(newOp);
                     cryptoPurchasesList.addPurchase(newOp);
                 }
-                else if (operationType === "Venda" || operationType === "Transf") { // Sell
+                //else if (operationType === "Venda" || operationType === "Transf") { // Sell
+                else if (operationType.match("Venda") || operationType.match('Transf')) {
+                    linesWithBRL.push(parser.pos());
                     const newOp = logSell(worksheet);
                     //cryptoSellsList[newOp.asset].push(newOp);
                     cryptoSellsList.addSell(newOp);
@@ -231,7 +241,7 @@ class ParserCryptoUseCase {
         function updatePurchases (asset: string, purchaseIndex: number, sell_id: string, debit: number): number {
 
             //test
-            //console.log(asset, purchaseIndex);
+            console.log(asset, purchaseIndex);
             //console.log(cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant);
 
             if (cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant) {
@@ -287,15 +297,20 @@ class ParserCryptoUseCase {
          */
 
         //const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${username}.xlsx`);
-        const logsPath = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos');
+        //const logsPath = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos');
+        //const fileName = 'b3884956b2ac44c87b8c2f3ce1dc542c';
+        const fileName = '2022.xlsx';
+        
+        const logsPath = path.join(__dirname, '..', '..', '..', '..', '..', 'uploads');
         const dirFiles = fs.readdirSync(logsPath, 'utf8');
 
-        if (!dirFiles.includes(`${username}.xlsx`)) throw new AppError(
+        //if (!dirFiles.includes(`${username}.xlsx`)) throw new AppError(
+        if (!dirFiles.includes(fileName)) throw new AppError(
             `File ${username}.xlsx not found`,
             404
         );
 
-        const pathName = path.join(logsPath, `${username}.xlsx`)
+        const pathName = path.join(logsPath, fileName)
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(pathName);
         const cryptoSheetList = [];
@@ -324,10 +339,13 @@ class ParserCryptoUseCase {
                     const cryptoSheet = parsing(worksheet);
                     
                     //test
-                    //console.log(cryptoPurchasesList);
-                    //console.log(cryptoSellsList);
+                    console.log(cryptoPurchasesList);
+                    console.log(cryptoSellsList);
 
                     cryptoSellsList.presentAssets().forEach(asset => {
+                        //console.log(asset, 'purchases\n', cryptoPurchasesList.assets[asset]);
+                        //console.log(asset, 'sells\n', cryptoSellsList.assets[asset]);
+
                         // Each reduce iteration corresponds to a CryptoSell object 
                         cryptoSellsList.assets[asset].reduce(
                             (purchaseIndex: number, cryptoSell: CryptoSell): number => { 
