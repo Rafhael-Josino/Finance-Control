@@ -5,7 +5,7 @@ import { AppError } from '@shared/errors/AppErrors';
 import runMigrations from '@shared/infra/postgresSQL/migrations/migrationsBackup';
 
 import { CreateUserUseCase } from '@modules/accounts/useCases/createAccount/createUserUseCase';
-import { ParserCryptoUseCase } from '../useCases/parser/parserUseCase';
+import { UploadSheetUseCase } from '../useCases/uploadSheet/uploadSheetUseCase';
 import { DeleteUserUseCase } from '@modules/accounts/useCases/deleteAccount/deleteUserUseCase';
 import { AccountRepositoryPG } from '@modules/accounts/infra/postgresSQL/repositories/AccountRepositoryPG';
 import { CryptoRepositoryPG } from '@modules/crypto/infra/postgresSQL/repositories/CryptoRepositoryPG';
@@ -18,7 +18,7 @@ describe("Parser sheets use case", () => {
     const deleteAccountUseCase = new DeleteUserUseCase(accountRepository);
     
     const cryptoRepository = new CryptoRepositoryPG();
-    const parserCryptoUseCase = new ParserCryptoUseCase(cryptoRepository);
+    const parserCryptoUseCase = new UploadSheetUseCase(cryptoRepository);
     
     let testUser: Account;
 

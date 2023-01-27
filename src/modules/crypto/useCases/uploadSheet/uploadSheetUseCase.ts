@@ -37,7 +37,7 @@ interface IRequest {
 }
 
 @injectable()
-class ParserCryptoUseCase {
+class UploadSheetUseCase {
     constructor(
         @inject("CryptoRepository")
         private cryptoRepository: ICryptoRepository
@@ -296,21 +296,20 @@ class ParserCryptoUseCase {
          * Parsing xlsx file:
          */
 
-        //const pathName = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos', `${username}.xlsx`);
-        //const logsPath = path.join(__dirname, '..', '..', '..', '..', '..', 'logs', 'cryptos');
-        //const fileName = 'b3884956b2ac44c87b8c2f3ce1dc542c';
-        const fileName = '2022.xlsx';
+        const fileName = 'cryptoSheet.xlsx';
         
-        const logsPath = path.join(__dirname, '..', '..', '..', '..', '..', 'uploads');
-        const dirFiles = fs.readdirSync(logsPath, 'utf8');
+        const logPath = path.join(__dirname, '..', '..', '..', '..', '..', 'tmp','uploads');
+        const dirFiles = fs.readdirSync(logPath, 'utf8');
 
-        //if (!dirFiles.includes(`${username}.xlsx`)) throw new AppError(
-        if (!dirFiles.includes(fileName)) throw new AppError(
-            `File ${username}.xlsx not found`,
-            404
-        );
+        console.log(dirFiles)
 
-        const pathName = path.join(logsPath, fileName)
+        // If it was received by this Use Case's Controller but it was not found 
+        // inside the server's repository, it is an internal error
+        if (!dirFiles.includes(fileName)) {
+            throw new AppError(`Uploaded file not found, favor send it again`, 500);
+        }
+
+        const pathName = path.join(logPath, fileName)
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(pathName);
         const cryptoSheetList = [];
@@ -335,7 +334,6 @@ class ParserCryptoUseCase {
                     parser.reset();
                     
                     console.log(`Parsing of ${worksheet.name} started`);
-                    //cryptoSheetList.push(parsing(worksheet));
                     const cryptoSheet = parsing(worksheet);
                     
                     //test
@@ -367,4 +365,4 @@ class ParserCryptoUseCase {
     }
 }
 
-export { ParserCryptoUseCase };
+export { UploadSheetUseCase };

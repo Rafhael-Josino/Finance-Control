@@ -1,8 +1,16 @@
 import { Router } from 'express';
 import multer from 'multer';
 
-const upload = multer({dest: 'uploads/'});
+const storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb (null, './tmp/uploads');
+	},
+	filename: (req, file, cb) => {
+		cb (null, 'cryptoSheet.xlsx');
+	}
+});
 
+const upload = multer({ storage });
 
 
 // ###################### Middleware #########################
@@ -10,7 +18,7 @@ import { AccountVerifications } from '../middlewares/AccountVerificationsPG';
 
 const accountVerifications = new AccountVerifications();
 
-import { ParserCryptoController } from '@modules/crypto/useCases/parser/parserController';
+import { UploadSheetController } from '@modules/crypto/useCases/uploadSheet/uploadSheetController';
 import { ListSheetsController } from '@modules/crypto/useCases/listSheets/listSheetsController';
 import { GetAssetOperationsController} from '@modules/crypto/useCases/getAssetOperations/getAssetOperationsController';
 import { GetSheetSummaryController} from '@modules/crypto/useCases/getSheetSummary/getSheetSummaryController';
@@ -20,7 +28,7 @@ import SaveSheetController from '@modules/crypto/useCases/saveSheet/SaveSheetCon
 const getSheetController = new GetAssetOperationsController();
 const listSheetsController = new ListSheetsController();
 const getSheetSummaryController = new GetSheetSummaryController();
-const parserSheetController = new ParserCryptoController();
+const parserSheetController = new UploadSheetController();
 const deleteSheetController = new DeleteSheetController();
 const saveSheetController = new SaveSheetController();
 
@@ -49,10 +57,9 @@ cryptoSheetsRouter.get(
 // Parse sheets in the xlsx file uploaded and stores the data obtained
 cryptoSheetsRouter.post(
 	'/saveSheet/:overwrite',
+	upload.single('sheet'),
 	parserSheetController.handle
 );
-
-
 
 cryptoSheetsRouter.post(
 	'/saveSheet2/:overwrite',
