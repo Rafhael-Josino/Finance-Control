@@ -1,5 +1,6 @@
-import { ICryptoRepository } from '../../repositories/ICryptoRepository';
 import { inject, injectable } from 'tsyringe';
+import { ICryptoRepository } from '../../repositories/ICryptoRepository';
+import { SheetListType } from '@modules/crypto/infra/models/CryptoTypes';
 
 @injectable()
 class ListSheetsUseCase {
@@ -8,7 +9,7 @@ class ListSheetsUseCase {
         private cryptoRepository: ICryptoRepository
     ) {}
 
-    async execute( user_id: string ): Promise<string[]> {
+    async execute( user_id: string ): Promise<SheetListType[]> {
         return await this.cryptoRepository.listSheets(user_id);
     }
 }

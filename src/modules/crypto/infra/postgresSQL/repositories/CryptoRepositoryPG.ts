@@ -13,17 +13,18 @@ import {
     IReferenceSheet,
     IGetSheetResponse
 } from '@modules/crypto/repositories/ICryptoRepository';
+import { SheetListType } from '@modules/crypto/infra/models/CryptoTypes';
 
 class CryptoRepositoryPG implements ICryptoRepository {
-    async listSheets( userID: string ): Promise<string[]> {
+    async listSheets( userID: string ): Promise<SheetListType[]> {
         const PGresponse = await PG.query(
-            `SELECT sheet_name FROM sheets 
+            `SELECT sheet_name, created_at FROM sheets 
             WHERE sheet_id IN (SELECT sheet_id FROM sheets WHERE user_id = $1)
             `,
             [userID]
         );
 
-        const sheetList = PGresponse.rows.map(PGelement => PGelement.sheet_name);
+        const sheetList = PGresponse.rows;
 
         return sheetList;
     }
