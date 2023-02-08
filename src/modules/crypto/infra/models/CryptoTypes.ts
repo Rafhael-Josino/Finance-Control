@@ -1,3 +1,8 @@
+type SheetListType = {
+    sheetName: string;
+    createdDate: string;
+}
+
 type PurchaseType = {
     purchase_id: string,
     purchase_date: string,
@@ -31,5 +36,12 @@ type GroupedSellType = {
     quantSold: number,
     receivedValue: number,
     purchasesSold: PurchaseSold[],
+}
 
+export {
+    SheetListType,
+    PurchaseType,
+    PurchaseSold,
+    SellType,
+    GroupedSellType,
 }
