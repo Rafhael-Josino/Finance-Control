@@ -1,6 +1,6 @@
 type SheetListType = {
-    sheetName: string;
-    createdDate: string;
+    sheet_name: string;
+    created_at: string;
 }
 
 type PurchaseType = {
