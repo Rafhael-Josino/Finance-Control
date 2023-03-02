@@ -320,7 +320,9 @@ class UploadSheetUseCase {
             async (promise, worksheet) => {
                 await promise;
 
-                const alreadyParsed = listSheetsResponse.includes(worksheet.name);
+                const alreadyParsed = listSheetsResponse.some(sheet => {
+                    return worksheet.name === sheet.sheet_name;
+                });
 
                 if (!alreadyParsed || (alreadyParsed && overwrite === 'yes')) {
                     if (alreadyParsed) {
