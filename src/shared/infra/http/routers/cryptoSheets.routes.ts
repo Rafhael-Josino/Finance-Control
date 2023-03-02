@@ -23,14 +23,12 @@ import { ListSheetsController } from '@modules/crypto/useCases/listSheets/listSh
 import { GetAssetOperationsController} from '@modules/crypto/useCases/getAssetOperations/getAssetOperationsController';
 import { GetSheetSummaryController} from '@modules/crypto/useCases/getSheetSummary/getSheetSummaryController';
 import { DeleteSheetController } from '@modules/crypto/useCases/deleteSheet/deleteSheetController';
-import SaveSheetController from '@modules/crypto/useCases/saveSheet/SaveSheetController';
 
 const getSheetController = new GetAssetOperationsController();
 const listSheetsController = new ListSheetsController();
 const getSheetSummaryController = new GetSheetSummaryController();
-const parserSheetController = new UploadSheetController();
+const uploadSheetController = new UploadSheetController();
 const deleteSheetController = new DeleteSheetController();
-const saveSheetController = new SaveSheetController();
 
 // Instance for Router();
 const cryptoSheetsRouter = Router();
@@ -58,13 +56,7 @@ cryptoSheetsRouter.get(
 cryptoSheetsRouter.post(
 	'/saveSheet/:overwrite',
 	upload.single('sheet'),
-	parserSheetController.handle
-);
-
-cryptoSheetsRouter.post(
-	'/saveSheet2/:overwrite',
-	upload.single('sheet'),
-	saveSheetController.handle
+	uploadSheetController.handle
 );
 
 // Delete given sheet's information of a user
