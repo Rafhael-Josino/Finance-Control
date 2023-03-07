@@ -4,7 +4,7 @@ import { container } from 'tsyringe';
 import { AppError } from '@shared/errors/AppErrors';
 
 class UploadSheetController {
-    async handle(req: Request, res: Response): Promise<Response> /* BAD - it should return a Response */ {
+    async handle(req: Request, res: Response): Promise<Response> {
         const { username } = req.headers;
         const { id: userID } = req.user; // received from middleware
         const { overwrite } = req.params;

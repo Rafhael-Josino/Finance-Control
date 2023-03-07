@@ -80,6 +80,9 @@ class UploadSheetUseCase {
         function logBuy(worksheet: any): CryptoPurchase {
             parser.moveToColumn('A');
             const date = worksheet.getCell(parser.pos()).value;
+            if (typeof date !== 'string') {
+                throw new AppError(`Bad input at line ${parser.pos()}`, 400);
+            }
     
             parser.moveToColumn('B');
             const asset = worksheet.getCell(parser.pos()).value.match(matchCrypto)[0];
@@ -128,6 +131,9 @@ class UploadSheetUseCase {
         function logSell(worksheet: any): CryptoSell {
             parser.moveToColumn('A');
             const sellingDate = worksheet.getCell(parser.pos()).value;
+            if (typeof sellingDate !== 'string') {
+                throw new AppError(`Bad input at line ${parser.pos()}`, 400);
+            }
     
             parser.moveToColumn('B');
             const asset = worksheet.getCell(parser.pos()).value.match(matchCrypto)[0];
@@ -146,16 +152,20 @@ class UploadSheetUseCase {
 
             const cellReceived = worksheet.getCell(parser.pos()).value;
 
+            // If the value present in the cell is a formula (ex: =A1/B1)
             if (cellReceived.hasOwnProperty('formula')) {
                 if (cellReceived.hasOwnProperty('result')) received = cellReceived.result;
                 else received = 0;
             }
-            else received = cellReceived;
+            // If is a value
+            else {
+                if (typeof cellReceived !== 'number') {
+                    throw new AppError(`Bad input at line ${parser.pos()}`, 400)
+                }
+                received = cellReceived;
+            }
 
-            console.log('received', received)
-    
             let leftOver: number; // in cryptos
-            //let debit = quantSold; // in cryptos
             let aquisitionValue = 0; // in FIAT coin
             let buyIndexes = [];
 
@@ -328,6 +338,7 @@ class UploadSheetUseCase {
                     if (alreadyParsed) {
                         await this.cryptoRepository.deleteSheet({ userID, sheetName: worksheet.name});
                     }
+
                     // "Resets" the variables below to start a new sheet parsing process
                     // Better make a new instance or create a reset method likewise parser object?
                     cryptoPurchasesList = new CryptoPurchasesList();
@@ -339,14 +350,14 @@ class UploadSheetUseCase {
                     const cryptoSheet = parsing(worksheet);
                     
                     //test
-                    console.log(cryptoPurchasesList);
-                    console.log(cryptoSellsList);
+                    //console.log(cryptoPurchasesList);
+                    //console.log(cryptoSellsList);
 
                     cryptoSellsList.presentAssets().forEach(asset => {
                         //console.log(asset, 'purchases\n', cryptoPurchasesList.assets[asset]);
                         //console.log(asset, 'sells\n', cryptoSellsList.assets[asset]);
 
-                        // Each reduce iteration corresponds to a CryptoSell object 
+                        // Each reduce iteration corresponds to one CryptoSell object 
                         cryptoSellsList.assets[asset].reduce(
                             (purchaseIndex: number, cryptoSell: CryptoSell): number => { 
                                 return updatePurchases(asset, purchaseIndex, cryptoSell.sell_id, cryptoSell.quantSold);
