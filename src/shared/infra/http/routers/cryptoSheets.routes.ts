@@ -23,17 +23,27 @@ import { ListSheetsController } from '@modules/crypto/useCases/listSheets/listSh
 import { GetAssetOperationsController} from '@modules/crypto/useCases/getAssetOperations/getAssetOperationsController';
 import { GetSheetSummaryController} from '@modules/crypto/useCases/getSheetSummary/getSheetSummaryController';
 import { DeleteSheetController } from '@modules/crypto/useCases/deleteSheet/deleteSheetController';
+import { GetCryptoBinanceController } from '@modules/crypto/useCases/getCryptoBinance/getCryptoBinanceController';
 
 const getSheetController = new GetAssetOperationsController();
 const listSheetsController = new ListSheetsController();
 const getSheetSummaryController = new GetSheetSummaryController();
 const uploadSheetController = new UploadSheetController();
 const deleteSheetController = new DeleteSheetController();
+const getCryptoBinanceController = new GetCryptoBinanceController();
 
 // Instance for Router();
 const cryptoSheetsRouter = Router();
 
+
 cryptoSheetsRouter.use(accountVerifications.verifySession);
+
+// Retrieves the Binance's wallet information through Binance's API
+// The API's keys are fixed yet
+cryptoSheetsRouter.get(
+	'/binance',
+	getCryptoBinanceController.handle
+);
 
 // Retrieves a list of all sheets parsed and stored
 cryptoSheetsRouter.get(

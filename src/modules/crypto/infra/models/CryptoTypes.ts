@@ -1,9 +1,9 @@
-type SheetListType = {
+export type SheetListType = {
     sheet_name: string;
     created_at: string;
 }
 
-type PurchaseType = {
+export type PurchaseType = {
     purchase_id: string,
     purchase_date: string,
     purchase_local: string,
@@ -13,14 +13,14 @@ type PurchaseType = {
     remain_quant: number,
 }
 
-type PurchaseSold = {
+export type PurchaseSold = {
     purchase_id: string,
     quant_sold: number,
     purchase_medium_price: number,
     purchase_date: string,
 }
 
-type SellType = {
+export type SellType = {
     sell_id: string,
     sell_date: string,
     sell_local: string,
@@ -30,7 +30,7 @@ type SellType = {
     purchases_sold: PurchaseSold[],
 }
 
-type GroupedSellType = {
+export type GroupedSellType = {
     sellDate: string,
     aquisitionValue: number,
     quantSold: number,
@@ -38,10 +38,8 @@ type GroupedSellType = {
     purchasesSold: PurchaseSold[],
 }
 
-export {
-    SheetListType,
-    PurchaseType,
-    PurchaseSold,
-    SellType,
-    GroupedSellType,
+export type BinanceAsset = {
+    asset: string,
+    free: string,
+    locked: string,
 }

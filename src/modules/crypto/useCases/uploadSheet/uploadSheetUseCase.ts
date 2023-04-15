@@ -80,9 +80,9 @@ class UploadSheetUseCase {
         function logBuy(worksheet: any): CryptoPurchase {
             parser.moveToColumn('A');
             const date = worksheet.getCell(parser.pos()).value;
-            if (typeof date !== 'string') {
-                throw new AppError(`Bad input at line ${parser.pos()}`, 400);
-            }
+            //if (typeof date !== 'string') {
+            //    throw new AppError(`Bad input at line ${parser.pos()}`, 400);
+            //}
     
             parser.moveToColumn('B');
             const asset = worksheet.getCell(parser.pos()).value.match(matchCrypto)[0];
@@ -131,9 +131,9 @@ class UploadSheetUseCase {
         function logSell(worksheet: any): CryptoSell {
             parser.moveToColumn('A');
             const sellingDate = worksheet.getCell(parser.pos()).value;
-            if (typeof sellingDate !== 'string') {
-                throw new AppError(`Bad input at line ${parser.pos()}`, 400);
-            }
+            //if (typeof sellingDate !== 'string') {
+            //    throw new AppError(`Bad input at line ${parser.pos()}`, 400);
+            //}
     
             parser.moveToColumn('B');
             const asset = worksheet.getCell(parser.pos()).value.match(matchCrypto)[0];
