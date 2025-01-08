@@ -79,7 +79,10 @@ class UploadSheetUseCase {
     
         function logBuy(worksheet: any): CryptoPurchase {
             parser.moveToColumn('A');
-            const date = worksheet.getCell(parser.pos()).value;
+            let date: string;
+            date = worksheet.getCell(parser.pos()).value.result;
+            if (!date) date = worksheet.getCell(parser.pos()).value;
+            // const date = worksheet.getCell(parser.pos()).value;
             //if (typeof date !== 'string') {
             //    throw new AppError(`Bad input at line ${parser.pos()}`, 400);
             //}
@@ -130,7 +133,10 @@ class UploadSheetUseCase {
     
         function logSell(worksheet: any): CryptoSell {
             parser.moveToColumn('A');
-            const sellingDate = worksheet.getCell(parser.pos()).value;
+            let sellingDate: string;
+            sellingDate = worksheet.getCell(parser.pos()).value.result;
+            if (!sellingDate) sellingDate = worksheet.getCell(parser.pos()).value;
+            // const sellingDate = worksheet.getCell(parser.pos()).value;
             //if (typeof sellingDate !== 'string') {
             //    throw new AppError(`Bad input at line ${parser.pos()}`, 400);
             //}
@@ -251,7 +257,8 @@ class UploadSheetUseCase {
         function updatePurchases (asset: string, purchaseIndex: number, sell_id: string, debit: number): number {
 
             //test
-            console.log(asset, purchaseIndex);
+            // console.log(asset, purchaseIndex);
+            console.log(asset, "Purchase Date:", cryptoPurchasesList.assets[asset][purchaseIndex].date);
             //console.log(cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant);
 
             if (cryptoPurchasesList.assets[asset][purchaseIndex].remainQuant) {
@@ -352,14 +359,17 @@ class UploadSheetUseCase {
                     //test
                     //console.log(cryptoPurchasesList);
                     //console.log(cryptoSellsList);
+                    console.log("Updating crypto purchases lists");
 
                     cryptoSellsList.presentAssets().forEach(asset => {
                         //console.log(asset, 'purchases\n', cryptoPurchasesList.assets[asset]);
                         //console.log(asset, 'sells\n', cryptoSellsList.assets[asset]);
+                        console.log("Updating purchases of", asset);
 
                         // Each reduce iteration corresponds to one CryptoSell object 
                         cryptoSellsList.assets[asset].reduce(
                             (purchaseIndex: number, cryptoSell: CryptoSell): number => { 
+                                console.log("Sell of", cryptoSell.sellingDate);
                                 return updatePurchases(asset, purchaseIndex, cryptoSell.sell_id, cryptoSell.quantSold);
                             },
                             0

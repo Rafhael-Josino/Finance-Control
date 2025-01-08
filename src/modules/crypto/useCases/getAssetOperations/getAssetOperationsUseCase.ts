@@ -70,7 +70,7 @@ class GetAssetOperationsUseCase {
             const agroupedSellsMap: Map<string, GroupedSellType>  = new Map();
 
             assetOperations.sells.map((sell: SellType) => {
-                if (sell.received >= sell.aquisitionValue) {
+                // if (sell.received >= sell.aquisitionValue) {
                     // sell.sell_date is returned as an object from the databank
                     // the "pieces" bellow correspond to the month and year present after stringfy the object
                     const month_year = String(sell.sell_date).slice(4,7) + " " +
@@ -105,7 +105,7 @@ class GetAssetOperationsUseCase {
                             purchasesSold: [...purchasesSold, ...sell.purchases_sold],
                         })
                     }
-                }
+                // }
             });
 
             // 
